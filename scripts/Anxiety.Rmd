@@ -54,7 +54,9 @@ MHQ %>%
   colnames()
 ```
 
-# GAD-7 - Score
+# Generalised Anxiety Disorder 
+
+## GAD-7 - Score
 Sum {Feeling nervous, anxious or on edge 20506, Not being able to stop or control worrying 20509, Worrying too much about different things 20520, Trouble relaxing 20515, Being so restless that it is hard to sit still 20516, Becoming easily annoyed or irritable 20505, Feeling afraid as if something awful might happen 20512} 
 - 01 Not at all 
 - 02 Several days 
@@ -97,3 +99,190 @@ MHQ$GAD.Current <- with(MHQ,
 ```
 +++ ATK: add chunk to screen controls for a score of less than 5 (mild anxiety threshold)? (as done in MHQ1 algorithm)?
 
+# Panic attacks ever
+An abrupt surge of intense fear or intense discomfort that reaches a peak within minutes, and during which time four or more of a list of 13 physical and cognitive symptoms occur.
+
+4 or more symptoms out of: 
+
+Experienced the following symptom (SFP1): 
+Heart pounding or racing (01) 
+Sweating (02) 
+Trembling or shaking (03) 
+Short of breath or being smothered (04) 
+Choking (05) 
+Pain or discomfort in chest (06) 
+Nauseous or felt sick in the stomach (07) 
+Dizzy, unsteady, light-headed or faint (08) 
+Hot or cold (09) 
+Numbness or tingling sensations (10) 
+Felt like things weren't real, or felt detached (11) 
+Afraid going to lose control or ‘go crazy’ (12) 
+Afraid going to die (13) 
+
+check colnames
+```{r Check colnames}
+colnames(MHQ)
+```
+
+
+4 or more panic attack symptoms must be endorsed
+
+If participants endorse fewer than 4 panic symptoms, then they are given a 0 for diagnosis 
+
+
+Calculate panic attacks symptoms score
+
++++ATK: need to see how the data looks, but might be that each of the 13 entries for the field will have a 1-13 response https://biobank.ndph.ox.ac.uk/ukb/coding.cgi?id=1910
+e.g. for heart pounding or racing (=1), would need to do something like this:
+dat <- dat %>%
+  mutate(PAD.panic_symptoms_numeric = 
+           if_else(condition =
+           f29065_0_1 == "1" |
+           f29065_0_2 == "1" |
+           f29065_0_3 == "1" |
+           f29065_0_4 == "1" |
+           f29065_0_5 == "1" |
+           f29065_0_6 == "1" |
+           f29065_0_7 == "1" |
+           f29065_0_8 == "1" |
+           f29065_0_9 == "1" |
+           f29065_0_10 == "1" |
+           f29065_0_11 == "1" |
+           f29065_0_12 == "1" |
+           f29065_0_13 == "1",
+           true = pad.panic_symptoms_numeric + 1,
+           false = pad.panic_symptoms_numeric))
+```{r panic attacks symptom score}
+#Create score for panic attack symptoms
+
+
+dat <- dat %>%
+  mutate(PAD.panic_symptoms_numeric = 0)
+
+# Heart was pounding or racing
+dat <- dat %>%
+  mutate(pad.panic_symptoms_numeric = 
+           if_else(condition = !is.na(pad.heart_poundingracing_numeric) &
+                    pad.heart_poundingracing_numeric == 1,
+                   true = pad.panic_symptoms_numeric + 1,
+                   false = pad.panic_symptoms_numeric))
+
+
+# Sweating
+dat <- dat %>%
+  mutate(pad.panic_symptoms_numeric = 
+           if_else(condition = !is.na(pad.sweating_numeric) &
+                    pad.sweating_numeric == 2,
+                   true = pad.panic_symptoms_numeric + 1,
+                   false = pad.panic_symptoms_numeric))
+
+
+# Trembling or shaking
+dat <- dat %>%
+  mutate(pad.panic_symptoms_numeric = 
+           if_else(condition = !is.na(pad.tremblingshaking_numeric) &
+                    pad.tremblingshaking_numeric == 1,
+                   true = pad.panic_symptoms_numeric + 1,
+                   false = pad.panic_symptoms_numeric))
+
+# Short of breath
+dat <- dat %>%
+  mutate(pad.panic_symptoms_numeric = 
+           if_else(condition = !is.na(pad.short_of_breathsmothered_numeric) &
+                    pad.short_of_breathsmothered_numeric == 1,
+                   true = pad.panic_symptoms_numeric + 1,
+                   false = pad.panic_symptoms_numeric))
+
+
+
+# Felt like you were choking
+dat <- dat %>%
+  mutate(pad.panic_symptoms_numeric = 
+           if_else(condition = !is.na(pad.choking_numeric) &
+                    pad.choking_numeric == 1,
+                   true = pad.panic_symptoms_numeric + 1,
+                   false = pad.panic_symptoms_numeric))
+
+
+# Had pain or discomfort in chest
+dat <- dat %>%
+  mutate(pad.panic_symptoms_numeric = 
+           if_else(condition = !is.na(pad.paindiscomfort_in_your_chest_numeric) &
+                    pad.paindiscomfort_in_your_chest_numeric == 1,
+                   true = pad.panic_symptoms_numeric + 1,
+                   false = pad.panic_symptoms_numeric))
+
+
+# Nauseous or felt sick in the stomach
+dat <- dat %>%
+  mutate(pad.panic_symptoms_numeric = 
+           if_else(condition = !is.na(pad.nauseousfelt_sick_in_the_stomach_numeric) &
+                     pad.nauseousfelt_sick_in_the_stomach_numeric == 1,
+                   true = pad.panic_symptoms_numeric + 1,
+                   false = pad.panic_symptoms_numeric))
+
+
+# Dizzy, unsteady, light-headed or faint
+dat <- dat %>%
+  mutate(pad.panic_symptoms_numeric = 
+           if_else(condition = !is.na(pad.dizzy_unsteady_lightheaded_or_faint_numeric) &
+                     pad.dizzy_unsteady_lightheaded_or_faint_numeric == 1,
+                   true = pad.panic_symptoms_numeric + 1,
+                   false = pad.panic_symptoms_numeric))
+
+
+# Felt hot or cold
+dat <- dat %>%
+  mutate(pad.panic_symptoms_numeric = 
+           if_else(condition = !is.na(pad.hot_or_cold_numeric) &
+                     pad.hot_or_cold_numeric == 1,
+                   true = pad.panic_symptoms_numeric + 1,
+                   false = pad.panic_symptoms_numeric))
+
+
+
+# Felt numbness or tingling sensations
+dat <- dat %>%
+  mutate(pad.panic_symptoms_numeric = 
+           if_else(condition = !is.na(pad.numbnesstingling_sensations_numeric) &
+                     pad.numbnesstingling_sensations_numeric == 1,
+                   true = pad.panic_symptoms_numeric + 1,
+                   false = pad.panic_symptoms_numeric))
+
+
+# Felt like things weren't real, or felt detached from self
+dat <- dat %>%
+  mutate(pad.panic_symptoms_numeric = 
+           if_else(condition = !is.na(pad.felt_things_werent_realdetached_numeric) &
+                     pad.felt_things_werent_realdetached_numeric == 1,
+                   true = pad.panic_symptoms_numeric + 1,
+                   false = pad.panic_symptoms_numeric))
+
+
+#Criterion A.12 - Afraid going to lose control or go crazy
+dat <- dat %>%
+  mutate(pad.panic_symptoms_numeric = 
+           if_else(condition = !is.na(pad.afraid_lose_controlgo_crazy_numeric) &
+                     pad.afraid_lose_controlgo_crazy_numeric == 1,
+                   true = pad.panic_symptoms_numeric + 1,
+                   false = pad.panic_symptoms_numeric))
+
+
+#Criterion A.13 - Afraid going to die
+dat <- dat %>%
+  mutate(pad.panic_symptoms_numeric = 
+           if_else(condition = !is.na(pad.afraid_you_were_going_to_die_numeric) &
+                     pad.afraid_you_were_going_to_die_numeric == 1,
+                   true = pad.panic_symptoms_numeric + 1,
+                   false = pad.panic_symptoms_numeric))
+
+ 
+#Check distribution of scores
+dat %>%
+  freq(pad.panic_symptoms_numeric)
+  
+```
+
+
+
+# Panic disorder
