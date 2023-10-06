@@ -1,0 +1,99 @@
+---
+title: "Anxiety"
+author: "Abigail ter Kuile"
+date: "2023-10-06"
+output: html_document
+---
+
+# Set up
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+Install packages
+```{r Install packages}
+#install.packages("tidyverse")
+```
+
+Load packages from library 
+```{r Load packages from library}
+library(tidyverse)
+```
+
+```{r Clear global environment}
+rm(list=ls())
+```
+
+```{r Get system date}
+date <- Sys.Date()
+date
+```
+
+## Read in data
+
+```{r Source the credentials file}
+source(file = "credentials/paths.R")
+```
+
+```{r read in pheno_covar file}
+
+MHQ <- readRDS(file = paste0(UKBMHQ,
+                             "ukb_mhd_data.rds")
+               )
+
+# check
+MHQ %>%
+  dim()
+
+MHQ %>%
+  colnames()
+```
+
+# GAD-7 - Score
+Sum {Feeling nervous, anxious or on edge 20506, Not being able to stop or control worrying 20509, Worrying too much about different things 20520, Trouble relaxing 20515, Being so restless that it is hard to sit still 20516, Becoming easily annoyed or irritable 20505, Feeling afraid as if something awful might happen 20512} 
+- 01 Not at all 
+- 02 Several days 
+- 03 More than half the days 
+- 04 Nearly every day 
+
+- DA Prefer not to answer 
+(nb in biobank coded 1-4 [1,2,3,4] instead of 0-3, subtract 7 to adjust) 
+
+If item missing, score 0 when scoring 0-3 Score 0-3 and sum. ++ATK - check if this is handled when testing with data
+```{r GAD-7 score}
+# Create a new column named 'GAD7.Severity' in the data frame 'MHQ' and calculate its value.
+MHQ$GAD7.Severity <- with(MHQ, # use with function to sum variables in the df dataframe
+                         (Recent.feelings.of.nervousness.or.anxiety +  # Add up the score for feelings of nervousness or anxiety
+                            Recent.inability.to.stop.or.control.worrying +  # Add up the score for inability to stop or control worrying
+                            Recent.worrying.too.much.about.different.things +  # Add up the score for worrying about various things
+                            Recent.trouble.relaxing +  # Add up the score for trouble relaxing
+                            Recent.restlessness +  # Add up the score for restlessness
+                            Recent.easy.annoyance.or.irritability +  # Add up the score for easy annoyance or irritability
+                            Recent.feelings.of.foreboding)  # Add up the score for feelings of foreboding
+                         - 7)  # Subtract 7 from the total to calculate the GAD7.Severity score
+```
+
+## Generalised Anxiety Disorder Current (GAD-7 derived GAD case status)
+
+Note: This is not consistent with MHQ1 {current anxiety}, where CIDI-SF(L) GAD module was used, and participants were only categorised as current anxiety if positive on the CIDI GAD ever. The CIDI-SF GAD is not included in the MHQ2.
+
+GAD7 full score >= 10. (10 is moderate anxiety)
+```{r GAD7 case status}
+# Create a new column named 'GAD.Current' in the data frame 'MHQ' and calculate its value.
+MHQ$GAD.Current <- with(MHQ, 
+                        # Use the 'ifelse' function to define conditional logic:
+                        ifelse(is.na(GAD7.Severity), # If 'GAD7.Severity' is missing (NA),
+                               NA, # Assign NA to the 'GAD.Current' column.
+                               ifelse(GAD7.Severity > 9, # If 'GAD7.Severity' is greater than 9 (i.e. >=10 for moderate current GAD)
+                                      1, # Assign 1 to the 'GAD.Current' column (as case)
+                                      0) # Otherwise, assign 0 to the 'GAD.Current' column (not case)
+                               )
+                        )
+```
++++ ATK: add chunk to screen controls for a score of less than 5 (mild anxiety threshold)? (as done in MHQ1 algorithm)?
+
