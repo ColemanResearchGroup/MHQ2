@@ -1,0 +1,126 @@
+---
+title: "MHQ2 DSM5 hypo/mania"
+author: "Jared G Maina"
+date: "2023-10-19"
+output: html_document
+---
+
+This is a script containing an algorithm for mania and hypomania based on the DSM4/5 definition. This includes likely cases of bipolar affective disorder type I, possible bipolar type II, recurrent mania without clear depression, and antidepressant-induced symptoms of hypomania / mania. Due to the low specificity of symptoms may also include normal variation
+
+# Set up
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+Clear global environment prior to initiation
+```{r clear global environment}
+remove(list = ls())
+```
+
+Load dependencies
+```{r}
+#To be updated later
+#Code and adaptation to tidyverse to be refined while testing code with data
+library(data.table)
+library(tidyverse)
+library(dplyr)
+```
+
+# Read in the data
+
+```{r}
+#To change later once I find out more about the datafile
+MHQ2<-fread(args[1], data.table=F)
+```
+
+# Hypomania/Mania ever
+High/Hyper=yes OR Irritable=Yes
+AND
+Four features from:
+  High/hyper=Yes, Active, Talkative, Less sleep, Creative/ideas, Restless, Confident, Thoughts racing, Easily distracted
+AND
+Duration=A week or more
+
+# Define manifestations
+
+```{r}
+MHQ2$Total.Manifestations <- apply(
+  MHQ2[, c(
+    'f.29051.0.0',
+    'f.29051.0.1',
+    'f.29051.0.2',
+    'f.29051.0.3',
+    'f.29051.0.4',
+    'f.29051.0.5',
+    'f.29051.0.6',
+    'f.29051.0.7',
+    'f.29051.0.8'
+  )],
+  1,
+  function(x) {
+    sum(x > 0)
+  }
+)
+```
+
+```{r}
+MHQ2$Hypomania.Ever <- with(MHQ2, 
+                       ifelse(
+                         (!is.na(f.29049.0.0) & f.29049.0.0 == 1 | (!is.na(f.29050.0.0) & f.29050.0.0 == 1)) &
+                         (f.29049.0.0 == 1 & MHQ2$Total.Manifestations >= 3) &
+                           !is.na(f.29052.0.0) & f.29052.0.0 == 3),1 , 0)
+```
+
+# Mania ever
+High/Hyper=yes OR Irritable=Yes
+AND
+Four features from:
+  High/hyper=Yes, Active, Talkative, Less sleep, Creative/ideas, Restless, Confident, Thoughts racing, Easily distracted
+AND
+Duration=A week or more
+AND
+Needed treatment=Yes OR Caused problems=Yes
+
+```{r}
+
+MHQ2$Mania.Ever <- with(MHQ2, 
+                       ifelse(
+                         (!is.na(f.29049.0.0) & f.29049.0.0 == 1 | (!is.na(f.29050.0.0) & f.29050.0.0 == 1)) &
+                         (f.29049.0.0 == 1 & MHQ2$Total.Manifestations >= 3) &
+                          !is.na(f.29052.0.0) & f.29052.0.0 == 3) & (!is.na(f.29056.0.0) & f.29056.0.0 == 1) | (!is.na(f.29057.0.0) & f.29057.0.0 == 1), 1, 0)
+```
+
+# Bipolar affective disorder type 1 (BD1)
+Case(depression ever) AND symptoms (Mania ever)
+```{r}
+MHQ2$BD1 <- with(MHQ2,
+                 ifelse(
+                   (!is.na(Depressed.Ever) & Depressed.Ever == 1) & (!is.na(Mania.Ever) & Mania.Ever == 1), 1, 0
+                 ))
+```
+
+# Bipolar affective disorder (BAD)
+NOT hypomania/mania AND NOT categorised Bipolar at baseline = 0 AND NOT self-reported bipolar 20544=10
+```{r}
+MHQ2$BAD <- with(MHQ2,
+                 ifelse(
+                   (is.na(Hypomania.Ever) & Hypomania.Ever == 0) &
+                   (is.na(f.20126.0.0) & f.20126.0.0 == 0) &
+                   (is.na(f.20544.0.0) & f.20544.0.0 != 10 ), 1, 0
+                 ))
+```
+
+# Wide bipolar spectrum
+Case (depression ever) AND Symptoms (hypomania/mania ever)
+```{r}
+MHQ2$Wider.Bipolar <- with(MHQ2,
+                           ifelse(
+                           (is.na(Depressed.Ever) & Depressed.Ever == 1 ) & (is.na(Hypomania.Ever) & Hypomania.Ever == 1), 1, 0
+                           ))
+```
