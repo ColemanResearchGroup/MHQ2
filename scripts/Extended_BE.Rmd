@@ -1,0 +1,37 @@
+---
+title: "UKB MHQ2 Extended binge eating"
+author: "Helena Davies"
+date: "2023-10-08"
+output: html_document
+---
+
+*Criteria*
+Extended binge-eating phenotype 
+Recurrent episodes of excessive overeating, regardless of length and context 
+
+*Written algorithm*
+Have you had recurrent episodes of excessive overeating or binge eating (EP6a) = 02 Yes, at least once a week 
+Extended eating disorder phenotypes include participants that may not meet the exact diagnostic criteria used for disorder algorithms, and do not represent any clinical entity 
+
+```{r}
+library("summarytools")
+library("dplyr")
+library("tidyverse")
+```
+
+```{r read in data}
+dat <- readRDS("/Users/helenadavies/werk/UKB_MHQ2_algorithms/anon_data/MHQ2_Anonymous.rds")
+```
+
+```{r extended BE}
+dat <- dat %>%
+  mutate(extended_BE_algorithm =
+           case_when(
+             
+  # "Have you had recurrent episodes of excessive overeating or binge eating (i.e. eating significantly more than what most people eat in a similar period of time, for example, two hours)?" = "Yes, at least once a week" 
+            `29132-0.0` == 2  ~ 1)
+  )
+
+# HLD - Shouldn't we add loss of control?
+```
+

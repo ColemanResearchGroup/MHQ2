@@ -1,0 +1,93 @@
+---
+title: "UKB MHQ2 BED ICD-11"
+author: "Helena Davies"
+date: "2023-10-08"
+output: html_document
+---
+
+```{r}
+library("summarytools")
+library("dplyr")
+library("tidyverse")
+```
+
+```{r read in data}
+dat <- readRDS("/Users/helenadavies/werk/UKB_MHQ2_algorithms/anon_data/MHQ2_Anonymous.rds")
+```
+
+*ICD-11 criteria*
+1) Binge eating at least once a week over a period of at least three months. 
+PLUS 
+2) Either never weighed much less than other people expected 
+OR 
+Never had BMI indicating underweight 
+OR 
+Had periods when underweight, but binge eating never occurred when underweight 
+PLUS 
+3) At time when regular episodes of overeating, self-worth was dependent on body shape / weight to moderate or great deal 
+PLUS 
+4) At time when regular episodes of overeating, none of the listed ways of controlling weight / shape were used 
+PLUS 
+5) At time when regular episodes of overeating, self-worth was dependent on body shape / weight to moderate or great deal 
+
+*Written algorithm*
+Have you had recurrent episodes of excessive overeating or binge eating (EP6a) = 02 Yes, at least once a week 
+AND 
+What was the longest amount of time where you were overeating/binge eating at least once a week? (EP6b) = 03 At least three months 
+ 
+AND 
+NOT Case {Extended anorexia phenotype} 
+OR 
+BMI at low weight} > 18.55 kg/m2 
+OR 
+If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 00 No, only at time(s) when I was NOT at low weight 
+ 
+AND 
+During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (e.g. not being able to stop eating or feeling compelled to eat)? (EP7) = 03 At least once a week for at least three months 
+ 
+AND 
+Do/did you feel distressed about your episodes of excessive overeating/binge eating? (EP9) =01 Yes 
+ 
+AND 
+During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? EP10= None of the above 
+ 
+AND 
+During the time when you were overeating/binge eating, how dependent was your self-worth on your body shape or weight? (EP10c) = 02 A great deal OR 01 A moderate amount 
+
+```{r BED ICD11 algorithm}
+dat <- dat %>%
+  mutate(ICD11_BED_algorithm =
+           case_when(
+             
+        # "Have you had recurrent episodes of excessive overeating or binge eating (i.e. eating significantly more than what most people eat in a similar period of time, for example, two hours)?" = "Yes, at least once a week" 
+            `29132-0.0` == 2 &
+              
+        # "During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (e.g. not being able to stop eating or feeling compelled to eat)?" = "At least once a week for at least 3 months"  
+           `29135-0.0` == 0 &
+              
+        # "What was the longest amount of time when you were overeating/binge eating at least once a week?" = "At least 3 months"
+           `29133-0.0` == 0 &
+          
+        # "Do/did you feel distressed about your episodes of excessive overeating/binge eating?" = "Yes"
+          `29137-0.0` == 1 &
+          
+        # "During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?" = "None of the above"
+          `29140-0.0` == 0 &
+ 
+           # "During the time when you were overeating/binge eating, how dependent was your self-worth on your body shape or weight?" = "A great deal" OR "A moderate amount"
+        (`29143-0.0` == 2 |
+         `29143-0.0` == 1) &
+        
+        (         
+           # Extended anorexia phenotype != 1 | # HLD - why?
+           # BMI at low weight > 18.55 kg/m2 | # HLD - why?
+
+           # "If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight?" = "Only at time(s) when I was not at low weight" # HLD - shouldn't this also include "Both at times of low weight and when not at low weight" and "Not applicable, as did not have low weight"
+            `29134-0.0` ~ 1)
+           )
+  )
+
+# Check
+dat %>%
+  freq(ICD11_BED_algorithm)
+```
