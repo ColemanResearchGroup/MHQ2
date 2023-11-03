@@ -50,22 +50,15 @@ Duration=A week or more
 # Define manifestations
 
 ```{r}
-MHQ2$Total.Manifestations <- apply(
-  MHQ2[, c(
-    'X29051.0.0',
-    'X29051.0.1',
-    'X29051.0.2',
-    'X29051.0.3',
-    'X29051.0.4',
-    'X29051.0.5',
-    'X29051.0.6',
-    'X29051.0.7'
-  )],
-  1,
-  function(x) {
-    sum(x > 0)
-  }
-)
+MHQ2$Total.Manifestations<-0
+
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(X29051.0.1) & X29051.0.1 > 0, Total.Manifestations + 1, Total.Manifestations))
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(X29051.0.2) & X29051.0.2 > 0, Total.Manifestations + 1, Total.Manifestations))
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(X29051.0.3) & X29051.0.3 > 0, Total.Manifestations + 1, Total.Manifestations))
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(X29051.0.4) & X29051.0.4 > 0, Total.Manifestations + 1, Total.Manifestations))
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(X29051.0.5) & X29051.0.5 > 0, Total.Manifestations + 1, Total.Manifestations))
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(X29051.0.6) & X29051.0.6 > 0, Total.Manifestations + 1, Total.Manifestations))
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(X29051.0.7) & X29051.0.7 > 0, Total.Manifestations + 1, Total.Manifestations))
 ```
 
 ```{r}
