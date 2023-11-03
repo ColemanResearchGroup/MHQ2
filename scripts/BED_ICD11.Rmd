@@ -54,6 +54,7 @@ During the time(s) when you were regularly overeating/binge eating, have you don
 AND 
 During the time when you were overeating/binge eating, how dependent was your self-worth on your body shape or weight? (EP10c) = 02 A great deal OR 01 A moderate amount 
 
+
 ```{r BED ICD11 algorithm}
 dat <- dat %>%
   mutate(ICD11_BED_algorithm =

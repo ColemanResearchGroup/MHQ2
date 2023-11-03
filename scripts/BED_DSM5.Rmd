@@ -143,7 +143,7 @@ dat <- dat %>%
                      )
          )
 
-
+# add statements!
 # Check (expecting 6,312)
 dat %>%
   freq(rapid_eating_numeric)
@@ -192,6 +192,7 @@ dat %>%
 ```
 NB: This sumscore should only be used in the BED DSM5 algorithm, i.e., to indicate if participants have a score of 3 or above. A score of 0 is not informative because it includes people who did not answer the question or were not shown the question because of their answer to Field 29132.
 
+
 # BED DSM5 algorithm
 ```{r BED DSM5 algorithm}
 dat <- dat %>%
@@ -207,13 +208,13 @@ dat <- dat %>%
         # "What was the longest amount of time when you were overeating/binge eating at least once a week?" = "At least 3 months"
            `29133-0.0` == 0 &
           
-          # "During these episodes of excessive overeating/binge eating, have you:" (Participant needs at least 3 of 5 binge-eating-related behaviours, sumscore calculated above)
+        # "During these episodes of excessive overeating/binge eating, have you:" (Participant needs at least 3 of 5 binge-eating-related behaviours, sumscore calculated above)
           BE_behaviours_sumscore => 3 &
           
-          # "Do/did you feel distressed about your episodes of excessive overeating/binge eating?" = "Yes"
+        # "Do/did you feel distressed about your episodes of excessive overeating/binge eating?" = "Yes"
           `29137-0.0` == 1 &
           
-          # "During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?" = "None of the above"
+        # "During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?" = "None of the above"
           `29140-0.0` = 0
 
           ( 
