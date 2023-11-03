@@ -52,15 +52,14 @@ Duration=A week or more
 ```{r}
 MHQ2$Total.Manifestations <- apply(
   MHQ2[, c(
-    'f.29051.0.0',
-    'f.29051.0.1',
-    'f.29051.0.2',
-    'f.29051.0.3',
-    'f.29051.0.4',
-    'f.29051.0.5',
-    'f.29051.0.6',
-    'f.29051.0.7',
-    'f.29051.0.8'
+    'X29051.0.0',
+    'X29051.0.1',
+    'X29051.0.2',
+    'X29051.0.3',
+    'X29051.0.4',
+    'X29051.0.5',
+    'X29051.0.6',
+    'X29051.0.7'
   )],
   1,
   function(x) {
@@ -71,10 +70,14 @@ MHQ2$Total.Manifestations <- apply(
 
 ```{r}
 MHQ2$Hypomania.Ever <- with(MHQ2, 
-                       ifelse(
-                         (!is.na(f.29049.0.0) & f.29049.0.0 == 1 | (!is.na(f.29050.0.0) & f.29050.0.0 == 1)) &
-                         (f.29049.0.0 == 1 & MHQ2$Total.Manifestations >= 3) &
-                           !is.na(f.29052.0.0) & f.29052.0.0 == 3),1 , 0)
+  ifelse(
+    (!is.na(X29049.0.0) & X29049.0.0 == 1 | (!is.na(X29050.0.0) & X29050.0.0 == 1)) &
+    (X29049.0.0 == 1 & Total.Manifestations >= 3) &
+    !is.na(X29052.0.0) & X29052.0.0 == 3,
+    1,
+    0
+  )
+)
 ```
 
 # Mania ever
@@ -90,29 +93,27 @@ Needed treatment=Yes OR Caused problems=Yes
 ```{r}
 
 MHQ2$Mania.Ever <- with(MHQ2, 
-                       ifelse(
-                         (!is.na(f.29049.0.0) & f.29049.0.0 == 1 | (!is.na(f.29050.0.0) & f.29050.0.0 == 1)) &
-                         (f.29049.0.0 == 1 & MHQ2$Total.Manifestations >= 3) &
-                          !is.na(f.29052.0.0) & f.29052.0.0 == 3) & (!is.na(f.29056.0.0) & f.29056.0.0 == 1) | (!is.na(f.29057.0.0) & f.29057.0.0 == 1), 1, 0)
+  ifelse(
+    ((!is.na(X29049.0.0) & X29049.0.0 == 1) | (!is.na(X29050.0.0) & X29050.0.0 == 1)) &
+    (X29049.0.0 == 1 & Total.Manifestations >= 3) &
+    ((!is.na(X29052.0.0) & X29052.0.0 == 3) & ((!is.na(X29056.0.0) & X29056.0.0 == 1) | (!is.na(X29057.0.0) & X29057.0.0 == 1))),
+    1,
+    0
+  )
+)
+
 ```
 
-# Bipolar affective disorder type 1 (BD1)
+# Bipolar affective disorder type 1 (BD1) definition
 Case(depression ever) AND symptoms (Mania ever)
 ```{r}
+
 MHQ2$BD1 <- with(MHQ2,
                  ifelse(
-                   (!is.na(Depressed.Ever) & Depressed.Ever == 1) & (!is.na(Mania.Ever) & Mania.Ever == 1), 1, 0
-                 ))
-```
-
-# Bipolar affective disorder (BAD)
-NOT hypomania/mania AND NOT categorised Bipolar at baseline = 0 AND NOT self-reported bipolar 20544=10
-```{r}
-MHQ2$BAD <- with(MHQ2,
-                 ifelse(
-                   (is.na(Hypomania.Ever) & Hypomania.Ever == 0) &
-                   (is.na(f.20126.0.0) & f.20126.0.0 == 0) &
-                   (is.na(f.20544.0.0) & f.20544.0.0 != 10 ), 1, 0
+                   (!is.na(Depressed.Ever) & Depressed.Ever ==1) & #Depressed.Ever defined elsewhere
+                     (!is.na(Mania.Ever) & Mania.Ever == 1),
+                   1,
+                   0
                  ))
 ```
 
@@ -121,6 +122,8 @@ Case (depression ever) AND Symptoms (hypomania/mania ever)
 ```{r}
 MHQ2$Wider.Bipolar <- with(MHQ2,
                            ifelse(
-                           (is.na(Depressed.Ever) & Depressed.Ever == 1 ) & (is.na(Hypomania.Ever) & Hypomania.Ever == 1), 1, 0
+                           (!is.na(Depressed.Ever) & Depressed.Ever == 1 ) &
+                             (!is.na(Hypomania.Ever) & Hypomania.Ever == 1),
+                           1, 0
                            ))
 ```
