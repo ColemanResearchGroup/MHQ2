@@ -143,7 +143,6 @@ dat <- dat %>%
                      )
          )
 
-# add statements!
 # Check (expecting 6,312)
 dat %>%
   freq(rapid_eating_numeric)
