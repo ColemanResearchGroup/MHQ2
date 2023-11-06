@@ -192,6 +192,39 @@ dat %>%
 ```
 NB: This sumscore should only be used in the BED DSM5 algorithm, i.e., to indicate if participants have a score of 3 or above. A score of 0 is not informative because it includes people who did not answer the question or were not shown the question because of their answer to Field 29132.
 
+# Checks
+For remaining questions in algorithm
+```{r sanity checks}
+# Excessive overeating or binge eating
+# Expecting 3,338 for "Yes, at least once a week" (2)
+dat %>%
+  freq(`29132-0.0`)
+
+# Loss of control
+# Expecting 3,904 for "At least once a week for at least 3 months" (0)
+dat %>%
+  freq(`29135-0.0`)
+
+# Duration of overeating/binge eating
+# Expecting 2,479 for "At least 3 months" (0)
+dat %>%
+  freq(`29133-0.0`)
+
+# Distress re. binge eating
+# Expecting 10,960 for "Yes" (1)
+dat %>%
+  freq(`29137-0.0`)
+              
+# Compensatory behaviours to control for body shape or weight
+# Expecting 1,124 for "None of the above" (0)
+dat %>%
+  freq(`29140-0.0`)
+                
+# Binge eating during low weight
+# Expecting 2,767 for "Only at time(s) when I was not at low weight" (2)
+dat %>%
+  freq(`29134-0.0`)
+```
 
 # BED DSM5 algorithm
 ```{r BED DSM5 algorithm}
@@ -215,14 +248,14 @@ dat <- dat %>%
           `29137-0.0` == 1 &
           
         # "During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?" = "None of the above"
-          `29140-0.0` = 0
+          `29140-0.0` == 0
 
           ( 
             # Extended anorexia phenotype != 1 | # HLD - why?
             # BMI at low weight > 18.55 kg/m2 | # HLD - why?
 
             # "If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight?" = "Only at time(s) when I was not at low weight" # HLD - shouldn't this also include "Both at times of low weight and when not at low weight" and "Not applicable, as did not have low weight"
-            `29134-0.0` ~ 1)
+            `29134-0.0`== 2 ~ 1)
            )
   )
 

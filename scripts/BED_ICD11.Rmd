@@ -54,6 +54,44 @@ During the time(s) when you were regularly overeating/binge eating, have you don
 AND 
 During the time when you were overeating/binge eating, how dependent was your self-worth on your body shape or weight? (EP10c) = 02 A great deal OR 01 A moderate amount 
 
+# Checks
+For questions in algorithm
+```{r sanity checks}
+# Excessive overeating or binge eating
+# Expecting 3,338 for "Yes, at least once a week" (2)
+dat %>%
+  freq(`29132-0.0`)
+
+# Loss of control
+# Expecting 3,904 for "At least once a week for at least 3 months" (0)
+dat %>%
+  freq(`29135-0.0`)
+
+# Duration of overeating/binge eating
+# Expecting 2,479 for "At least 3 months" (0)
+dat %>%
+  freq(`29133-0.0`)
+
+# Distress re. binge eating
+# Expecting 10,960 for "Yes" (1)
+dat %>%
+  freq(`29137-0.0`)
+              
+# Compensatory behaviours to control for body shape or weight
+# Expecting 1,124 for "None of the above" (0)
+dat %>%
+  freq(`29140-0.0`)
+                
+# Binge eating during low weight
+# Expecting 2,767 for "Only at time(s) when I was not at low weight" (2)
+dat %>%
+  freq(`29134-0.0`)
+
+# Dependency of self-worth when binge eating
+# Expecting 5,001 for "A great deal" (2) and 7,105 for "A moderate amount" (1)
+dat %>%
+  freq(`29143-0.0`)
+```
 
 ```{r BED ICD11 algorithm}
 dat <- dat %>%

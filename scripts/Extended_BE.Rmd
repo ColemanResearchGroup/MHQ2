@@ -23,6 +23,15 @@ library("tidyverse")
 dat <- readRDS("/Users/helenadavies/werk/UKB_MHQ2_algorithms/anon_data/MHQ2_Anonymous.rds")
 ```
 
+# Check
+```{r sanity check}
+# Expecting 3,338 for "Yes, at least once a week" (2)
+dat %>%
+  freq(`29132-0.0`)
+```
+
+
+
 ```{r extended BE}
 dat <- dat %>%
   mutate(extended_BE_algorithm =
