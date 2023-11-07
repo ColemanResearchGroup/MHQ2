@@ -66,8 +66,40 @@ Do/did you feel distressed about your episodes of excessive overeating/binge eat
 AND 
 During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (EP10) = 00 None of the above 
 
+# Pre-algorithm code
+## Not during AN criteria
+From the DSM5: "Does not occur exclusively during the course of anorexia nervosa"
+```{r not during AN criteria}
+dat <- dat %>%
+  mutate(not_during_AN =
+           case_when(
+             # "If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight?"
+             
+             # "Only at time(s) when I was not at low weight"
+            (
+             `29134-0.0` == 2 |
+               
+            # "Both at times of low weight and when not at low weight"   
+             `29134-0.0` == 1 |
+              
+            # "Not applicable, as did not have low weight"
+             `29134-0.0` == -4
+            ) |
+              
+            # "Only at time(s) of low weight"
+             (
+               `29134-0.0` == 0 &
+                
+            # No lifetime anorexia nervosa
+              DSM_AN_algorithm == 0 &
+              self_reported_AN == 0 
+            # +++ add any other reports of AN
+            ) ~ 1
+           )
+  )
+```
 
-# Create sumscore of binge eating behaviours (need at least 3 for DSM5 BED)
+## Create sumscore of binge eating behaviours (need at least 3 for DSM5 BED)
 NB: Question was asked when Field 29132 ("Ever had recurrent episodes of excessive overeating or binge eating") was Yes.
 ```{r sumscore BE behaviours}
 # Create numeric variables
@@ -191,7 +223,8 @@ dat %>%
 ```
 NB: This sumscore should only be used in the BED DSM5 algorithm, i.e., to indicate if participants have a score of 3 or above. A score of 0 is not informative because it includes people who did not answer the question or were not shown the question because of their answer to Field 29132.
 
-# Checks
+# Algorithm
+## Checks
 For remaining questions in algorithm
 ```{r sanity checks}
 # Excessive overeating or binge eating
@@ -221,11 +254,14 @@ dat %>%
                 
 # Binge eating during low weight
 # Expecting 2,767 for "Only at time(s) when I was not at low weight" (2)
+# Expecting 1,352 for "Both at times of low weight and when not at low weight" (1)
+# Expecting 241 for "Only at time(s) of low weight" (0)
+# Expecting 15,049 for "Not applicable, as did not have low weight" (-4)
 dat %>%
   freq(`29134-0.0`)
 ```
 
-# BED DSM5 algorithm
+## BED DSM5 algorithm
 ```{r BED DSM5 algorithm}
 dat <- dat %>%
   mutate(DSM5_BED_algorithm =
@@ -247,14 +283,10 @@ dat <- dat %>%
           `29137-0.0` == 1 &
           
         # "During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?" = "None of the above"
-          `29140-0.0` == 0
+          `29140-0.0` == 0 &
 
-          ( 
-            # Extended anorexia phenotype != 1 | # HLD - why?
-            # BMI at low weight > 18.55 kg/m2 | # HLD - why?
-
-            # "If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight?" = "Only at time(s) when I was not at low weight" # HLD - shouldn't this also include "Both at times of low weight and when not at low weight" and "Not applicable, as did not have low weight"
-            `29134-0.0`== 2 ~ 1)
+        # DSM5 criteria: "Does not occur exclusively during the course of anorexia nervosa" (calculated above)
+          not_during_AN == 1 ~ 1
            )
   )
 
