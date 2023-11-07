@@ -22,6 +22,7 @@ Install packages
 
 Load packages from library 
 ```{r Load packages from library}
+library(summarytools)
 library(tidyverse)
 ```
 
@@ -36,68 +37,118 @@ date
 
 ## Read in data
 
-```{r Source the credentials file}
-source(file = "credentials/paths.R")
-```
-
 ```{r read in pheno_covar file}
 
-MHQ <- readRDS(file = paste0(UKBMHQ,
-                             "ukb_mhd_data.rds")
-               )
-
-# check
-MHQ %>%
-  dim()
-
-MHQ %>%
-  colnames()
+MHQ <- readRDS(file = "MHQ2_Anonymous.rds")
+               
 ```
+
+# Make anxiety & panic field data frame (for easier inspecting)
+Anxiety & panic field names MHQ: 29058-29075
+https://biobank.ndph.ox.ac.uk/ukb/label.cgi?id=1504
+
+# specify field numbers
+```{r}
+anx_pad_field_numbers <- as.character(29058:29075)
+```
+
+# select anxiety & panic field numbers into dataframe
+```{r}
+anx_pad_data <- MHQ %>% 
+  select(matches(paste(anx_pad_field_numbers, 
+                       collapse = "|")))
+
+anx_pad_data
+```
+
+# Convert data to numeric
+```{r}
+anx_pad_data <- anx_pad_data %>%
+  mutate_all(as.numeric)
+```
+
+```{r}
+glimpse(anx_pad_data)
+
+summary(anx_pad_data)
+```
+
 
 # Generalised Anxiety Disorder 
 
-## GAD-7 - Score
-Sum {Feeling nervous, anxious or on edge 20506, Not being able to stop or control worrying 20509, Worrying too much about different things 20520, Trouble relaxing 20515, Being so restless that it is hard to sit still 20516, Becoming easily annoyed or irritable 20505, Feeling afraid as if something awful might happen 20512} 
-- 01 Not at all 
-- 02 Several days 
-- 03 More than half the days 
-- 04 Nearly every day 
+## GAD-7 - Full Score
+Sum scores on [0-3] individual items {Feeling nervous, anxious or on edge (29058), Not being able to stop or control worrying (29059), Worrying too much about different things (29060), Trouble relaxing (29061), Being so restless that it is hard to sit still (29062), Becoming easily annoyed or irritable (29063), Feeling afraid as if something awful might happen (29064)} 
 
-- DA Prefer not to answer 
-(nb in biobank coded 1-4 [1,2,3,4] instead of 0-3, subtract 7 to adjust) 
+https://biobank.ndph.ox.ac.uk/ukb/coding.cgi?id=168
+0	Not at all
+1	Several days
+2	More than half the days
+3	Nearly every day
+-3	Prefer not to answer 
 
-If item missing, score 0 when scoring 0-3 Score 0-3 and sum. ++ATK - check if this is handled when testing with data
-```{r GAD-7 score}
-# Create a new column named 'GAD7.Severity' in the data frame 'MHQ' and calculate its value.
-MHQ$GAD7.Severity <- with(MHQ, # use with function to sum variables in the df dataframe
-                         (Recent.feelings.of.nervousness.or.anxiety +  # Add up the score for feelings of nervousness or anxiety
-                            Recent.inability.to.stop.or.control.worrying +  # Add up the score for inability to stop or control worrying
-                            Recent.worrying.too.much.about.different.things +  # Add up the score for worrying about various things
-                            Recent.trouble.relaxing +  # Add up the score for trouble relaxing
-                            Recent.restlessness +  # Add up the score for restlessness
-                            Recent.easy.annoyance.or.irritability +  # Add up the score for easy annoyance or irritability
-                            Recent.feelings.of.foreboding)  # Add up the score for feelings of foreboding
-                         - 7)  # Subtract 7 from the total to calculate the GAD7.Severity score
+# Recode -3 (Prefer not to answer) to NA
+```{r}
+anx_pad_data <- anx_pad_data %>%
+  mutate(
+    across(c("29058-0.0",
+             "29059-0.0",
+             "29060-0.0",
+             "29061-0.0",
+             "29062-0.0",
+             "29063-0.0",
+             "29064-0.0"),
+           ~case_when(
+             . == -3 ~ NA_real_,
+             TRUE ~ .
+           )
+    )
+  )
+```
+
+# Sum GAD-7 scores
+Check response minimum is 0 and max is 21
+```{r}
+anx_pad_data <- anx_pad_data %>%
+  mutate(
+    GAD7.Severity = rowSums(select(., 
+"29058-0.0",
+"29059-0.0",
+"29060-0.0",
+"29061-0.0",
+"29062-0.0",
+"29063-0.0",
+"29064-0.0")
+                            ) 
+  )
+
+summary(anx_pad_data$GAD7.Severity)
+
+anx_pad_data %>%
+  freq(GAD7.Severity)
 ```
 
 ## Generalised Anxiety Disorder Current (GAD-7 derived GAD case status)
 
 Note: This is not consistent with MHQ1 {current anxiety}, where CIDI-SF(L) GAD module was used, and participants were only categorised as current anxiety if positive on the CIDI GAD ever. The CIDI-SF GAD is not included in the MHQ2.
 
-GAD7 full score >= 10. (10 is moderate anxiety)
-```{r GAD7 case status}
-# Create a new column named 'GAD.Current' in the data frame 'MHQ' and calculate its value.
-MHQ$GAD.Current <- with(MHQ, 
-                        # Use the 'ifelse' function to define conditional logic:
-                        ifelse(is.na(GAD7.Severity), # If 'GAD7.Severity' is missing (NA),
-                               NA, # Assign NA to the 'GAD.Current' column.
-                               ifelse(GAD7.Severity > 9, # If 'GAD7.Severity' is greater than 9 (i.e. >=10 for moderate current GAD)
-                                      1, # Assign 1 to the 'GAD.Current' column (as case)
-                                      0) # Otherwise, assign 0 to the 'GAD.Current' column (not case)
-                               )
-                        )
+GAD7 full score >= 10. (10 is moderate anxiety). Ref: Kroenke K, Spitzer RL, Williams JB, Löwe B. The patient health questionnaire somatic, anxiety, and depressive symptom scales: a systematic review. Gen Hosp Psychiatry. 2010;32(4):345-59
+
++++ ATK: note that there is no control algorithm criteria in the MHQ2 algorithm guidance. Need to what was done in MHQ1 and if we should add thi (e.g. only 0 if score below 5 (mild anxiety)). 
+```{r}
+# Create a new column named 'GAD.Current' in the data frame and calculate its value.
+anx_pad_data <- anx_pad_data %>%
+  mutate(
+    GAD.Current = if_else(is.na(GAD7.Severity), # If 'GAD7.Severity' is missing (NA),
+                          NA_real_, # Assign NA to the 'GAD.Current' column.
+                          if_else(GAD7.Severity > 9, # If 'GAD7.Severity' is greater than 9 (i.e. >=10 for moderate current GAD) 
+                                  1, # Assign 1 to the 'GAD.Current' column (as case)
+                                  0) # Otherwise, assign 0 to the 'GAD.Current' column
+                          )
+  )
+
+anx_pad_data %>%
+  freq(GAD.Current)
 ```
-+++ ATK: add chunk to screen controls for a score of less than 5 (mild anxiety threshold)? (as done in MHQ1 algorithm)?
 
 # Panic attacks ever
 An abrupt surge of intense fear or intense discomfort that reaches a peak within minutes, and during which time four or more of a list of 13 physical and cognitive symptoms occur.
@@ -105,23 +156,51 @@ An abrupt surge of intense fear or intense discomfort that reaches a peak within
 4 or more symptoms out of: 
 
 Experienced the following symptom (SFP1): 
-Heart pounding or racing (01) 
-Sweating (02) 
-Trembling or shaking (03) 
-Short of breath or being smothered (04) 
-Choking (05) 
-Pain or discomfort in chest (06) 
-Nauseous or felt sick in the stomach (07) 
-Dizzy, unsteady, light-headed or faint (08) 
-Hot or cold (09) 
-Numbness or tingling sensations (10) 
-Felt like things weren't real, or felt detached (11) 
-Afraid going to lose control or ‘go crazy’ (12) 
-Afraid going to die (13) 
+https://biobank.ndph.ox.ac.uk/ukb/coding.cgi?id=1910
+13	Afraid I was going to die
+12	Afraid of losing control or 'going crazy'
+11	Felt like things weren't real or detached from self
+10	Felt numbness or tingling sensations
+9	Felt hot or cold
+8	Felt dizzy, unsteady, light-headed or faint
+7	Nauseous or felt sick in the stomach
+6	Pain or discomfort in chest
+5	Felt like I was choking
+4	Felt short of breath, or like being smothered
+3	Trembling or shaking 
+2	Sweating
+1	Heart was pounding or racing
 
-check colnames
+0	No, I have not had this happen to me
+
+-3	Prefer not to answer
+
+
+check colnames for field number 29065
+29065-0.0 - 29065-0.12
 ```{r Check colnames}
-colnames(MHQ)
+anx_pad_data %>%
+  select(contains("29065"))
+# field name ranges: 29065-0.0 - 29065-0.12
+```
+check coding
+```{r}
+anx_pad_data %>%
+  select(starts_with("29065-0.0"),
+         matches("29065-0.[0-9]+")) %>%
+  summary()
+```
+recode -3 (only shown in 29065-0.0) to NA
+```{r}
+anx_pad_data <- anx_pad_data %>%
+  mutate(
+    across(c("29065-0.0"),
+           ~case_when(
+             . == -3 ~ NA_real_,
+             TRUE ~ .
+           )
+    )
+  )
 ```
 
 
@@ -129,160 +208,98 @@ colnames(MHQ)
 
 If participants endorse fewer than 4 panic symptoms, then they are given a 0 for diagnosis 
 
-
 Calculate panic attacks symptoms score
 
-+++ATK: need to see how the data looks, but might be that each of the 13 entries for the field will have a 1-13 response https://biobank.ndph.ox.ac.uk/ukb/coding.cgi?id=1910
-e.g. for heart pounding or racing (=1), would need to do something like this:
-dat <- dat %>%
-  mutate(PAD.panic_symptoms_numeric = 
-           if_else(condition =
-           f29065_0_1 == "1" |
-           f29065_0_2 == "1" |
-           f29065_0_3 == "1" |
-           f29065_0_4 == "1" |
-           f29065_0_5 == "1" |
-           f29065_0_6 == "1" |
-           f29065_0_7 == "1" |
-           f29065_0_8 == "1" |
-           f29065_0_9 == "1" |
-           f29065_0_10 == "1" |
-           f29065_0_11 == "1" |
-           f29065_0_12 == "1" |
-           f29065_0_13 == "1",
-           true = pad.panic_symptoms_numeric + 1,
-           false = pad.panic_symptoms_numeric))
-```{r panic attacks symptom score}
+Check frequency of panic attack syptom responses
+```{r}
+anx_pad_data %>%
+  select(starts_with("29065-0.0"),
+         matches("29065-0.[0-9]+")) %>%
+  freq()
+```
+           
+```{r}
 #Create score for panic attack symptoms
+anx_pad_data <- anx_pad_data %>%
+  mutate(panic_symptoms_count = 0)
 
+anx_pad_data <- anx_pad_data %>%
+  mutate(panic_symptoms_count = 
+           case_when(
+             `29065-0.0` == 0 ~ 0,
+             `29065-0.12` > 0 ~ 13,
+             `29065-0.11` > 0 ~ 12,
+             `29065-0.10` > 0 ~ 11,
+             `29065-0.9` > 0 ~ 10,
+             `29065-0.8` > 0 ~ 9,
+             `29065-0.7` > 0 ~ 8,
+             `29065-0.6` > 0 ~ 7,
+             `29065-0.5` > 0 ~ 6,
+             `29065-0.4` > 0 ~ 5,
+             `29065-0.3` > 0 ~ 4,
+             `29065-0.2` > 0 ~ 3,
+             `29065-0.1` > 0 ~ 2,
+             `29065-0.0` > 0 ~ 1)
+  )
 
-dat <- dat %>%
-  mutate(PAD.panic_symptoms_numeric = 0)
+anx_pad_data %>% 
+  freq(panic_symptoms_count)
+```
+Create panic attacks ever case 
+```{r}
+anx_pad_data <- anx_pad_data %>%
+  mutate(panic_attacks_ever = case_when(is.na(panic_symptoms_count) ~ NA,
+                                    panic_symptoms_count < 4 ~ 0,
+                                     panic_symptoms_count > 3 ~ 1))
 
-# Heart was pounding or racing
-dat <- dat %>%
-  mutate(pad.panic_symptoms_numeric = 
-           if_else(condition = !is.na(pad.heart_poundingracing_numeric) &
-                    pad.heart_poundingracing_numeric == 1,
-                   true = pad.panic_symptoms_numeric + 1,
-                   false = pad.panic_symptoms_numeric))
+anx_pad_data %>% 
+  freq(panic_attacks_ever)
+```
+## Panic disorder
+Symptoms {panic attack ever} 
+AND 
+Feel anxious more panic attacks (SFP3a) = Yes 
+OR 
+Feel worried bad things  
+happening because of panic attacks (SFP3b) = Yes 
+OR 
+Avoid situations in which panic attacks might occur (SFP3c) = Yes 
+AND 
+Continue to worry about panic attacks or their consequences (SFP4) = Between 1 and 6 months (01) OR Between 6 and 12 months (02) OR Between 1 and 5 years (03) OR More than 5 years (04) OR All of my life / as long as I can remember (05) 
+AND 
+Ever the result of a medical condition, medication, drugs or alcohol (SFP7) = “No, never” (00) OR “Yes, some of them” (01) 
+AND 
+Do they occur in specific situations that cause you strong fear (SFP8) = No (00) OR “Yes, some of them” (01) 
 
+Coding for 29070-0.0 (how long Continue to worry about panic attacks or their consequences)
+0	Less than 1 month
+1	Between 1 and 6 months
+2	Between 6 and 12 months
+3	Between 1 and 5 years
+4	More than 5 years
+5	All of my life / as long as I can remember
+-1	Do not know
+-3	Prefer not to answer
 
-# Sweating
-dat <- dat %>%
-  mutate(pad.panic_symptoms_numeric = 
-           if_else(condition = !is.na(pad.sweating_numeric) &
-                    pad.sweating_numeric == 2,
-                   true = pad.panic_symptoms_numeric + 1,
-                   false = pad.panic_symptoms_numeric))
++++ ATK:  Note that the below should be used to define panic disorder cases, not necessarily controls.There is no control algorithm criteria for panic disorder in the MHQ2 algorithm guidance. Note to check with team if we should add this (e.g. dealing with those who are NA for some panic disorder diagnostic criteria, they should be kept as NA and not 0) - discuss with Meg
+```{r}
+anx_pad_data <- anx_pad_data %>% 
+  mutate(panic_disorder_ever = 
+           case_when(panic_attacks_ever == 1 # Symptoms {panic attack ever}
+                     & (`29067-0.0` == 1 # Feel anxious more panic attacks = Yes
+                     | `29068-0.0` == 1 # OR Feel worried bad things happening because of panic attacks = Yes
+                     | `29069-0.0` == 1) # OR Avoid situations in which panic attacks might occur = Yes
+                        & `29070-0.0` > 0 # how long worry periods: codes 1-5 (greater than less than 1 month)
+                     & (`29074-0.0` == 0  # AND not due to other reasons 'no never'
+                     | `29074-0.0` == 1) # OR due to other reasons 'yes some of them'
+                     & (`29075-0.0`== 0 # occur in specific situation 'no'
+                     | `29075-0.0`== 1) # OR occur in specific situation 'Yes, some of them'
+                     ~ 1, # code as 1 if meet all criteria
+                     TRUE ~ 0 # other wise code as 0 
+                       )
+  )
 
-
-# Trembling or shaking
-dat <- dat %>%
-  mutate(pad.panic_symptoms_numeric = 
-           if_else(condition = !is.na(pad.tremblingshaking_numeric) &
-                    pad.tremblingshaking_numeric == 1,
-                   true = pad.panic_symptoms_numeric + 1,
-                   false = pad.panic_symptoms_numeric))
-
-# Short of breath
-dat <- dat %>%
-  mutate(pad.panic_symptoms_numeric = 
-           if_else(condition = !is.na(pad.short_of_breathsmothered_numeric) &
-                    pad.short_of_breathsmothered_numeric == 1,
-                   true = pad.panic_symptoms_numeric + 1,
-                   false = pad.panic_symptoms_numeric))
-
-
-
-# Felt like you were choking
-dat <- dat %>%
-  mutate(pad.panic_symptoms_numeric = 
-           if_else(condition = !is.na(pad.choking_numeric) &
-                    pad.choking_numeric == 1,
-                   true = pad.panic_symptoms_numeric + 1,
-                   false = pad.panic_symptoms_numeric))
-
-
-# Had pain or discomfort in chest
-dat <- dat %>%
-  mutate(pad.panic_symptoms_numeric = 
-           if_else(condition = !is.na(pad.paindiscomfort_in_your_chest_numeric) &
-                    pad.paindiscomfort_in_your_chest_numeric == 1,
-                   true = pad.panic_symptoms_numeric + 1,
-                   false = pad.panic_symptoms_numeric))
-
-
-# Nauseous or felt sick in the stomach
-dat <- dat %>%
-  mutate(pad.panic_symptoms_numeric = 
-           if_else(condition = !is.na(pad.nauseousfelt_sick_in_the_stomach_numeric) &
-                     pad.nauseousfelt_sick_in_the_stomach_numeric == 1,
-                   true = pad.panic_symptoms_numeric + 1,
-                   false = pad.panic_symptoms_numeric))
-
-
-# Dizzy, unsteady, light-headed or faint
-dat <- dat %>%
-  mutate(pad.panic_symptoms_numeric = 
-           if_else(condition = !is.na(pad.dizzy_unsteady_lightheaded_or_faint_numeric) &
-                     pad.dizzy_unsteady_lightheaded_or_faint_numeric == 1,
-                   true = pad.panic_symptoms_numeric + 1,
-                   false = pad.panic_symptoms_numeric))
-
-
-# Felt hot or cold
-dat <- dat %>%
-  mutate(pad.panic_symptoms_numeric = 
-           if_else(condition = !is.na(pad.hot_or_cold_numeric) &
-                     pad.hot_or_cold_numeric == 1,
-                   true = pad.panic_symptoms_numeric + 1,
-                   false = pad.panic_symptoms_numeric))
-
-
-
-# Felt numbness or tingling sensations
-dat <- dat %>%
-  mutate(pad.panic_symptoms_numeric = 
-           if_else(condition = !is.na(pad.numbnesstingling_sensations_numeric) &
-                     pad.numbnesstingling_sensations_numeric == 1,
-                   true = pad.panic_symptoms_numeric + 1,
-                   false = pad.panic_symptoms_numeric))
-
-
-# Felt like things weren't real, or felt detached from self
-dat <- dat %>%
-  mutate(pad.panic_symptoms_numeric = 
-           if_else(condition = !is.na(pad.felt_things_werent_realdetached_numeric) &
-                     pad.felt_things_werent_realdetached_numeric == 1,
-                   true = pad.panic_symptoms_numeric + 1,
-                   false = pad.panic_symptoms_numeric))
-
-
-#Criterion A.12 - Afraid going to lose control or go crazy
-dat <- dat %>%
-  mutate(pad.panic_symptoms_numeric = 
-           if_else(condition = !is.na(pad.afraid_lose_controlgo_crazy_numeric) &
-                     pad.afraid_lose_controlgo_crazy_numeric == 1,
-                   true = pad.panic_symptoms_numeric + 1,
-                   false = pad.panic_symptoms_numeric))
-
-
-#Criterion A.13 - Afraid going to die
-dat <- dat %>%
-  mutate(pad.panic_symptoms_numeric = 
-           if_else(condition = !is.na(pad.afraid_you_were_going_to_die_numeric) &
-                     pad.afraid_you_were_going_to_die_numeric == 1,
-                   true = pad.panic_symptoms_numeric + 1,
-                   false = pad.panic_symptoms_numeric))
-
- 
-#Check distribution of scores
-dat %>%
-  freq(pad.panic_symptoms_numeric)
-  
+anx_pad_data %>% 
+  freq(panic_disorder_ever)
 ```
 
-
-
-# Panic disorder
