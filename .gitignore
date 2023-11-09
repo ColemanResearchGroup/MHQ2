@@ -61,3 +61,5 @@ rsconnect/
 *.tab
 *.r
 *.rds
+*.tsv
+*.html
