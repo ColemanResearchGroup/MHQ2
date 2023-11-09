@@ -16,7 +16,7 @@ which will output a file called `data/ukb12345.rds`
 Run all the phenotype notebooks against the extracted fields `*.rds` file:
 
 ```sh
-./scripts/MHQ2-phenotypes --rds data/ukb12345.rds
+./scripts/MHQ2-phenotypes.sh --rds data/ukb12345.rds
 ```
 
 which will produce reports in `reports/ukb12345-*.html` and phenotype files in `outputs/ukb12345-*.tsv`
