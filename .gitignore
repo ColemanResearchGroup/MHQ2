@@ -50,3 +50,8 @@ rsconnect/
 
 # .DS_Store file
 .DS_Store
+
+# UKB data files
+*.key
+*.enc
+*.enc_ukb
