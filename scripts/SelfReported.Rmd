@@ -3,6 +3,9 @@ title: "MHQ2 Self-Reported Conditions"
 author: "Jonathan RI Coleman"
 date: "2023-11-01"
 output: html_document
+params:
+  fields: ukb1234.rds
+  output: SelfReported.tsv
 ---
 
 This is a script containing an algorithm for self-reported conditions from the 2023 mental wellbeing questionnaire.
@@ -13,7 +16,7 @@ These differ in several places from the equivalent items from the 2016 mental he
 Configure global options for all chunks
 
 ```{r Setup, include=FALSE}
-
+save.image()
 knitr::opts_chunk$set(
   echo = TRUE,
   comment = '',
@@ -23,13 +26,7 @@ knitr::opts_chunk$set(
 
 ```
 
-Clear global environment prior to initiation
 
-```{r Clear global environment}
-
-remove(list = ls())
-
-```
 # Install dependencies – SHOULD BE A MERGED TO A SINGLE LIST AND HASHED IN FINAL SCRIPT
 
 Import package_install function
@@ -67,7 +64,7 @@ lapply(packages, require, character.only = TRUE)
 
 ```{r Read in data}
 
-MHQ2<-fread(args[1], data.table=F)
+MHQ2 <- readRDS(params$fields)
 
 ```
 
@@ -127,6 +124,14 @@ MHQ2$SelfReportedEatingDisorder <- apply(MHQ2[,grep("29000", colnames(MHQ2))], 1
 
 ```{r Any algorithmic diagnosis}
 
-~~TODO: This needs to be done as part of the overarching script as it relies on otuput from multiple modules~~ 
+#~~TODO: This needs to be done as part of the overarching script as it relies on otuput from multiple modules~~ 
 
+```
+
+# Output
+
+```{r Output}
+SelfReported <- MHQ2 |> select(f.eid, starts_with("SelfReported"))
+
+write_tsv(SelfReported, params$output)
 ```
