@@ -55,3 +55,9 @@ rsconnect/
 *.key
 *.enc
 *.enc_ukb
+*.dat
+*.ukb
+*.log
+*.tab
+*.r
+*.rds
