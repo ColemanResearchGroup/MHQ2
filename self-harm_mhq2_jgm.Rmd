@@ -1,0 +1,72 @@
+---
+title: "Self-Harm MHQ Algorithm"
+author: "Jared G Maina"
+date: "2023-11-10"
+output: html_document
+---
+
+This is a script containing an algorithm for self-harm definition in UK Biobank MHQ2.
+
+# Set up
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+Clear global environment prior to initiation
+```{r clear global environment}
+remove(list = ls())
+```
+
+# Read in the data
+
+```{r}
+#To change later once I find out more about the datafile
+MHQ2<-fread(args[1], data.table=F)
+```
+
+# Life Not Worth Living
+Ever thought life was not worth living (29108) (HB1). Yes, once (01) OR Yes, more than once (02) (Symptoms)
+
+```{r}
+MHQ2$Not.Worth.Living <- with(MHQ2, ifelse((is.na(X29108.0.0) | X29108.0.0 < 0), NA, X29108.0.0))
+```
+
+# Harm To Self Ever
+Deliberately harmed yourself (29111) (HB3) Yes , once (01) OR Yes, more than once (02) (Case)
+
+```{r}
+MHQ2$Self.Harm.Ever <- with(MHQ2, ifelse(is.na(X29111.0.0), NA,
+                                  ifelse(!is.na(X29111.0.0) & X29111.0.0 > 0, 1, 0)))
+```
+
+# Harm To Self Ever, 12m
+Deliberately harmed yourself (29111) (HB3) = Yes, once (01) OR Yes, more than once (02) AND In the last 12 months (29114) (HB4) = Yes (01)
+
+```{r}
+MHQ2$Self.Harm.Ever.12m <- with(MHQ2, ifelse(is.na(X29111.0.0), NA,
+                                       ifelse(!is.na(X29111.0.0) & X29111.0.0 > 0 &
+                                              !is.na(X29114.0.0) & X29114.0.0 > 0,
+                                              1,
+                                              0
+                                       )
+))
+
+```
+
+# Suicide Attempt
+Harmed self with intent (29116) (HB6) = Yes, once (01) OR Yes, more than once (02)
+
+```{r}
+MHQ2$Suicide.Attempt <- with(MHQ2, ifelse(!is.na(X29111.0.0) & X29111.0.0 > 0 &
+                                        !is.na(X29116.0.0) & X29116.0.0 > 0,
+                                        1,
+                                        0))
+
+```
+
