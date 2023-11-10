@@ -28,7 +28,7 @@ library(tidyverse)
 ```{r Read data}
 setwd('/scratch/prj/ukbiobank/UKB_MHQ2_Anonymised')
 # dat <- fread('ukb675453_MHQ2_Anonymised.csv', data.table=F)
-dat <- readRDS('MHQ2_Anonymous.rds')
+dat <- readRDS('data/MHQ2_Anonymous.rds')
 ```
 
 # 1. Depression ever case
@@ -165,7 +165,7 @@ dat <-
             (phq.symptom.score >= 5 & !is.na(phq.symptom.score)) ~ 0,
             .default = NA_real_
         )
-    ) %>% 
+    ) %>%
     select(-starts_with('tmp_'))
 
 rm(phq_symptoms)
@@ -313,13 +313,14 @@ AND
 (Loss of interest (29012) = Yes (1)
 OR
 Did your mood brighten in response to positive events (29016) = No (0)
-AND
->2 of:
+AND 
+(> 2) of:
 •	Was your mood worse (29017) = “in the morning” (0)
 •	Appetite (29020) = “decreased appetite” (2) OR Weight change (29021) = “lost weight” (1)
 (counts as 1 item)
 •	Sleep change (29022) = Yes (1) AND Waking too early (29024) = Yes (1)
 •	Guilt (29028) = Yes (1)
+
 ```{r Melancholic-like depression}
 dat <- 
     dat %>% 
@@ -372,7 +373,7 @@ NOT Case {worst depressive episode melancholic}
 AND
 Did your mood brighten in response to positive events (29016) = Yes (1)
 AND
->1 of:
+(>1) of:
 •	Appetite (29020) = “increased appetite” (1) OR Weight (29021) = “gained weight” (0)
 (counts as 1 item)
 •	Sleep change (29022) = Yes (1) AND Sleeping too much (29025) = Yes (1)
