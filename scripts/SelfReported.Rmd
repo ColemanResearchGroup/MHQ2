@@ -4,7 +4,7 @@ author: "Jonathan RI Coleman"
 date: "2023-11-01"
 output: html_document
 params:
-  fields: ukb1234.rds
+  data: ukb1234.csv
   output: SelfReported.tsv
 ---
 
@@ -55,7 +55,7 @@ package_install <- function(packages){
 
 ```{r Load dependencies}
 
-packages <- c("data.table","tidyverse","dplyr")
+packages <- c("data.table","tidyverse","dplyr", "readr")
 lapply(packages, require, character.only = TRUE)
 
 ```
@@ -64,7 +64,7 @@ lapply(packages, require, character.only = TRUE)
 
 ```{r Read in data}
 
-MHQ2 <- readRDS(params$fields)
+MHQ2 <- fread(file = params$data, data.table = FALSE)
 
 ```
 
@@ -131,7 +131,7 @@ MHQ2$SelfReportedEatingDisorder <- apply(MHQ2[,grep("29000", colnames(MHQ2))], 1
 # Output
 
 ```{r Output}
-SelfReported <- MHQ2 |> select(f.eid, starts_with("SelfReported"))
+SelfReported <- MHQ2 |> select(eid, starts_with("SelfReported"))
 
 write_tsv(SelfReported, params$output)
 ```
