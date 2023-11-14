@@ -82,7 +82,7 @@ MHQ2<-fread(args[1], data.table=F)
 ## Disorders are coded in coding 1954: BN (18), BED (19), Other EDs (20)
 ## Not included are panic attacks (14)
 
-MHQ2$SelfReportedDiagnosis <- apply(MHQ2[,grep("29000", colnames(MHQ2))], 1, function(row) ifelse(sum(c(1:13,15:20) %in% row) > 0, 1, 0))
+MHQ2$SelfReportedDiagnosis <- apply(MHQ2[,grep("^29000-", colnames(MHQ2))], 1, function(row) ifelse(sum(c(1:13,15:20) %in% row) > 0, 1, 0))
 
 ```
 
@@ -98,7 +98,7 @@ MHQ2$SelfReportedDiagnosis <- apply(MHQ2[,grep("29000", colnames(MHQ2))], 1, fun
 ## Not included are PTSD (16), Other EDs (20)
 
 
-MHQ2$SelfReportedDiagnosisMHQ2016Compatible<- apply(MHQ2[,grep("29000", colnames(MHQ2))], 1, function(row) ifelse(sum(c(1:15,17:19) %in% row) > 0, 1, 0))
+MHQ2$SelfReportedDiagnosisMHQ2016Compatible<- apply(MHQ2[,grep("^29000-", colnames(MHQ2))], 1, function(row) ifelse(sum(c(1:15,17:19) %in% row) > 0, 1, 0))
 
 ```
 
@@ -109,7 +109,7 @@ MHQ2$SelfReportedDiagnosisMHQ2016Compatible<- apply(MHQ2[,grep("29000", colnames
 ## Anxiety disorder diagnoses coded in coding 1954 are GAD (10), Social (11), Agoraphobia (12), Panic disorder (15), Other phobias (13)
 ## Not included are generic anxiety (9), panic attacks (14), OCD (8), and PTSD (16)
 
-MHQ2$SelfReportedAnxietyDisorder <- apply(MHQ2[,grep("29000", colnames(MHQ2))], 1, function(row) ifelse(sum(c(10:13,15) %in% row) > 0, 1, 0))
+MHQ2$SelfReportedAnxietyDisorder <- apply(MHQ2[,grep("^29000-", colnames(MHQ2))], 1, function(row) ifelse(sum(c(10:13,15) %in% row) > 0, 1, 0))
 
 ```
 
@@ -119,7 +119,7 @@ MHQ2$SelfReportedAnxietyDisorder <- apply(MHQ2[,grep("29000", colnames(MHQ2))], 
 
 ## Eating disorder diagnoses coded in coding 1954 are AN (17), BN (18), BED (19), Other EDs (20)
 
-MHQ2$SelfReportedEatingDisorder <- apply(MHQ2[,grep("29000", colnames(MHQ2))], 1, function(row) ifelse(sum(c(17:20) %in% row) > 0, 1, 0))
+MHQ2$SelfReportedEatingDisorder <- apply(MHQ2[,grep("^29000-", colnames(MHQ2))], 1, function(row) ifelse(sum(c(17:20) %in% row) > 0, 1, 0))
 
 ```
 
