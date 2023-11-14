@@ -2,7 +2,7 @@
 #
 ## Run all phenotype notebooks
 #
-# ARG_OPTIONAL_SINGLE([rds],[u],[MHQ2 fields RDS file])
+# ARG_OPTIONAL_SINGLE([csv],[u],[MHQ2 fields csv file])
 # ARG_HELP([Run all phenotype notebooks.])
 # ARGBASH_GO()
 # needed because of Argbash --> m4_ignore([
@@ -29,14 +29,14 @@ begins_with_short_option()
 }
 
 # THE DEFAULTS INITIALIZATION - OPTIONALS
-_arg_rds=
+_arg_data=
 
 
 print_help()
 {
 	printf '%s\n' "Run all phenotype notebooks."
-	printf 'Usage: %s [-u|--rds <arg>] [-h|--help]\n' "$0"
-	printf '\t%s\n' "-u, --rds: MHQ2 fields RDS file (no default)"
+	printf 'Usage: %s [-d|--data <arg>] [-h|--help]\n' "$0"
+	printf '\t%s\n' "-d, --data: MHQ2 fields CSV file (no default)"
 	printf '\t%s\n' "-h, --help: Prints help"
 }
 
@@ -47,16 +47,16 @@ parse_commandline()
 	do
 		_key="$1"
 		case "$_key" in
-			-u|--rds)
+			-d|--data)
 				test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
-				_arg_rds="$2"
+				_arg_data="$2"
 				shift
 				;;
-			--rds=*)
-				_arg_rds="${_key##--rds=}"
+			--data=*)
+				_arg_data="${_key##--data=}"
 				;;
 			-u*)
-				_arg_rds="${_key##-u}"
+				_arg_data="${_key##-u}"
 				;;
 			-h|--help)
 				print_help
@@ -86,10 +86,10 @@ mkdir -p reports
 mkdir -p outputs
 
 for rmd in scripts/*.Rmd; do
-    rds=$(readlink -f $_arg_rds)
-    html_document="$(basename $_arg_rds .rds)-$(basename $rmd .Rmd).html"
-    output="$(basename $_arg_rds .rds)-$(basename $rmd .Rmd).tsv"
-    Rscript -e "rmarkdown::render('${rmd}', params = list(fields = '$rds', output = '$output'), output_file = '${html_document}')"
+    csv=$(readlink -f $_arg_data)
+    html_document="$(basename $_arg_data .csv)-$(basename $rmd .Rmd).html"
+    output="$(basename $_arg_data .csv)-$(basename $rmd .Rmd).tsv"
+    Rscript -e "rmarkdown::render('${rmd}', params = list(data = '$csv', output = '$output'), output_file = '${html_document}')"
     mv scripts/${html_document} reports/
     mv scripts/${output} outputs/
 done
