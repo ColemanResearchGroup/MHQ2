@@ -16,10 +16,10 @@ Configure global options for all chunks
 
 knitr::opts_chunk$set(
   echo = TRUE,
-  comment = '',
+  comment = "",
   prompt = FALSE,
   cache = FALSE
-  )
+)
 
 ```
 
@@ -36,13 +36,10 @@ Import package_install function
 
 ```{r Define package_install}
 
-package_install <- function(packages){
-
-    for(x in packages){
-    
-        install.packages(x, dependencies = TRUE)
-	
-    }	    
+package_install <- function(packages) {
+  for (x in packages) {
+    install.packages(x, dependencies = TRUE)
+  }
 }
 
 ```
@@ -58,8 +55,8 @@ package_install <- function(packages){
 
 ```{r Load dependencies}
 
-packages <- c("data.table","tidyverse","dplyr")
-lapply(packages, require, character.only = TRUE)
+packages <- c("data.table", "tidyverse", "dplyr")
+lapply(X = packages, FUN = require, character.only = TRUE)
 
 ```
 
@@ -67,59 +64,90 @@ lapply(packages, require, character.only = TRUE)
 
 ```{r Read in data}
 
-MHQ2<-fread(args[1], data.table=F)
+MHQ2 <- fread(args[1], data.table = FALSE)
+
+```
+
+# Define grep_reports function
+
+```{r Define grep_reports}
+
+grep_reports <- function(data, fields) {
+  return(
+    apply(X = data,
+      MARGIN = 1,
+      FUN = function(selected_row) {
+        case_when(all(is.na(selected_row)) == TRUE ~ NA_real_,
+          sum(fields %in% selected_row) > 0 ~ 1,
+          sum(fields %in% selected_row) == 0 ~ 0
+        )
+      }
+    )
+  )
+}
 
 ```
 
 # Any self-reported diagnosis
 
+Disorders are coded in coding 1954: Depression (1), Mania (2), Schizophrenia (3), Other Psychosis (4)
+Disorders are coded in coding 1954: Personality disorder (5), ASD (6), ADHD (7), OCD (8),
+Disorders are coded in coding 1954: Generic anxiety (9), GAD (10), Social anxiety (11), Agoraphobia (12)
+Disorders are coded in coding 1954: Other phobias (13), Panic disorder (15), PTSD (16), AN (17)
+Disorders are coded in coding 1954: BN (18), BED (19), Other EDs (20)
+Not included are panic attacks (14)
+
 ```{r Any self-reported diagnosis}
 
-## Disorders are coded in coding 1954: Depression (1), Mania (2), Schizophrenia (3), Other Psychosis (4)
-## Disorders are coded in coding 1954: Personality disorder (5), ASD (6), ADHD (7), OCD (8),
-## Disorders are coded in coding 1954: Generic anxiety (9), GAD (10), Social anxiety (11), Agoraphobia (12)
-## Disorders are coded in coding 1954: Other phobias (13), Panic disorder (15), PTSD (16), AN (17)
-## Disorders are coded in coding 1954: BN (18), BED (19), Other EDs (20)
-## Not included are panic attacks (14)
-
-MHQ2$SelfReportedDiagnosis <- apply(MHQ2[,grep("^29000-", colnames(MHQ2))], 1, function(row) ifelse(sum(c(1:13,15:20) %in% row) > 0, 1, 0))
+MHQ2$SelfReportedDiagnosis <- grep_reports(
+  data = MHQ2[, grep("^29000-", colnames(MHQ2))],
+  fields = c(1:13, 15:20)
+)
 
 ```
 
 # Any self-reported diagnosis (alternate, MHQ2016 compatible)
 
+Disorders are coded in coding 1954: Depression (1), Mania (2), Schizophrenia (3), Other Psychosis (4)
+Disorders are coded in coding 1954: Personality disorder (5), ASD (6), ADHD (7), OCD (8),
+Disorders are coded in coding 1954: Generic anxiety (9), GAD (10), Social anxiety (11), Agoraphobia (12)
+Disorders are coded in coding 1954: Other phobias (13), Panic attacks (14), Panic disorder (15), AN (17)
+Disorders are coded in coding 1954: BN (18), BED (19)
+Not included are PTSD (16), Other EDs (20)
+
 ```{r Any self-reported diagnosis, MHQ2016 compatible}
 
-## Disorders are coded in coding 1954: Depression (1), Mania (2), Schizophrenia (3), Other Psychosis (4)
-## Disorders are coded in coding 1954: Personality disorder (5), ASD (6), ADHD (7), OCD (8),
-## Disorders are coded in coding 1954: Generic anxiety (9), GAD (10), Social anxiety (11), Agoraphobia (12)
-## Disorders are coded in coding 1954: Other phobias (13), Panic attacks (14), Panic disorder (15), AN (17)
-## Disorders are coded in coding 1954: BN (18), BED (19)
-## Not included are PTSD (16), Other EDs (20)
-
-
-MHQ2$SelfReportedDiagnosisMHQ2016Compatible<- apply(MHQ2[,grep("^29000-", colnames(MHQ2))], 1, function(row) ifelse(sum(c(1:15,17:19) %in% row) > 0, 1, 0))
+MHQ2$SelfReportedDiagnosisMHQ2016Compatible <- grep_reports(
+  data = MHQ2[, grep("^29000-", colnames(MHQ2))],
+  fields = c(1:15, 17, 19)
+)
 
 ```
 
 # Self-reported anxiety diagnosis
 
+Anxiety disorder diagnoses coded in coding 1954 are GAD (10), Social (11), Agoraphobia (12), Panic disorder (15), Other phobias (13)
+Not included are generic anxiety (9), panic attacks (14), OCD (8), and PTSD (16)
+
 ```{r Any anxiety diagnosis}
 
-## Anxiety disorder diagnoses coded in coding 1954 are GAD (10), Social (11), Agoraphobia (12), Panic disorder (15), Other phobias (13)
-## Not included are generic anxiety (9), panic attacks (14), OCD (8), and PTSD (16)
-
-MHQ2$SelfReportedAnxietyDisorder <- apply(MHQ2[,grep("^29000-", colnames(MHQ2))], 1, function(row) ifelse(sum(c(10:13,15) %in% row) > 0, 1, 0))
+MHQ2$SelfReportedAnxietyDisorder <- grep_reports(
+  data = MHQ2[, grep("^29000-", colnames(MHQ2))],
+  fields = c(10:13, 15)
+)
 
 ```
 
 # Self-reported eating disorder diagnosis
 
+Eating disorder diagnoses coded in coding 1954 are AN (17), BN (18), BED (19), Other EDs (20)
+
 ```{r Any eating disorder diagnosis}
 
-## Eating disorder diagnoses coded in coding 1954 are AN (17), BN (18), BED (19), Other EDs (20)
-
-MHQ2$SelfReportedEatingDisorder <- apply(MHQ2[,grep("^29000-", colnames(MHQ2))], 1, function(row) ifelse(sum(c(17:20) %in% row) > 0, 1, 0))
+MHQ2$SelfReportedEatingDisorder <- grep_reports(
+  data = MHQ2[, grep("^29000-", colnames(MHQ2))],
+  fields = c(17:20)
+)
 
 ```
 
@@ -127,6 +155,6 @@ MHQ2$SelfReportedEatingDisorder <- apply(MHQ2[,grep("^29000-", colnames(MHQ2))],
 
 ```{r Any algorithmic diagnosis}
 
-~~TODO: This needs to be done as part of the overarching script as it relies on otuput from multiple modules~~ 
+~~TODO: This needs to be done as part of the overarching script as it relies on otuput from multiple modules~~
 
 ```
