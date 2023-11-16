@@ -97,6 +97,11 @@ columns_PHQ9.Items <- c(
   "f.29004.0.0", "f.29009.0.0", "f.29005.0.0", "f.29006.0.0", "f.29010.0.0"
 )
 
+### change as numeric variables
+for (col in columns_PHQ9.Items) {
+  MHQ2[[col]] <- as.numeric(MHQ2[[col]])
+}
+
 MHQ2$PHQ9.Items <- 0
 
 for (col in columns_PHQ9.Items) {
