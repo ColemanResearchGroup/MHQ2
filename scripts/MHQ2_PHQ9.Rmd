@@ -140,6 +140,17 @@ MHQ2 <- MHQ2 %>%
     )
   )
 
+### Set PHQ9.Severity to NA, if all items are missing
+
+conditions <- Reduce(
+  `&`,
+  lapply(columns_PHQ9.Items, function(col) {
+    (MHQ2[[col]] < 0 | is.na(MHQ2[[col]]))
+  })
+)
+
+MHQ2$PHQ9.Severity[conditions] <- NA
+
 ```
 
 ### Current Depression case and control
@@ -147,7 +158,7 @@ MHQ2 <- MHQ2 %>%
 Current Depression cases (1 = cases): PHQ9 derived depression + CIDI-SF(L): Depressed.Ever
 Current Depression controls (0 = controls): Scores negative on PHQ9 algorithm and below cut-off on PHQ9 full score (not derived from PHQ-9 depression AND PHQ-9 full score < 5)
 
-#### FLAG: line 154: need to merge depression.ever.case variable from Lifetime depression script ####
+#### FLAG: line 170: need to merge depression.ever.case variable from Lifetime depression script ####
 
 ```{r Current Depression}
 
@@ -231,7 +242,7 @@ MHQ2$f.29038[c(f.29038)]<-1
 f.29039 <- apply(MHQ2[, grep("f.29039.0", colnames(MHQ2))], 1, function(row) any(c("1","2","3","4","5","6","7") %in% row))
 MHQ2$f.29039[c(f.29039)] <- 1
 
-#### FLAG: lines 234 and 236: need to merge depression.ever.case variable from Lifetime depression script ####
+#### FLAG: lines 250 and 252: need to merge depression.ever.case variable from Lifetime depression script ####
 
 MHQ2 <- MHQ2 %>%
   mutate(
@@ -264,7 +275,7 @@ f.29048.0.0: Activities have helped (D29a) = “Yes, at least a little” (1)
 f.29047 <- apply(MHQ2[, grep("f.29047.0", colnames(MHQ2))], 1, function(row) any(c("1","2") %in% row))
 MHQ2$f.29047[c(f.29047)] <- 1
 
-#### FLAG: lines 267 and 268: need to merge depression.ever.case variable from Lifetime depression script ####
+#### FLAG: lines 283 and 284: need to merge depression.ever.case variable from Lifetime depression script ####
 
 MHQ2 <- MHQ2 %>%
   mutate(
