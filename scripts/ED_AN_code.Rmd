@@ -76,13 +76,13 @@ MHQ2 %>%
 # Extended anorexia phenotype
 
 Have you had a period in your life when you weighed much less than other people thought you ought to weigh? (EP1a) = 01 Yes
->'29121-0.0' == 1
+>'29120-0.0' == 1
 
 ```{r}
 #Extended anorexia phenotype
 MHQ2 <- MHQ2 %>%
   mutate(Extended_AN = 
-           case_when('29121-0.0' == 1 ~ 1, 
+           case_when('29120-0.0' == 1 ~ 1, 
                      TRUE ~ 0
                      )
         )
