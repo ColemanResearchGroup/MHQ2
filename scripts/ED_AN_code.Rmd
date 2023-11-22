@@ -17,7 +17,59 @@ library("tidyverse")
 ```{r}
 MHQ2 <-
 readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
-MHQ <- ##Change file path (I don't have the MHQ baseline dataset)
+```
+
+##Sanity Checks
+```{r}
+#Period in life when was underweight
+#Expecting 150,509 for 'No' (0)
+MHQ2 %>%
+  freq('29120-0.0')
+
+#Did you feel fat
+#Expecting 16,570 for 'No' (0)
+MHQ2 %>%
+  freq('29122-0.0')
+
+#Afraid of gaining weight or becoming fat
+#Expecting 14,815 for 'No' (0)
+MHQ2 %>%
+  freq('29123-0.0')
+
+#Thinking or feeling body larger than it is
+#Expecting 15,810 for 'No' (0)
+MHQ2 %>%
+  freq('29124-0.0')
+
+#Lowest weight during period when underweight
+#Expecting Mean = 51.4476
+MHQ2 %>%
+  mean('29125-0.0', na.rm = FALSE)
+
+#Low weight had/has negative consequences for health
+#Expecting 14,186 for 'No' (0)
+MHQ2 %>%
+  freq('29128-0.0')
+
+#Dependency of self-esteem on body shape or weight when at this low weight
+#Expecting 11,759 for 'None at all or very little' (0)
+MHQ2 %>%
+  freq('29129-0.0')
+
+#Methods of controlling body shape or weight when at this low weight
+#Expecting 14,430 for 'None of above' (0)
+MHQ2 %>%
+  freq('29130-0.0')
+
+#Ever had recurrent episodes of excessive overeating or binge eating
+#Expecting 149,732 for 'No' (0)
+MHQ2 %>%
+  freq('29132-0.0')
+
+#Experienced episodes of overeating/binge eating during time(s) of low weight
+#Expecting 241 for 'Only at time(s) of low weight' (0)
+MHQ2 %>%
+  freq('29134-0.0')
 ```
 
 ## Algorithms
@@ -49,12 +101,10 @@ EP3 (f.29125-0.0) Roughly how low did your weight get during this time? [metric]
 ```{r}
 #BMI at low weight
 MHQ2 <- MHQ2 %>%
-  mutate('12144-1.0' = MHQ$'12144-1.0')
-MHQ2 <- MHQ2 %>%
   mutate(BMI =
            case_when(is.na('29125-0.0') |
                      is.na('12144-1.0') ~ NA,
-                     TRUE ~ '29125-0.0' / ('12144-1.0')^2)
+                     TRUE ~ '29125-0.0' / ('12144-1.0'/100)^2)
         )
 ```
               
@@ -96,13 +146,28 @@ Have you done any of the following as a way to control your body shape or weight
 #Anorexia nervosa
 MHQ2 <- MHQ2 %>%
   mutate(AN =
+           #Case {Extended anorexia phenotype}
            case_when(Extended_AN == 1 &
+
+           #{BMI at low weight} <= 18.55 kg/m2
                        BMI <= 18.55 &
+
+           #Did you feel fat (EP2a) = 01 Yes
                        ('29122-0.0' == 1 |
+
+           #Were you afraid that you might become fat (EP2c)= 01 Yes
                         '29124-0.0' == 1 |
+
+           #Did you think or feel that your body or parts of your body were larger than they actually were (EP4c) = 01 Yes
                         '29128-0.0' == 1 |
+
+           #Was your self-esteem dependent on your body shape or weight (EP4d) = 02 A great deal OR 01 A moderate amount)
                         '29129-0.0' %in% c(1,2)) &
+
+           #(afraid that you might gain weight or become fat (EP2b) = 01 Yes
                        ('29123-0.0' == 1 |
+
+           #Have you done any of the following as a way to control your body shape or weight? (EP5) = any of 01 to 07)
                         '29130-0.0' %in% c(1,2,3,4,5,6,7))
             ~ 1,
          TRUE ~ 0
