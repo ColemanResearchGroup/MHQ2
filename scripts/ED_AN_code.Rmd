@@ -81,8 +81,8 @@ Have you had a period in your life when you weighed much less than other people 
 ```{r}
 #Extended anorexia phenotype
 MHQ2 <- MHQ2 %>%
-  mutate(Extended_AN = 
-           case_when('29120-0.0' == 1 ~ 1, 
+  mutate(Extended_AN =
+           case_when(`29120-0.0` == 1 ~ 1,
                      TRUE ~ 0
                      )
         )
@@ -91,7 +91,7 @@ MHQ2 <- MHQ2 %>%
 # BMI at low weight
 
 EP3 (f.29125-0.0) Roughly how low did your weight get during this time? [metric] /
-((f.12144.1) Physical measures  Height [cm]/100)^2
+((f.12144.1 ++OVERARCHING) Physical measures  Height [cm]/100)^2
 
 > '29125-0.0'/('12144-1.0')^2
 
@@ -101,10 +101,12 @@ EP3 (f.29125-0.0) Roughly how low did your weight get during this time? [metric]
 ```{r}
 #BMI at low weight
 MHQ2 <- MHQ2 %>%
+  mutate(`12144-1.0` = MHQ$`12144-1.0`)
+MHQ2 <- MHQ2 %>%
   mutate(BMI =
-           case_when(is.na('29125-0.0') |
-                     is.na('12144-1.0') ~ NA,
-                     TRUE ~ '29125-0.0' / ('12144-1.0'/100)^2)
+           case_when(is.na(`29125-0.0`) |
+                     is.na(`12144-1.0++OVERARCHING`) ~ NA,
+                     TRUE ~ `29125-0.0` / (`12144-1.0++OVERARCHING`/100)^2)
         )
 ```
               
