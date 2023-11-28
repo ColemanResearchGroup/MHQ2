@@ -36,10 +36,10 @@ date
 ```
 
 ## Read in data
-
+/Users/abiterkuile/OneDrive/UCL/Postdoc/ukb/mhq2/anon_data/MHQ2_Anonymous.rds
 ```{r read in pheno_covar file}
 
-MHQ <- readRDS(file = "MHQ2_Anonymous.rds")
+MHQ <- readRDS(file = "/Users/abiterkuile/OneDrive/UCL/Postdoc/ukb/mhq2/anon_data/MHQ2_Anonymous.rds")
                
 ```
 
@@ -58,19 +58,30 @@ anx_pad_data <- MHQ %>%
   select(matches(paste(anx_pad_field_numbers, 
                        collapse = "|")))
 
-anx_pad_data
+# Inspect data
+glimpse(anx_pad_data)
+summary(anx_pad_data)
 ```
-
-# Convert data to numeric
+# Convert data to numeric and recode -3 (prefer not to answer) to NA
+To avoid overwriting raw data, save changes in new columns with suffix "_mod" (modified)
 ```{r}
 anx_pad_data <- anx_pad_data %>%
-  mutate_all(as.numeric)
+  mutate(across(everything(), ~ ., .names = "{.col}_mod")) %>%
+  mutate_all(~ as.numeric(.)) %>%
+  mutate_all(~ case_when(
+    . == -3 ~ NA_real_,
+    TRUE ~ .
+  ))
 ```
 
+# Inspect data of modified columns
 ```{r}
-glimpse(anx_pad_data)
+modified_columns <- anx_pad_data %>%
+  select(ends_with("_mod"))
 
-summary(anx_pad_data)
+# Inspect modified columns
+glimpse(modified_columns)
+summary(modified_columns)
 ```
 
 
@@ -86,45 +97,56 @@ https://biobank.ndph.ox.ac.uk/ukb/coding.cgi?id=168
 3	Nearly every day
 -3	Prefer not to answer 
 
-# Recode -3 (Prefer not to answer) to NA
-```{r}
-anx_pad_data <- anx_pad_data %>%
-  mutate(
-    across(c("29058-0.0",
-             "29059-0.0",
-             "29060-0.0",
-             "29061-0.0",
-             "29062-0.0",
-             "29063-0.0",
-             "29064-0.0"),
-           ~case_when(
-             . == -3 ~ NA_real_,
-             TRUE ~ .
-           )
-    )
-  )
-```
-
 # Sum GAD-7 scores
 Check response minimum is 0 and max is 21
 ```{r}
 anx_pad_data <- anx_pad_data %>%
   mutate(
-    GAD7.Severity = rowSums(select(., 
-"29058-0.0",
-"29059-0.0",
-"29060-0.0",
-"29061-0.0",
-"29062-0.0",
-"29063-0.0",
-"29064-0.0")
-                            ) 
-  )
+    Gad7Score = rowSums(select(., 
+                               "29058-0.0_mod",
+                               "29059-0.0_mod",
+                               "29060-0.0_mod",
+                               "29061-0.0_mod",
+                               "29062-0.0_mod",
+                               "29063-0.0_mod",
+                               "29064-0.0_mod"),
+                        na.rm = TRUE))
 
-summary(anx_pad_data$GAD7.Severity)
+summary(anx_pad_data$Gad7Score)
 
 anx_pad_data %>%
-  freq(GAD7.Severity)
+  freq(Gad7Score)
+```
+Create column that counts the number of NAs for GAD7 score
+```{r}
+anx_pad_data <- anx_pad_data %>%
+  mutate(
+    Gad7NaCount = rowSums(select(., 
+      "29058-0.0_mod",
+      "29059-0.0_mod",
+      "29060-0.0_mod",
+      "29061-0.0_mod",
+      "29062-0.0_mod",
+      "29063-0.0_mod",
+      "29064-0.0_mod"
+    ) %>% is.na())
+  )
+
+# check NA count
+anx_pad_data %>%
+  select(Gad7NaCount,
+         "29058-0.0_mod",
+      "29059-0.0_mod",
+      "29060-0.0_mod",
+      "29061-0.0_mod",
+      "29062-0.0_mod",
+      "29063-0.0_mod",
+      "29064-0.0_mod") %>% 
+  head()
+
+#check freq
+anx_pad_data %>%
+  freq(Gad7NaCount)
 ```
 
 ## Generalised Anxiety Disorder Current (GAD-7 derived GAD case status)
@@ -133,21 +155,21 @@ Note: This is not consistent with MHQ1 {current anxiety}, where CIDI-SF(L) GAD m
 
 GAD7 full score >= 10. (10 is moderate anxiety). Ref: Kroenke K, Spitzer RL, Williams JB, Löwe B. The patient health questionnaire somatic, anxiety, and depressive symptom scales: a systematic review. Gen Hosp Psychiatry. 2010;32(4):345-59
 
-+++ ATK: note that there is no control algorithm criteria in the MHQ2 algorithm guidance. Need to what was done in MHQ1 and if we should add thi (e.g. only 0 if score below 5 (mild anxiety)). 
++++ ATK: note that there is no control algorithm criteria in the MHQ2 algorithm guidance. Confirm with team whether or not the below handling of controls should be added. We have added the following criteria (not specified in MHQ2 algorithm doc): 0 is assigned if they score less than 10, and in case they could score on the missed NA items [max 3 each] taking them above a threshold of 10, this is handled by including a threshold where their score + NA count x3 does not take them above 10
 ```{r}
-# Create a new column named 'GAD.Current' in the data frame and calculate its value.
+# Create a new column named 'GadCurrent' in the data frame and calculate its value.
 anx_pad_data <- anx_pad_data %>%
   mutate(
-    GAD.Current = if_else(is.na(GAD7.Severity), # If 'GAD7.Severity' is missing (NA),
-                          NA_real_, # Assign NA to the 'GAD.Current' column.
-                          if_else(GAD7.Severity > 9, # If 'GAD7.Severity' is greater than 9 (i.e. >=10 for moderate current GAD) 
-                                  1, # Assign 1 to the 'GAD.Current' column (as case)
-                                  0) # Otherwise, assign 0 to the 'GAD.Current' column
-                          )
-  )
-
+    GadCurrent = case_when(
+      is.na(Gad7Score) ~ NA_real_, # If 'Gad7Score' is missing (NA) Assign NA to the 'GadCurrent' column.
+      Gad7Score > 9 ~ 1, # If 'Gad7Score' is greater than 9 (i.e. >=10 for moderate current Gad) Assign 1 to the 'GadCurrent' column (as case)
+        Gad7Score < 10 & Gad7Score + Gad7NaCount*3 < 10 ~ 0, # if score less than 10, and adding score with NA count *3 (in case they score on the missed NA items [max 3 each] taking them above threshold of 10) - Assign 0 
+        TRUE ~ NA_real_ # NA if no conditions are met
+        )
+      )
+    
 anx_pad_data %>%
-  freq(GAD.Current)
+  freq(GadCurrent)
 ```
 
 # Panic attacks ever
@@ -175,93 +197,74 @@ https://biobank.ndph.ox.ac.uk/ukb/coding.cgi?id=1910
 
 -3	Prefer not to answer
 
+4 or more panic attack symptoms must be endorsed
 
+If participants endorse fewer than 4 panic symptoms, then they are given a 0 for diagnosis 
 check colnames for field number 29065
 29065-0.0 - 29065-0.12
 ```{r Check colnames}
 anx_pad_data %>%
-  select(contains("29065"))
+  select(contains("29065")) %>% 
+  head()
 # field name ranges: 29065-0.0 - 29065-0.12
 ```
-check coding
+Check summary and coding
 ```{r}
 anx_pad_data %>%
-  select(starts_with("29065-0.0"),
-         matches("29065-0.[0-9]+")) %>%
+  select(matches("^29065-0\\.\\d+_mod$")) %>% # matches regular expression (column names that start with "29065-0.", followed by a digit, and end with "_mod")
   summary()
 ```
-recode -3 (only shown in 29065-0.0) to NA
-```{r}
-anx_pad_data <- anx_pad_data %>%
-  mutate(
-    across(c("29065-0.0"),
-           ~case_when(
-             . == -3 ~ NA_real_,
-             TRUE ~ .
-           )
-    )
-  )
-```
 
-
-4 or more panic attack symptoms must be endorsed
-
-If participants endorse fewer than 4 panic symptoms, then they are given a 0 for diagnosis 
-
-Calculate panic attacks symptoms score
-
-Check frequency of panic attack syptom responses
+Check frequency of panic attack symptom responses
 ```{r}
 anx_pad_data %>%
-  select(starts_with("29065-0.0"),
-         matches("29065-0.[0-9]+")) %>%
+  select(matches("^29065-0\\.\\d+_mod$")) %>% # matches regular expression (column names that start with "29065-0.", followed by a digit, and end with "_mod")
   freq()
 ```
-           
+Calculate panic attacks symptoms score          
 ```{r}
 #Create score for panic attack symptoms
 anx_pad_data <- anx_pad_data %>%
-  mutate(panic_symptoms_count = 0)
+  mutate(PanicSymptomsCount = 0)
 
 anx_pad_data <- anx_pad_data %>%
-  mutate(panic_symptoms_count = 
+  mutate(PanicSymptomsCount = 
            case_when(
-             `29065-0.0` == 0 ~ 0,
-             `29065-0.12` > 0 ~ 13,
-             `29065-0.11` > 0 ~ 12,
-             `29065-0.10` > 0 ~ 11,
-             `29065-0.9` > 0 ~ 10,
-             `29065-0.8` > 0 ~ 9,
-             `29065-0.7` > 0 ~ 8,
-             `29065-0.6` > 0 ~ 7,
-             `29065-0.5` > 0 ~ 6,
-             `29065-0.4` > 0 ~ 5,
-             `29065-0.3` > 0 ~ 4,
-             `29065-0.2` > 0 ~ 3,
-             `29065-0.1` > 0 ~ 2,
-             `29065-0.0` > 0 ~ 1)
+             `29065-0.0_mod` == 0 ~ 0,
+             `29065-0.12_mod` > 0 ~ 13,
+             `29065-0.11_mod` > 0 ~ 12,
+             `29065-0.10_mod` > 0 ~ 11,
+             `29065-0.9_mod` > 0 ~ 10,
+             `29065-0.8_mod` > 0 ~ 9,
+             `29065-0.7_mod` > 0 ~ 8,
+             `29065-0.6_mod` > 0 ~ 7,
+             `29065-0.5_mod` > 0 ~ 6,
+             `29065-0.4_mod` > 0 ~ 5,
+             `29065-0.3_mod` > 0 ~ 4,
+             `29065-0.2_mod` > 0 ~ 3,
+             `29065-0.1_mod` > 0 ~ 2,
+             `29065-0.0_mod` > 0 ~ 1)
   )
 
 anx_pad_data %>% 
-  freq(panic_symptoms_count)
+  freq(PanicSymptomsCount)
 ```
 Create panic attacks ever case 
 ```{r}
 anx_pad_data <- anx_pad_data %>%
-  mutate(panic_attacks_ever = case_when(is.na(panic_symptoms_count) ~ NA,
-                                    panic_symptoms_count < 4 ~ 0,
-                                     panic_symptoms_count > 3 ~ 1))
+  mutate(PanicAttacksEver = case_when(is.na(PanicSymptomsCount) ~ NA,
+                                    PanicSymptomsCount < 4 ~ 0,
+                                     PanicSymptomsCount > 3 ~ 1))
 
 anx_pad_data %>% 
-  freq(panic_attacks_ever)
+  freq(PanicAttacksEver)
 ```
 ## Panic disorder
 Symptoms {panic attack ever} 
 AND 
 Feel anxious more panic attacks (SFP3a) = Yes 
 OR 
-Feel worried bad things  
-happening because of panic attacks (SFP3b) = Yes 
+Feel worried bad things happening because of panic attacks (SFP3b) = Yes 
 OR 
 Avoid situations in which panic attacks might occur (SFP3c) = Yes 
 AND 
@@ -281,25 +284,36 @@ Coding for 29070-0.0 (how long Continue to worry about panic attacks or their co
 -1	Do not know
 -3	Prefer not to answer
 
-+++ ATK:  Note that the below should be used to define panic disorder cases, not necessarily controls.There is no control algorithm criteria for panic disorder in the MHQ2 algorithm guidance. Note to check with team if we should add this (e.g. dealing with those who are NA for some panic disorder diagnostic criteria, they should be kept as NA and not 0) - discuss with Meg
++++ ATK: Note to check with team on if we want to add more stringent control criteria (which is not specified in the MHQ2 algorithm guidance). i.e. dealing with those who are NA for some panic disorder diagnostic criteria, they should be kept as NA and not 0, or at the very least make everyone NA who did not respond to the MHQ2
 ```{r}
 anx_pad_data <- anx_pad_data %>% 
-  mutate(panic_disorder_ever = 
-           case_when(panic_attacks_ever == 1 # Symptoms {panic attack ever}
-                     & (`29067-0.0` == 1 # Feel anxious more panic attacks = Yes
-                     | `29068-0.0` == 1 # OR Feel worried bad things happening because of panic attacks = Yes
-                     | `29069-0.0` == 1) # OR Avoid situations in which panic attacks might occur = Yes
-                        & `29070-0.0` > 0 # how long worry periods: codes 1-5 (greater than less than 1 month)
-                     & (`29074-0.0` == 0  # AND not due to other reasons 'no never'
-                     | `29074-0.0` == 1) # OR due to other reasons 'yes some of them'
-                     & (`29075-0.0`== 0 # occur in specific situation 'no'
-                     | `29075-0.0`== 1) # OR occur in specific situation 'Yes, some of them'
+  mutate(PanicDisorder = 
+           case_when(PanicAttacksEver == 1 # Symptoms {panic attack ever}
+                     & (`29067-0.0_mod` == 1 # Feel anxious more panic attacks = Yes
+                     | `29068-0.0_mod` == 1 # OR Feel worried bad things happening because of panic attacks = Yes
+                     | `29069-0.0_mod` == 1) # OR Avoid situations in which panic attacks might occur = Yes
+                        & `29070-0.0_mod` > 0 # how long worry periods: codes 1-5 (greater than less than 1 month)
+                     & (`29074-0.0_mod` == 0  # AND not due to other reasons 'no never'
+                     | `29074-0.0_mod` == 1) # OR due to other reasons 'yes some of them'
+                     & (`29075-0.0_mod`== 0 # occur in specific situation 'no'
+                     | `29075-0.0_mod`== 1) # OR occur in specific situation 'Yes, some of them'
                      ~ 1, # code as 1 if meet all criteria
                      TRUE ~ 0 # other wise code as 0 
                        )
   )
 
 anx_pad_data %>% 
-  freq(panic_disorder_ever)
+  freq(PanicDisorder)
 ```
+# Save the data
+```{r save data}
+anx_pad_data %>% 
+  select(Gad7Score,
+         GadCurrent,
+         PanicSymptomsCount,
+         PanicAttacksEver,
+         PanicDisorder) %>% 
+  saveRDS(
+    file = "/file/path/anxiety_algorithms.rds")
 
+```
