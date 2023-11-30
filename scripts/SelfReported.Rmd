@@ -102,7 +102,7 @@ Not included are panic attacks (14)
 
 MHQ2$SelfReportedDiagnosis <- grep_reports(
   data = MHQ2[, grep("^29000-", colnames(MHQ2))],
-  fields = c(1:13, 15:20)
+  codes = c(1:13, 15:20)
 )
 
 ```
@@ -120,7 +120,7 @@ Not included are PTSD (16), Other EDs (20)
 
 MHQ2$SelfReportedDiagnosisMHQ2016Compatible <- grep_reports(
   data = MHQ2[, grep("^29000-", colnames(MHQ2))],
-  fields = c(1:15, 17, 19)
+  codes = c(1:15, 17, 19)
 )
 
 ```
@@ -134,7 +134,7 @@ Not included are generic anxiety (9), panic attacks (14), OCD (8), and PTSD (16)
 
 MHQ2$SelfReportedAnxietyDisorder <- grep_reports(
   data = MHQ2[, grep("^29000-", colnames(MHQ2))],
-  fields = c(10:13, 15)
+  codes = c(10:13, 15)
 )
 
 ```
@@ -147,7 +147,7 @@ Eating disorder diagnoses coded in coding 1954 are AN (17), BN (18), BED (19), O
 
 MHQ2$SelfReportedEatingDisorder <- grep_reports(
   data = MHQ2[, grep("^29000-", colnames(MHQ2))],
-  fields = c(17:20)
+  codes = c(17:20)
 )
 
 ```
