@@ -72,15 +72,16 @@ MHQ2 <- fread(args[1], data.table = FALSE)
 
 ```{r Define grep_reports}
 
-grep_reports <- function(data, fields) {
+grep_reports <- function(data, codes) {
   return(
     apply(X = data,
       MARGIN = 1,
       FUN = function(selected_row) {
-        case_when(all(is.na(selected_row)) == TRUE ~ NA_real_,
-          sum(fields %in% selected_row) > 0 ~ 1,
-          sum(fields %in% selected_row) == 0 ~ 0
-        )
+        if(all(is.na(selected_row))) {
+          return(NA_real_)
+        } else {
+          return(sign(sum(codes %in% selected_row)))
+        }
       }
     )
   )
