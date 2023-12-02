@@ -1,4 +1,4 @@
----
+§---
 title: "Trauma"
 author: "Abigail ter Kuile"
 date: "2023-11-23"
@@ -22,7 +22,6 @@ Install packages
 
 Load packages from library 
 ```{r Load packages from library}
-library(summarytools)
 library(tidyverse)
 ```
 
@@ -39,7 +38,7 @@ date
 Read in data
 ```{r read in data file}
 
-MHQ <- readRDS(file = "/file/path/MHQ2_Anonymous.rds")
+MHQ2 <- readRDS(file = "/file/path/MHQ2_Anonymous.rds")
 ```
  
 # Make trauma field data frame (for easier inspecting)
@@ -53,7 +52,7 @@ trauma_field_numbers <- as.character(29076:29090)
 
 # select trauma field numbers into dataframe
 ```{r}
-trauma_data <- MHQ %>% 
+trauma_data <- MHQ2 %>% 
   select(matches(paste(trauma_field_numbers, 
                        collapse = "|")))
 
@@ -118,11 +117,11 @@ Coding	Meaning
 trauma_data <- trauma_data %>%
   mutate(
     TraumaChildhood = case_when(
-      # (is.na(`29076-0.0_mod`)
-      #     | is.na(`29077-0.0_mod`)
-      #     | is.na(`29078-0.0_mod`)
-      #     | is.na(`29079-0.0_mod`)
-      #     | is.na(`29080-0.0_mod`)) ~ NA_real_,
+       (is.na(`29076-0.0_mod`)
+         & is.na(`29077-0.0_mod`)
+         & is.na(`29078-0.0_mod`)
+         & is.na(`29079-0.0_mod`)
+         & is.na(`29080-0.0_mod`)) ~ NA_real_,
       (`29076-0.0_mod` < 3) # Felt loved = Never true (0) Rarely true (1) or Sometimes true (2) 
      | (`29077-0.0_mod` > 0) #Physically abused by family = Rarely true (01), Sometimes true (02), Often true (03) OR Very often true (04)
      | (`29078-0.0_mod` > 0) # Felt hated by family = Rarely true (01), Sometimes true (02), Often true (03) OR Very often true (04) 
@@ -132,8 +131,8 @@ trauma_data <- trauma_data %>%
     TRUE ~ 0   )
     )
   
-trauma_data %>% 
-  freq(TraumaChildhood)
+trauma_data %>%
+  with(table(TraumaChildhood, useNA="a"))
 ```
 
 # Adult abuse events exposure
@@ -170,11 +169,11 @@ Coding	Meaning
 trauma_data <- trauma_data %>%
   mutate(
     TraumaAdulthood = case_when(
-      # (is.na(`29081-0.0_mod`)
-      #     | is.na(`29082-0.0_mod`)
-      #     | is.na(`29083-0.0_mod`)
-      #     | is.na(`29084-0.0_mod`)
-      #     | is.na(`29085-0.0_mod`)) ~ NA_real_,
+      (is.na(`29081-0.0_mod`)
+        & is.na(`29082-0.0_mod`)
+        & is.na(`29083-0.0_mod`)
+        & is.na(`29084-0.0_mod`)
+        & is.na(`29085-0.0_mod`)) ~ NA_real_,
       (`29081-0.0_mod` > 0) # Stopped seeing friends (29081) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01)  
      | (`29082-0.0_mod` > 0) # Belittled (29082) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01)  
      | (`29083-0.0_mod` > 0) # Hurt (29083) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01)  
@@ -185,7 +184,7 @@ trauma_data <- trauma_data %>%
     )
   
 trauma_data %>% 
-  freq(TraumaAdulthood)
+  with(table(TraumaAdulthood, useNA="a"))
 ```
 
 # Adverse events 12 months exposure
@@ -243,17 +242,17 @@ Coding	Meaning
 trauma_data <- trauma_data %>%
   mutate(
     Trauma12Months = case_when(
-      # (is.na(`29081-0.0_mod`)
-      #     | is.na(`29082-0.0_mod`)
-      #     | is.na(`29083-0.0_mod`)
-      #     | is.na(`29084-0.0_mod`)
-      #     | is.na(`29085-0.0_mod`)
-      #     | is.na(`29086-0.0_mod`)
-      #     | is.na(`29087-0.0_mod`)
-      #     | is.na(`29088-0.0_mod`)
-      #     | is.na(`29089-0.0_mod`)
-      #     | is.na(`29090-0.0_mod`)
-      #  ) ~ NA_real_,
+      (is.na(`29081-0.0_mod`)
+        & is.na(`29082-0.0_mod`)
+        & is.na(`29083-0.0_mod`)
+        & is.na(`29084-0.0_mod`)
+        & is.na(`29085-0.0_mod`)
+        & is.na(`29086-0.0_mod`)
+        & is.na(`29087-0.0_mod`)
+        & is.na(`29088-0.0_mod`)
+        & is.na(`29089-0.0_mod`)
+        & is.na(`29090-0.0_mod`)
+      ) ~ NA_real_,
       (`29081-0.0_mod` == 2) # Stopped seeing friends (29081) = Yes, within the last 12 months (02)   
      | (`29082-0.0_mod` == 2) # Belittled (29082) = Yes, within the last 12 months (02) 
      | (`29083-0.0_mod` == 2) # Hurt (29083) = Yes, within the last 12 months (02)
@@ -269,7 +268,7 @@ trauma_data <- trauma_data %>%
     )
   
 trauma_data %>% 
-  freq(Trauma12Months)
+  with(table(Trauma12Months, useNA="a"))
 ```
 
 # Save the data
