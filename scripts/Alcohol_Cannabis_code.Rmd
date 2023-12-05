@@ -23,18 +23,32 @@ adjusting item scores to 0-4 as indicated:
 Frequency (AUDIT1) > f.29091-0.0
 scored 0-4, no adjustment needed 
 
+```{r}
+MHQ2 <- MHQ2 %>%
+  mutate(`29091-0.0` = recode(as.character(`29091-0.0`),
+    "0" = 0,
+    "1" = 1,
+    "2" = 2,
+    "3" = 3,
+    "4" = 4,
+    "-3" = NA_real_,
+    .default = NA_real_))
+```
+
+
 Typical drinks (AUDIT 1a) > f.29092-0.0
 scored 1-5, needs adjusting 
 
 ```{r}
 MHQ2 <- MHQ2 %>%
-  mutate('29092-0.0' = case_when(
-    '29092-0.0' == 1 ~ 0,
-    '29092-0.0' == 2 ~ 1,
-    '29092-0.0' == 3 ~ 2,
-    '29092-0.0' == 4 ~ 3,
-    '29092-0.0' == 5 ~ 4,
-    ))
+  mutate(`29092-0.0` = recode(as.character(`29092-0.0`),
+    "1" = 0,
+    "2" = 1,
+    "3" = 2,
+    "4" = 3,
+    "5" = 4,
+    "-3" = NA_real_,
+    .default = NA_real_))
 ```
 
 Six or more drinks (AUDIT 1b) > f.29093-0.0
@@ -43,12 +57,14 @@ scored 1-5, needs adjusting
 
 ```{r}
 MHQ2 <- MHQ2 %>%
-  mutate('29093-0.0' = case_when(
-    '29093-0.0' == 2 ~ 1,
-    '29093-0.0' == 3 ~ 2,
-    '29093-0.0' == 4 ~ 3,
-    '29093-0.0' == 5 ~ 4,
-    ))
+  mutate(`29093-0.0` = recode(as.character(`29093-0.0`),
+    "0" = 0,
+    "2" = 1,
+    "3" = 2,
+    "4" = 3,
+    "5" = 4,
+    "-3" = NA_real_,
+    .default = NA_real_))
 ```
 
 Unable to stop (AUDIT 2) > f.29094-0.0
@@ -57,12 +73,14 @@ scored 1-5, needs adjusting
 
 ```{r}
 MHQ2 <- MHQ2 %>%
-  mutate('f.29094-0.0' = case_when(
-    '29094-0.0' == 2 ~ 1,
-    '29094-0.0' == 3 ~ 2,
-    '29094-0.0' == 4 ~ 3,
-    '29094-0.0' == 5 ~ 4,
-    ))
+  mutate(`29094-0.0` = recode(as.character(`29094-0.0`),
+    "0" = 0,
+    "2" = 1,
+    "3" = 2,
+    "4" = 3,
+    "5" = 4,
+    "-3" = NA_real_,
+    .default = NA_real_))
 ```
 
 
@@ -72,12 +90,14 @@ scored 1-5, needs adjusting
 
 ```{r}
 MHQ2 <- MHQ2 %>%
-  mutate('29095-0.0' = case_when(
-    '29095-0.0' == 2 ~ 1,
-    '29095-0.0' == 3 ~ 2,
-    '29095-0.0' == 4 ~ 3,
-    '29095-0.0' == 5 ~ 4,
-    ))
+  mutate(`29095-0.0` = recode(as.character(`29095-0.0`),
+    "0" = 0,
+    "2" = 1,
+    "3" = 2,
+    "4" = 3,
+    "5" = 4,
+    "-3" = NA_real_,
+    .default = NA_real_))
 ```
 
 Needed to drink first thing (AUDIT 4) > f.29096-0.0
@@ -86,12 +106,14 @@ scored 1-5, needs adjusting
 
 ```{r}
 MHQ2 <- MHQ2 %>%
-  mutate('29096-0.0' = case_when(
-    '29096-0.0' == 2 ~ 1,
-    '29096-0.0' == 3 ~ 2,
-    '29096-0.0' == 4 ~ 3,
-    '29096-0.0' == 5 ~ 4,
-    ))
+  mutate(`29096-0.0` = recode(as.character(`29096-0.0`),
+    "0" = 0,
+    "2" = 1,
+    "3" = 2,
+    "4" = 3,
+    "5" = 4,
+    "-3" = NA_real_,
+    .default = NA_real_))
 ```
 
 Guilt due to drinking (AUDIT 5) f.29097-0.0
@@ -100,12 +122,14 @@ scored 1-5, needs adjusting
 
 ```{r}
 MHQ2 <- MHQ2 %>%
-  mutate('29097-0.0' = case_when(
-    '29097-0.0' == 2 ~ 1,
-    '29097-0.0' == 3 ~ 2,
-    '29097-0.0' == 4 ~ 3,
-    '29097-0.0' == 5 ~ 4,
-    ))
+ mutate(`29097-0.0` = recode(as.character(`29097-0.0`),
+    "0" = 0,
+    "2" = 1,
+    "3" = 2,
+    "4" = 3,
+    "5" = 4,
+    "-3" = NA_real_,
+    .default = NA_real_))
 ```
 
 Unable to remember due to drink (AUDIT 6) f.29098-0.0
@@ -114,12 +138,14 @@ scored 1-5, needs adjusting
 
 ```{r}
 MHQ2 <- MHQ2 %>%
-  mutate('29098-0.0' = case_when(
-    '29098-0.0' == 2 ~ 1,
-    '29098-0.0' == 3 ~ 2,
-    '29098-0.0' == 4 ~ 3,
-    '29098-0.0' == 5 ~ 4,
-    ))
+mutate(`29098-0.0` = recode(as.character(`29098-0.0`),
+    "0" = 0,
+    "2" = 1,
+    "3" = 2,
+    "4" = 3,
+    "5" = 4,
+    "-3" = NA_real_,
+    .default = NA_real_))
 ```
 
 Injury due to drinking ever (AUDIT 7) f.29099-0.0
@@ -127,10 +153,12 @@ scored 0,1,2, needs adjusting to 0,2,4
 
 ```{r}
 MHQ2 <- MHQ2 %>%
-  mutate('29099-0.0' = case_when(
-    '29099-0.0' == 1 ~ 2,
-    '29099-0.0' == 2 ~ 4,
-    ))
+  mutate(`29099-0.0` = recode(as.character(`29099-0.0`),
+    "0" = 0,
+    "1" = 2,
+    "2" = 4,
+    "-3" = NA_real_,
+    .default = NA_real_))
 ```
 
 Advice to cut down ever (AUDIT 8) f.29100-0.0
@@ -138,10 +166,12 @@ scored 0,1,2, needs adjusting to 0,2,4
 
 ```{r}
 MHQ2 <- MHQ2 %>%
-  mutate('29100-0.0' = case_when(
-    '29100-0.0' == 1 ~ 2,
-    '29100-0.0' == 2 ~ 4,
-    ))
+  mutate(`29100-0.0` = recode(as.character(`29100-0.0`),
+    "0" = 0,
+    "1" = 2,
+    "2" = 4,
+    "-3" = NA_real_,
+    .default = NA_real_))
 ```
 
 # Sum of AUDIT score
@@ -149,6 +179,15 @@ MHQ2 <- MHQ2 %>%
 ```{r}
 MHQ2[c("29091-0.0", "29092-0.0", "29093-0.0", "29094-0.0", "29095-0.0", "29096-0.0", "29097-0.0", "29098-0.0", "29099-0.0", "29100-0.0")] <- lapply(MHQ2[c("29091-0.0", "29092-0.0", "29093-0.0", "29094-0.0", "29095-0.0", "29096-0.0", "29097-0.0", "29098-0.0", "29099-0.0", "29100-0.0")], as.numeric)
 MHQ2$Sum_AUDIT <- rowSums(MHQ2[,c("29091-0.0", "29092-0.0", "29093-0.0", "29094-0.0", "29095-0.0", "29096-0.0", "29097-0.0", "29098-0.0", "29099-0.0", "29100-0.0")], na.rm = TRUE)
+
+#Rewrites Sum_AUDIT to NA if all AUDIT scores are missing/NA
+MHQ2$Sum_AUDIT <- apply(MHQ2[,c("29091-0.0", "29092-0.0", "29093-0.0", "29094-0.0", "29095-0.0", "29096-0.0", "29097-0.0", "29098-0.0", "29099-0.0", "29100-0.0")], 1, function(row) {
+    if (all(is.na(row))) {
+        NA
+    } else {
+        sum(row, na.rm = TRUE)
+    }
+})
 ```
 
 # Hazardous / harmful alcohol use (12 month) 
@@ -160,13 +199,15 @@ Harmful alcohol use: Score {AUDIT full scale} >= 16 (when items scored 0-4)
 #Hazardous use
 MHQ2 <- MHQ2 %>%
   mutate(alcohol_hazardous_use = case_when(
-    Sum_AUDIT >= 8 & Sum_AUDIT <= 15 ~ 1,
+    is.na(Sum_AUDIT) ~ NA_real_,
+    Sum_AUDIT >= 8 ~ 1,
   TRUE ~ 0
   ))
 
 #Harmful use
 MHQ2 <- MHQ2 %>%
-  mutate('alcohol_harmful_use' == case_when(
+  mutate(alcohol_harmful_use = case_when(
+    is.na(Sum_AUDIT) ~ NA_real_,
     Sum_AUDIT >= 16 ~ 1,
   TRUE ~ 0
   ))
@@ -190,9 +231,10 @@ NOT reason for reducing amount of alcohol drunk 2664 = “ill health”, “doct
 MHQ2 <- MHQ2 %>%
   mutate(alcohol_nonuse = 
            case_when(
+    is.na(Sum_AUDIT) ~ NA_real_,
     Sum_AUDIT < 8 &
-    '20117-0.0' == 0 &
-    !('2664-0.0' %in% c(1,2,3))
+    20117-0.0 == 0 &
+    !(2664-0.0 %in% c(1,2,3))
    ~ 1,
   TRUE ~ 0
   ))
@@ -206,10 +248,12 @@ Used cannabis (CU1) = Yes, 1-2 times (01) OR Yes, 3-10 times (02) OR Yes, 11-100
 
 ```{r}
 MHQ2 <- MHQ2 %>%
-  mutate(cannabis_use = case_when(
-   '29104-0.0' %in% c(1,2,3,4) ~ 1,
-   TRUE ~ 0
-  ))
+mutate(cannabis_use = 
+         case_when(
+    `29104-0.0` %in% c(1,2,3,4) ~ 1,
+    29104-0.0 == 0 ~ 0,
+    TRUE ~ NA_integer_
+))
 ```
 
 # Daily cannabis use ever 
@@ -220,8 +264,10 @@ How often = Every day (04)
 
 ```{r}
 MHQ2 <- MHQ2 %>%
-  mutate(daily_cannabis_use = case_when(
-   '29107-0.0' == 3 ~ 1,
-   TRUE ~ 0
-  ))
+mutate(daily_cannabis_use = 
+         case_when(
+    29107-0.0 == 3 ~ 1,
+    29107-0.0 >=0 & 29107-0.0< 3 ~ 0,
+    TRUE ~ NA_integer_
+))
 ```
