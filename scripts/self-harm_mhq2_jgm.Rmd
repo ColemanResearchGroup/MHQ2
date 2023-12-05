@@ -1,46 +1,11 @@
----
-title: "Self-Harm MHQ Algorithm"
-author: "Jared G Maina"
-date: "2023-11-10"
-output: html_document
----
-
-This is a script containing an algorithm for self-harm definition in UK Biobank MHQ2.
-
-# Set up
-Configure global options for all chunks
-```{r Setup, include=FALSE}
-knitr::opts_chunk$set(
-  echo = TRUE,
-  comment = '',
-  prompt = FALSE,
-  cache = FALSE
-  )
-```
-
-Clear global environment prior to initiation
-```{r clear global environment}
-remove(list = ls())
-```
-
-# Read in the data
-
-```{r}
-#To change later once I find out more about the datafile
-MHQ2<-fread(args[1], data.table=F)
-```
-
 # Life Not Worth Living
 Ever thought life was not worth living (29108) (HB1). Yes, once (01) OR Yes, more than once (02) (Symptoms)
 
 ```{r}
-MHQ2$Not.Worth.Living <- with(MHQ2,
-  ifelse(
-    (is.na(`29108-0.0`) | `29108-0.0` < 0),
-    NA,
-    `29108-0.0`
-  )
-)
+MHQ2$Not.Worth.Living <- with(MHQ2, case_when(
+  is.na(`29108-0.0`) | `29108-0.0` < 0 ~ NA_real_,
+  TRUE ~ `29108-0.0`
+))
 ```
 
 # Harm To Self Ever
@@ -68,6 +33,7 @@ MHQ2$Self.Harm.Ever.12m <- with(MHQ2,
     .default = 0
   )
 )
+
 ```
 
 # Suicide Attempt
@@ -82,4 +48,6 @@ MHQ2$Suicide.Attempt <- with(MHQ2,
     .default = 0
   )
 )
+
 ```
+
