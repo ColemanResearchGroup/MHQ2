@@ -23,62 +23,62 @@ readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
 #Ever had recurrent episodes of excessive overeating or binge eating
 #Expecting 149,732 for 'No' (0)
 MHQ2 %>%
-  freq('29132-0.0')
+  freq(`29132-0.0`)
 
 #Longest amount of time that overate or binge ate at least once a week
 #Expecting 2,479 for 'At least 3 months' (0)
 MHQ2 %>%
-  freq('29133-0.0')
+  freq(`29133-0.0`)
 
 #Experienced episodes of overeating/binge eating during time(s) of low weight
 #Expecting 241 for 'Only at time(s) of low weight' (0)
 MHQ2 %>%
-  freq('29134-0.0')
+  freq(`29134-0.0`)
 
 #Frequency of feeling had no control over eating during episodes of overeating/binge eating
 #Expecting 3,904 for 'At least once a week for at least 3 months' (0)
 MHQ2 %>%
-  freq('29135-0.0')
+  freq(`29135-0.0`)
 
 #Distress about episodes of overeating/binge eating
-#Expecting 10,960 for 'No' (0)
+#Expecting 8,446 for 'No' (0)
 MHQ2 %>%
-  freq('29137-0.0')
+  freq(`29137-0.0`)
 
 #Methods of controlling body shape or weight when overeating/binge eating
 #Expecting 1,124 for 'None of above' (0)
 MHQ2 %>%
-  freq('29140-0.0')
+  freq(`29140-0.0`)
 
 #Frequency of using methods of controlling body shape or weight when overeating/binge eating
 #Expecting 780 for 'No' (0)
 MHQ2 %>%
-  freq('29141-0.0')
+  freq(`29141-0.0`)
 
 #Longest amount of time that engaged in these behaviours when overeating/binge eating
 #Expecting 749 for 'At least 3 months' (0)
 MHQ2 %>%
-  freq('29142-0.0')
+  freq(`29142-0.0`)
 
 #Dependency of self-esteem on body shape or weight when overeating/binge eating
 #Expecting 7,384 for 'None at all or very little' (0)
 MHQ2 %>%
-  freq('29143-0.0')
+  freq(`29143-0.0`)
 
 #	Control of body weight outside of periods of low weight or regular overeating/binge eating
 #Expecting 166,046 for 'No' (0)
 MHQ2 %>%
-  freq('29144-0.0')
+  freq(`29144-0.0`)
 
 #Longest amount of time that engaged in these behaviours outside of periods of low weight or overeating/binge eating
 #Expecting 1,606 for 'At least 3 months' (0)
 MHQ2 %>%
-  freq('29145-0.0')
+  freq(`29145-0.0`)
 
 #Dependency of self-esteem on body shape or weight
 #Expecting 352 for 'None at all or very little' (0)
 MHQ2 %>%
-  freq('29146-0.0')
+  freq(`29146-0.0`)
 ```
 
 ## Algorithms
@@ -88,24 +88,24 @@ Have you had recurrent episodes of excessive overeating or binge eating (EP6a) =
 > '29132-0.0' == 2
 
 AND 
-What was the longest amount of time where you were overeating/binge eating at least once a week? (EP6b) = 03 At least three months 
->'29133-0.0' == 3
+What was the longest amount of time where you were overeating/binge eating at least once a week? (EP6b) = 00 At least three months 
+>'29133-0.0' == 0
 
 AND
-    Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 01 Both, 00 No or NA not underweight 
-    >'29134-0.0' %in% c(0,1,NA)
+    Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 01 Both, 02 Only at times when I was not at low weight or -4 not underweight 
+    >'29134-0.0' %in% c(1,2,-4)
 
   OR 
-    Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 02 Yes
-    >'29134-0.0' == 2
+    Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 00 Only at time(s) of low weight
+    >'29134-0.0' == 0
     
     AND 
     NOT Case {Extended anorexia phenotype} 
     >Extended_AN == 0
 
 AND 
-During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (EP7) = 03 At least once a week for at least three months 
->'29135-0.0' == 3
+During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (EP7) = 00 At least once a week for at least three months 
+>'29135-0.0' == 0
 
 AND 
 Do/did you feel distressed about your episodes of excessive overeating/binge eating? (EP9) =01 Yes 
@@ -120,8 +120,8 @@ During the time when you were regularly overeating/binge eating, did you ever us
 >'29141-0.0' == 1
 
 AND 
-What was the longest amount of time when you were overeating/binge eating and you engaged in any of these behaviours (EP10b) = 03 At least three months 
->'29142-0.0' == 3
+What was the longest amount of time when you were overeating/binge eating and you engaged in any of these behaviours (EP10b) = 00 At least three months 
+>'29142-0.0' == 0
 
 AND 
 During the time when you were overeating/binge eating, how dependent was your self-worth on your body shape or weight? (EP10c) = 02 A great deal OR 01 A moderate amount
@@ -131,37 +131,38 @@ During the time when you were overeating/binge eating, how dependent was your se
 MHQ2 <- MHQ2 %>%
   mutate(Bulimia = 
             #Have you had recurrent episodes of excessive overeating or binge eating (EP6a) = 02 Yes, at least once a week 
-           case_when('29132-0.0' == 2 &
+           case_when(`29132-0.0` == 2 &
 
             #What was the longest amount of time where you were overeating/binge eating at least once a week? (EP6b) = 03 At least three months
-                     '29133-0.0' == 3 &
+                     `29133-0.0` == 0 &
 
-            #Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 01 Both, 00 No or NA not underweight 
-                     ('29134-0.0' %in% c(0,1,NA) |
+            #Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 01 Both, 02 Only at times when I was not at low weight or -4 not underweight 
 
-            #Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 02 Yes
-                        ('29134-0.0' == 2 &
+                     (`29134-0.0` %in% c(1,2,-4) |
+
+            #Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 00 Only at time(s) of low weight
+                        (`29134-0.0` == 0 &
 
             #NOT Case {Extended anorexia phenotype} 
                          Extended_AN == 0)) &
 
-            #During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (EP7) = 03 At least once a week for at least three months 
-                     '29135-0.0' == 3 &
+            #During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (EP7) = 00 At least once a week for at least three months
+                     `29135-0.0` == 0 &
 
             #Do/did you feel distressed about your episodes of excessive overeating/binge eating? (EP9) =01 Yes 
-                     '29137-0.0' == 1 &
+                     `29137-0.0` == 1 &
 
             #During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (EP10) = 01 Made yourself vomit OR  02 Used laxatives (pills or liquids meant to stimulate bowel movements) OR 03 Used diuretics (water pills) OR 04 Used weight loss pills (over the counter or prescription) OR 05 Exercised excessively, felt compelled to exercise, felt uneasy or distressed if unable to exercise or prioritised exercise over your health or important activities OR 06 Fasted or not eaten for eight waking hours or more OR 07 Used other methods to lose weight/stay at low weight) 
-                     '29140-0.0' %in% c(1,2,3,4,5,6,7) &
+                     `29140-0.0` %in% c(1,2,3,4,5,6,7) &
 
             #During the time when you were regularly overeating/binge eating, did you ever use any of these behaviours (made yourself vomit, used pills, exercised excessively or fasted), on their own or in combination, at least once a week? (EP10a) = 01 Yes, at least once a week 
-                     '29141-0.0' == 1 &
+                     `29141-0.0` == 1 &
 
-            #What was the longest amount of time when you were overeating/binge eating and you engaged in any of these behaviours (EP10b) = 03 At least three months 
-                     '29142-0.0' == 3 &
+            #What was the longest amount of time when you were overeating/binge eating and you engaged in any of these behaviours (EP10b) = 00 At least three months 
+                     `29142-0.0` == 0 &
 
             #During the time when you were overeating/binge eating, how dependent was your self-worth on your body shape or weight? (EP10c) = 02 A great deal OR 01 A moderate amount
-                     '29143-0.0' %in% c(1,2)
+                     `29143-0.0` %in% c(1,2)
              ~ 1,
             TRUE ~ 0
            )
@@ -176,7 +177,7 @@ Outside any periods of low weight or regular overeating/binge eating that you ma
 #Extended purging phenotype
 MHQ2 <- MHQ2 %>%
   mutate(Extended_purg = 
-           case_when('29144-0.0' == 1 ~ 1,
+           case_when(`29144-0.0` == 1 ~ 1,
                      TRUE ~ 0)
   )
 ```
@@ -197,9 +198,9 @@ During the time when you were engaging in these behaviours, how dependent was yo
 #Purging disorder
 MHQ2 <- MHQ2 %>%
   mutate(Purging = 
-           case_when('29144-0.0' == 1 &
-                     '29145-0.0' == 0 &
-                     '29146-0.0' %in% c(1,2)
+           case_when(`29144-0.0` == 1 &
+                     `29145-0.0` == 0 &
+                     `29146-0.0` %in% c(1,2)
            ~ 1,
         TRUE ~ 0
         )
