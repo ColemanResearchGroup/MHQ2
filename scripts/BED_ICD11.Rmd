@@ -144,10 +144,6 @@ dat <- dat %>%
           
         # "During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?" = "None of the above"
           `29140-0.0` == 0 &
- 
-        # "During the time when you were overeating/binge eating, how dependent was your self-worth on your body shape or weight?" = "A great deal" OR "A moderate amount"
-        (`29143-0.0` == 2 |
-         `29143-0.0` == 1) &
         
        # ICD11 criteria: "The individual may be of normal weight or even low weight (though not sufficiently to meet the diagnostic requirements for Anorexia Nervosa)" (calculated above)
           not_during_AN == 1 ~ 1
