@@ -44,8 +44,7 @@ MHQ2 %>%
 
 #Lowest weight during period when underweight
 #Expecting Mean = 51.4476
-MHQ2 %>%
-  mean(`29125-0.0`, na.rm = FALSE)
+mean(MHQ2[MHQ2$`29125-0.0`!=-1 & MHQ2$`29125-0.0`!=-3 & MHQ2$`29125-0.0`!=0,]$`29125-0.0`, na.rm = TRUE)
 
 #Low weight had/has negative consequences for health
 #Expecting 14,186 for 'No' (0)
@@ -102,9 +101,7 @@ EP3 (f.29125-0.0) Roughly how low did your weight get during this time? [metric]
 ```{r}
 #BMI at low weight
 
-#FOR TESTING: MHQ2$BMI<-18.1
-MHQ2 <- MHQ2 %>%
-  mutate(`12144-1.0` = MHQ$`12144-1.0`)
+#FOR TESTING: MHQ2$'12144-1.0'<-169.0
 MHQ2 <- MHQ2 %>%
   mutate(BMI =
            case_when(is.na(`29125-0.0`) |
