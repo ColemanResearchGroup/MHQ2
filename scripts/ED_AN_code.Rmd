@@ -11,7 +11,7 @@ date: "2023-10-07"
 ```{r}
 library("dplyr")
 library("tidyverse")
-library('summarytools')
+library("summarytools")
 ```
 
 ## Import data
@@ -44,7 +44,8 @@ MHQ2 %>%
 
 #Lowest weight during period when underweight
 #Expecting Mean = 51.4476
-mean(MHQ2$`29125-0.0`, na.rm = TRUE)
+MHQ2 %>%
+  mean(`29125-0.0`, na.rm = FALSE)
 
 #Low weight had/has negative consequences for health
 #Expecting 14,186 for 'No' (0)
@@ -81,8 +82,8 @@ Have you had a period in your life when you weighed much less than other people 
 ```{r}
 #Extended anorexia phenotype
 MHQ2 <- MHQ2 %>%
-  mutate(Extended_AN =
-           case_when(`29120-0.0`== 1 ~ 1,
+  mutate(Extended_AN = 
+           case_when(`29120-0.0` == 1 ~ 1, 
                      TRUE ~ 0
                      )
         )
@@ -107,8 +108,8 @@ MHQ2 <- MHQ2 %>%
 MHQ2 <- MHQ2 %>%
   mutate(BMI =
            case_when(is.na(`29125-0.0`) |
-                     is.na(`12144-1.0++OVERARCHING`) ~ NA,
-                     TRUE ~ `29125-0.0` / (`12144-1.0++OVERARCHING`/100)^2)
+                     is.na(`12144-1.0`) ~ NA,
+                     TRUE ~ `29125-0.0` / (`12144-1.0`/100)^2)
         )
 ```
               
