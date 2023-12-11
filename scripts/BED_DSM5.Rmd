@@ -277,7 +277,7 @@ dat <- dat %>%
            `29133-0.0` == 0 &
           
         # "During these episodes of excessive overeating/binge eating, have you:" (Participant needs at least 3 of 5 binge-eating-related behaviours, sumscore calculated above)
-          BE_behaviours_sumscore => 3 &
+          BE_behaviours_sumscore >= 3 &
           
         # "Do/did you feel distressed about your episodes of excessive overeating/binge eating?" = "Yes"
           `29137-0.0` == 1 &
