@@ -37,7 +37,6 @@ date
 
 Read in data
 ```{r read in data file}
-
 MHQ2 <- readRDS(file = "/file/path/MHQ2_Anonymous.rds")
 ```
  
@@ -271,15 +270,32 @@ trauma_data %>%
   with(table(Trauma12Months, useNA="a"))
 ```
 
-# Save the data
-```{r save data}
-trauma_data %>% 
+# Select columns for saving
+```{r select columns}
+selected_columns <- trauma_data %>% 
   select(TraumaChildhood,
          TraumaAdulthood,
-         Trauma12Months) %>% 
+         Trauma12Months)
+```
+
+# Add the selected columns back to the MHQ2 dataframe
+```{r}
+MHQ2_trauma <- cbind(MHQ2,
+              selected_columns)
+```
+
+# Perform garbage collection
+```{r}
+gc()
+```
+
+# Save the data
+```{r save the data}
+MHQ2_trauma %>% 
   saveRDS(
     file = "/file/path/trauma_algorithms.rds")
-
 ```
+
+
 
 
