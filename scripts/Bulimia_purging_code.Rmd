@@ -130,7 +130,7 @@ During the time when you were overeating/binge eating, how dependent was your se
 
 ```{r}
 MHQ2 <- MHQ2 %>%
-  mutate(Bulimia = 
+  mutate(bulimia_nervosa_DSM5_algorithm = 
             #Have you had recurrent episodes of excessive overeating or binge eating (EP6a) = 02 Yes, at least once a week 
            case_when(`29132-0.0` == 2 &
 
