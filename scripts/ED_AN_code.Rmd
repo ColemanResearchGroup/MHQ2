@@ -27,7 +27,7 @@ readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
 MHQ2 %>%
   freq(`29120-0.0`)
 
-#Did you feel fat
+#Did you feel fat?
 #Expecting 16,570 for 'No' (0)
 MHQ2 %>%
   freq(`29122-0.0`)
@@ -45,7 +45,11 @@ MHQ2 %>%
 #Lowest weight during period when underweight
 #Expecting Mean = 51.4476
 MHQ2 %>%
-  mean(`29125-0.0`, na.rm = FALSE)
+  mean(MHQ2[MHQ2$`29125-0.0`!=-1 & 
+            MHQ2$`29125-0.0`!=-3 &
+            MHQ2$`29125-0.0`!=0,]
+            $29125-0.0, na.rm = TRUE)
+
 
 #Low weight had/has negative consequences for health
 #Expecting 14,186 for 'No' (0)
@@ -76,35 +80,39 @@ MHQ2 %>%
 ## Algorithms
 # Extended anorexia phenotype
 
-Have you had a period in your life when you weighed much less than other people thought you ought to weigh? (EP1a) = 01 Yes
+Period in life when was underweight = 1 Yes
 >'29120-0.0' == 1
 
 ```{r}
 #Extended anorexia phenotype
 MHQ2 <- MHQ2 %>%
   mutate(Extended_AN = 
-           case_when(`29120-0.0` == 1 ~ 1, 
-                     TRUE ~ 0
+           case_when(`29120-0.0` == 1 ~ 1,
+                     `29120-0.0` == 0 ~ 0,
+                     TRUE ~ NA
                      )
         )
 ```
 
 # BMI at low weight
 
-EP3 (f.29125-0.0) Roughly how low did your weight get during this time? [metric] /
+Lowest weight during period when underweight [metric] /
 ((f.12144.1) Physical measures  Height [cm]/100)^2
 
 > '29125-0.0'/('12144-1.0')^2
 
 > I assumed the column name for height follows the same naming pattern as the other columns. However, I don't have the data for this variable, which I assume will be in another data subset. So not sure if the column name ('12144-1.0') is correct for height?
 
+++OVERARCHING
+Please check the column name for height and if the data for height contains code for 'not applicable'
 
 ```{r}
 #BMI at low weight
 MHQ2 <- MHQ2 %>%
   mutate(BMI =
            case_when(is.na(`29125-0.0`) |
-                     is.na(`12144-1.0`) ~ NA,
+                     is.na(`12144-1.0`) |
+                     `29125-0.0' %in% (0, -1, -3) ~ NA,
                      TRUE ~ `29125-0.0` / (`12144-1.0`/100)^2)
         )
 ```
@@ -118,27 +126,27 @@ AND
 >BMI <= 18.55
 
 AND
-(Did you feel fat (EP2a) = 01 Yes
+(Did you feel fat? = 1 Yes
 >'29122-0.0' == 1
 
 OR
-Were you afraid that you might become fat (EP2c)= 01 Yes
->'29124-0.0' == 1
-
-OR
-Did you think or feel that your body or parts of your body were larger than they actually were (EP4c) = 01 Yes
->'29128-0.0' == 1
-
-OR
-Was your self-esteem dependent on your body shape or weight (EP4d) = 02 A great deal OR 01 A moderate amount)
->'29129-0.0' %in% c(1,2) 
-
-AND
-(afraid that you might gain weight or become fat (EP2b) = 01 Yes
+Afraid of gaining weight or becoming fat = 1 Yes
 >'29123-0.0' == 1
 
 OR
-Have you done any of the following as a way to control your body shape or weight? (EP5) = any of 01 to 07)
+Thinking or feeling body larger than it is = 1 Yes
+>'29124-0.0' == 1
+
+OR
+Dependency of self-esteem on body shape or weight = 2 A great deal OR 1 A moderate amount)
+>'29146-0.0' %in% c(1,2) 
+
+AND
+(Afraid of gaining weight or becoming fat = 1 Yes
+>'29123-0.0' == 1
+
+OR
+Methods of controlling body shape or weight when at this low weight = any of 1 to 7)
 >'29130-0.0' %in% c(1,2,3,4,5,6,7)
 
 
@@ -153,22 +161,22 @@ MHQ2 <- MHQ2 %>%
            #{BMI at low weight} <= 18.55 kg/m2
                        BMI <= 18.55 &
 
-           #Did you feel fat (EP2a) = 01 Yes
+           #(Did you feel fat? = 1 Yes
                        (`29122-0.0` == 1 |
 
-           #Were you afraid that you might become fat (EP2c)= 01 Yes
+           #Afraid of gaining weight or becoming fat = 1 Yes
+                        `29123-0.0` == 1 |
+
+           #Thinking or feeling body larger than it is = 1 Yes
                         `29124-0.0` == 1 |
 
-           #Did you think or feel that your body or parts of your body were larger than they actually were (EP4c) = 01 Yes
-                        `29128-0.0` == 1 |
+           #WDependency of self-esteem on body shape or weight = 2 A great deal OR 1 A moderate amount)
+                        `29146-0.0` %in% c(1,2)) &
 
-           #Was your self-esteem dependent on your body shape or weight (EP4d) = 02 A great deal OR 01 A moderate amount)
-                        `29129-0.0` %in% c(1,2)) &
-
-           #(afraid that you might gain weight or become fat (EP2b) = 01 Yes
+           #(Afraid of gaining weight or becoming fat = 1 Yes
                        (`29123-0.0` == 1 |
 
-           #Have you done any of the following as a way to control your body shape or weight? (EP5) = any of 01 to 07)
+           #Methods of controlling body shape or weight when at this low weight = any of 1 to 7)
                         `29130-0.0` %in% c(1,2,3,4,5,6,7))
             ~ 1,
          TRUE ~ 0
@@ -180,15 +188,15 @@ case {Anorexia nervosa}
 >Extended_AN == 1
 
 AND 
-(afraid that you might gain weight or become fat (EP2b)= 01 Yes
+(Afraid of gaining weight or becoming fat = 1 Yes
 >'29123-0.0' == 1
 
 AND 
-(Have you had recurrent episodes of excessive overeating or binge eating (EP6c) = 02 Yes, ONLY at time(s) of low weight OR 01 Yes, BOTH at time(s) of low weight AND at time(s) when I was not at low weight)
+(Experienced episodes of overeating/binge eating during time(s) of low weight = 2 Yes, ONLY at time(s) of low weight OR 1 Yes, BOTH at time(s) of low weight AND at time(s) when I was not at low weight)
 >'29134-0.0' %in% c(1,2)
 
 OR 
-(Have you done any of the following as a way to control your body shape or weight (EP5) = 01 Made yourself vomit OR 02 Used laxatives (pills or liquids meant to stimulate bowel movement) OR 03 Used diuretics (water pills) OR 07 Used other methods to lose weight/stay at low weight)
+(Methods of controlling body shape or weight when at this low weight = 1 Made yourself vomit OR 2 Used laxatives (pills or liquids meant to stimulate bowel movement) OR 3 Used diuretics (water pills) OR 7 Used other methods to lose weight/stay at low weight)
 >'29130-0.0' %in% c(1, 2, 3, 7)
 
 ```{r}
@@ -213,19 +221,19 @@ EP2b= 01 Yes
 >'29123-0.0' == 1
 
 AND 
-Have you done any of the following as a way to control your body shape or weight (EP5) did not include!= 01 Made yourself vomit OR 02 Used laxatives OR 03 Used diuretics (water pills) OR 07 other methods 
->'29130-0.0' %in% c(1, 2, 3, 7)
+Methods of controlling body shape or weight when at this low weight: did not include = 1 Made yourself vomit OR 2 Used laxatives OR 3 Used diuretics (water pills) OR 7 other methods 
+>!'29130-0.0' %in% c(1, 2, 3, 7)
 
 AND 
-(Have you had recurrent episodes of excessive overeating or binge eating (EP6a) = 00 No
+(Ever had recurrent episodes of excessive overeating or binge eating = 0 No
 >'29132-0.0' == 0
 
 OR 
-Do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight (EP6c) = 00 No, only at time(s) when I was NOT at low weight) 
+Experienced episodes of overeating/binge eating during time(s) of low weigh = 0 No, only at time(s) when I was NOT at low weight) 
 >'29134-0.0' == 0
 
 AND 
-Have you done any of the following as a way to control your body shape or weight (EP5) = 04 Used weight loss pills (over the counter or prescription) OR 05 Exercised excessively, felt compelled to exercise, felt uneasy or distressed if unable to exercise or prioritised exercise over your health or important activities OR 06 Fasted or not eaten for eight waking hours or more
+Methods of controlling body shape or weight when at this low weight = 4 Used weight loss pills (over the counter or prescription) OR 5 Exercised excessively, felt compelled to exercise, felt uneasy or distressed if unable to exercise or prioritised exercise over your health or important activities OR 6 Fasted or not eaten for eight waking hours or more
 >'29130-0.0' %in% c(4,5,6)
 
 ```{r}
