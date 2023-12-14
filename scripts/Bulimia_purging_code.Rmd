@@ -85,19 +85,19 @@ MHQ2 %>%
 ## Algorithms
 # Bulimia Nervosa
 
-Have you had recurrent episodes of excessive overeating or binge eating (EP6a) = 02 Yes, at least once a week 
+Ever had recurrent episodes of excessive overeating or binge eating = 2 Yes, at least once a week 
 > '29132-0.0' == 2
 
 AND 
-What was the longest amount of time where you were overeating/binge eating at least once a week? (EP6b) = 00 At least three months 
+Longest amount of time that overate or binge ate at least once a week = 0 At least three months 
 >'29133-0.0' == 0
 
 AND
-    Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 01 Both, 02 Only at times when I was not at low weight or -4 not underweight 
+    Experienced episodes of overeating/binge eating during time(s) of low weight = 1 Both, 2 Only at times when I was not at low weight or -4 not underweight 
     >'29134-0.0' %in% c(1,2,-4)
 
   OR 
-    Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 00 Only at time(s) of low weight
+    Experienced episodes of overeating/binge eating during time(s) of low weight = 0 Only at time(s) of low weight
     >'29134-0.0' == 0
     
     AND 
@@ -105,64 +105,63 @@ AND
     >Extended_AN == 0
 
 AND 
-During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (EP7) = 00 At least once a week for at least three months 
+Frequency of feeling had no control over eating during episodes of overeating/binge eating = 0 At least once a week for at least three months 
 >'29135-0.0' == 0
 
 AND 
-Do/did you feel distressed about your episodes of excessive overeating/binge eating? (EP9) =01 Yes 
+Distress about episodes of overeating/binge eating) = 1 Yes 
 >'29137-0.0' == 1
 
 AND 
-During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (EP10) = 01 Made yourself vomit OR  02 Used laxatives (pills or liquids meant to stimulate bowel movements) OR 03 Used diuretics (water pills) OR 04 Used weight loss pills (over the counter or prescription) OR 05 Exercised excessively, felt compelled to exercise, felt uneasy or distressed if unable to exercise or prioritised exercise over your health or important activities OR 06 Fasted or not eaten for eight waking hours or more OR 07 Used other methods to lose weight/stay at low weight) 
+Methods of controlling body shape or weight when overeating/binge eating = 1 Made yourself vomit OR  2 Used laxatives (pills or liquids meant to stimulate bowel movements) OR 3 Used diuretics (water pills) OR 4 Used weight loss pills (over the counter or prescription) OR 5 Exercised excessively, felt compelled to exercise, felt uneasy or distressed if unable to exercise or prioritised exercise over your health or important activities OR 6 Fasted or not eaten for eight waking hours or more OR 7 Used other methods to lose weight/stay at low weight) 
 >'29140-0.0' %in% c(1,2,3,4,5,6,7)
 
 AND 
-During the time when you were regularly overeating/binge eating, did you ever use any of these behaviours (made yourself vomit, used pills, exercised excessively or fasted), on their own or in combination, at least once a week? (EP10a) = 01 Yes, at least once a week 
+Frequency of using methods of controlling body shape or weight when overeating/binge eating = 1 Yes, at least once a week 
 >'29141-0.0' == 1
 
 AND 
-What was the longest amount of time when you were overeating/binge eating and you engaged in any of these behaviours (EP10b) = 00 At least three months 
+Longest amount of time that engaged in these behaviours when overeating/binge eating = 0 At least three months 
 >'29142-0.0' == 0
 
 AND 
-During the time when you were overeating/binge eating, how dependent was your self-worth on your body shape or weight? (EP10c) = 02 A great deal OR 01 A moderate amount
+Dependency of self-esteem on body shape or weight when overeating/binge eating = 2 A great deal OR 1 A moderate amount
 >'29143-0.0' %in% c(1,2)
 
 ```{r}
 MHQ2 <- MHQ2 %>%
   mutate(bulimia_nervosa_DSM5_algorithm = 
-            #Have you had recurrent episodes of excessive overeating or binge eating (EP6a) = 02 Yes, at least once a week 
+            #HEver had recurrent episodes of excessive overeating or binge eating = 2 Yes, at least once a week 
            case_when(`29132-0.0` == 2 &
 
-            #What was the longest amount of time where you were overeating/binge eating at least once a week? (EP6b) = 03 At least three months
+            #Longest amount of time that overate or binge ate at least once a week = 0 At least three months 
                      `29133-0.0` == 0 &
 
-            #Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 01 Both, 02 Only at times when I was not at low weight or -4 not underweight 
-
+            #Experienced episodes of overeating/binge eating during time(s) of low weight = 1 Both, 2 Only at times when I was not at low weight or -4 not underweight
                      (`29134-0.0` %in% c(1,2,-4) |
 
-            #Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 00 Only at time(s) of low weight
+            #Experienced episodes of overeating/binge eating during time(s) of low weight = 0 Only at time(s) of low weight
                         (`29134-0.0` == 0 &
 
             #NOT Case {Extended anorexia phenotype} 
                          Extended_AN == 0)) &
 
-            #During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (EP7) = 00 At least once a week for at least three months
+            #Frequency of feeling had no control over eating during episodes of overeating/binge eating = 0 At least once a week for at least three months
                      `29135-0.0` == 0 &
 
-            #Do/did you feel distressed about your episodes of excessive overeating/binge eating? (EP9) =01 Yes 
+            #Distress about episodes of overeating/binge eating) = 1 Yes
                      `29137-0.0` == 1 &
 
-            #During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (EP10) = 01 Made yourself vomit OR  02 Used laxatives (pills or liquids meant to stimulate bowel movements) OR 03 Used diuretics (water pills) OR 04 Used weight loss pills (over the counter or prescription) OR 05 Exercised excessively, felt compelled to exercise, felt uneasy or distressed if unable to exercise or prioritised exercise over your health or important activities OR 06 Fasted or not eaten for eight waking hours or more OR 07 Used other methods to lose weight/stay at low weight) 
+            #Methods of controlling body shape or weight when overeating/binge eating = 1 Made yourself vomit OR  2 Used laxatives (pills or liquids meant to stimulate bowel movements) OR 3 Used diuretics (water pills) OR 4 Used weight loss pills (over the counter or prescription) OR 5 Exercised excessively, felt compelled to exercise, felt uneasy or distressed if unable to exercise or prioritised exercise over your health or important activities OR 6 Fasted or not eaten for eight waking hours or more OR 7 Used other methods to lose weight/stay at low weight) 
                      `29140-0.0` %in% c(1,2,3,4,5,6,7) &
 
-            #During the time when you were regularly overeating/binge eating, did you ever use any of these behaviours (made yourself vomit, used pills, exercised excessively or fasted), on their own or in combination, at least once a week? (EP10a) = 01 Yes, at least once a week 
+            #Frequency of using methods of controlling body shape or weight when overeating/binge eating = 1 Yes, at least once a week
                      `29141-0.0` == 1 &
 
-            #What was the longest amount of time when you were overeating/binge eating and you engaged in any of these behaviours (EP10b) = 00 At least three months 
+            #Longest amount of time that engaged in these behaviours when overeating/binge eating = 0 At least three months
                      `29142-0.0` == 0 &
 
-            #During the time when you were overeating/binge eating, how dependent was your self-worth on your body shape or weight? (EP10c) = 02 A great deal OR 01 A moderate amount
+            #Dependency of self-esteem on body shape or weight when overeating/binge eating = 2 A great deal OR 1 A moderate amount
                      `29143-0.0` %in% c(1,2)
              ~ 1,
             TRUE ~ 0
@@ -171,7 +170,7 @@ MHQ2 <- MHQ2 %>%
 ```
 
 # Extended purging phenotype
-Outside any periods of low weight or regular overeating/binge eating that you may have told us about, was there a time in your life when you made yourself vomit, used laxatives, diuretics or pills, on their own or in combination, at least once a week as a way to control your body shape or weight? (EP11a) = 01 Yes, at least once a week
+Control of body weight outside of periods of low weight or regular overeating/binge eating = 1 Yes, at least once a week
 >'29144-0.0' == 1
 
 ```{r}
@@ -184,16 +183,16 @@ MHQ2 <- MHQ2 %>%
 ```
 
 # Purging disorder
-Outside any periods of low weight or regular overeating/binge eating that you may have told us about, was there a time in your life when you made yourself vomit, used laxatives, diuretics or pills, on their own or in combination, at least once a week as a way to control your body shape or weight? (EP11a) = 01 Yes, at least once a week
+Control of body weight outside of periods of low weight or regular overeating/binge eating = 1 Yes, at least once a week
 >'29144-0.0' == 1
 
 AND
-Outside any periods of low weight or regular overeating/binge eating that you may have told us about, what was the longest amount of time where you engaged in any of the behaviours (made yourself vomit, used laxatives, diuretics or pills), on their own or in combination, at least once a week? (EP11b) = 00 At least three months
+Longest amount of time that engaged in these behaviours outside of periods of low weight or overeating/binge eating = 0 At least three months
 >'29145-0.0' == 0
 
 AND
 During the time when you were engaging in these behaviours, how dependent was your self-worth on your body shape or weight? (EP11c) = 02 A great deal OR 01 A moderate amount
->'29146-0.0' %in% c(1,2)
+>'29143-0.0' %in% c(1,2)
 
 ```{r}
 #Purging disorder
@@ -201,7 +200,7 @@ MHQ2 <- MHQ2 %>%
   mutate(Purging = 
            case_when(`29144-0.0` == 1 &
                      `29145-0.0` == 0 &
-                     `29146-0.0` %in% c(1,2)
+                     `29143-0.0` %in% c(1,2)
            ~ 1,
         TRUE ~ 0
         )
