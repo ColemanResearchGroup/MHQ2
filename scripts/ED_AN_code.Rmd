@@ -1,0 +1,299 @@
+---
+title: "ED_AN_code"
+version: 2.0
+author: Zhaoying YU
+output: html_document
+date: "2023-10-07"
+---
+
+## Set-up
+
+```{r}
+library("dplyr")
+library("tidyverse")
+library("summarytools")
+```
+
+## Import data
+```{r}
+MHQ2 <-
+readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
+```
+
+##Sanity Checks
+```{r}
+#Period in life when was underweight
+#Expecting 150,509 for 'No' (0)
+MHQ2 %>%
+  freq(`29120-0.0`)
+
+#Did you feel fat?
+#Expecting 16,570 for 'No' (0)
+MHQ2 %>%
+  freq(`29122-0.0`)
+
+#Afraid of gaining weight or becoming fat
+#Expecting 14,815 for 'No' (0)
+MHQ2 %>%
+  freq(`29123-0.0`)
+
+#Thinking or feeling body larger than it is
+#Expecting 15,810 for 'No' (0)
+MHQ2 %>%
+  freq(`29124-0.0`)
+
+#Lowest weight during period when underweight
+#Expecting Mean = 51.4476
+mean(MHQ2[MHQ2$`29125-0.0`!=-1 & 
+            MHQ2$`29125-0.0`!=-3 &
+            MHQ2$`29125-0.0`!=0,]
+            $`29125-0.0`, na.rm = TRUE)
+
+#Low weight had/has negative consequences for health
+#Expecting 14,186 for 'No' (0)
+MHQ2 %>%
+  freq(`29128-0.0`)
+
+#Dependency of self-esteem on body shape or weight when at this low weight
+#Expecting 11,759 for 'None at all or very little' (0)
+MHQ2 %>%
+  freq(`29129-0.0`)
+
+#Methods of controlling body shape or weight when at this low weight
+#Expecting 14,430 for 'None of above' (0)
+MHQ2 %>%
+  freq(`29130-0.0`)
+
+#Ever had recurrent episodes of excessive overeating or binge eating
+#Expecting 149,732 for 'No' (0)
+MHQ2 %>%
+  freq(`29132-0.0`)
+
+#Experienced episodes of overeating/binge eating during time(s) of low weight
+#Expecting 241 for 'Only at time(s) of low weight' (0)
+MHQ2 %>%
+  freq(`29134-0.0`)
+```
+
+## Algorithms
+# Extended anorexia phenotype
+
+Period in life when was underweight = 1 Yes
+>'29120-0.0' == 1
+
+```{r}
+#Extended anorexia phenotype
+MHQ2 <- MHQ2 %>%
+  mutate(Extended_AN = 
+           case_when(`29120-0.0` == 1 ~ 1,
+                     `29120-0.0` == 0 ~ 0,
+                     TRUE ~ NA
+                     )
+        )
+```
+
+# BMI at low weight
+
+
+Lowest weight during period when underweight [metric] /
+((f.12144.1) Physical measures  Height [cm]/100)^2
+
+
+> '29125-0.0'/('12144-1.0')^2
+
+> I assumed the column name for height follows the same naming pattern as the other columns. However, I don't have the data for this variable, which I assume will be in another data subset. So not sure if the column name ('12144-1.0') is correct for height?
+
+++OVERARCHING
+Please check the column name for height and if the data for height contains code for 'not applicable'
+
+```{r}
+#BMI at low weight
+
+#FOR TESTING: MHQ2$'12144-1.0'<-169.0
+MHQ2 <- MHQ2 %>%
+  mutate(BMI =
+           case_when(is.na(`29125-0.0`) |
+                     is.na(`12144-1.0`) |
+                     `29125-0.0` %in% c(0, -1, -3) ~ NA,
+                     TRUE ~ `29125-0.0` / (`12144-1.0`/100)^2)
+        )
+```
+              
+#Anorexia nervosa
+Case {Extended anorexia phenotype}
+>Extended_AN == 1
+
+AND
+{BMI at low weight} <= 18.55 kg/m2
+>BMI <= 18.55
+
+AND
+(Did you feel fat? = 1 Yes
+>'29122-0.0' == 1
+
+OR
+Afraid of gaining weight or becoming fat = 1 Yes
+>'29123-0.0' == 1
+
+OR
+Thinking or feeling body larger than it is = 1 Yes
+>'29124-0.0' == 1
+
+OR
+Dependency of self-esteem on body shape or weight = 2 A great deal OR 1 A moderate amount)
+>'29146-0.0' %in% c(1,2) 
+
+AND
+(Afraid of gaining weight or becoming fat = 1 Yes
+>'29123-0.0' == 1
+
+OR
+Methods of controlling body shape or weight when at this low weight = any of 1 to 7)
+>'29130-0.0' %in% c(1,2,3,4,5,6,7)
+
+
+
+```{r}
+#Anorexia nervosa
+MHQ2 <- MHQ2 %>%
+  mutate(AN =
+           #Case {Extended anorexia phenotype}
+           case_when(Extended_AN == 1 &
+
+           #{BMI at low weight} <= 18.55 kg/m2
+                       BMI <= 18.55 &
+
+           #(Did you feel fat? = 1 Yes
+                       (`29122-0.0` == 1 |
+
+           #Afraid of gaining weight or becoming fat = 1 Yes
+                        `29123-0.0` == 1 |
+
+           #Thinking or feeling body larger than it is = 1 Yes
+                        `29124-0.0` == 1 |
+
+           #WDependency of self-esteem on body shape or weight = 2 A great deal OR 1 A moderate amount)
+                        `29146-0.0` %in% c(1,2)) &
+
+           #(Afraid of gaining weight or becoming fat = 1 Yes
+                       (`29123-0.0` == 1 |
+
+           #Methods of controlling body shape or weight when at this low weight = any of 1 to 7)
+                        `29130-0.0` %in% c(1,2,3,4,5,6,7))
+            ~ 1,
+         TRUE ~ 0
+  ))
+
+# #check results
+# View(
+#   MHQ2[,
+#        c(
+#          'Extended_AN',
+#          'BMI',
+#          '29122-0.0',
+#          '29124-0.0',
+#          '29128-0.0',
+#          '29129-0.0',
+#          '29123-0.0',
+#          '29130-0.0',
+#          'AN'
+#        )
+#        ]
+# )
+```
+
+# Anorexia nervosa - binge/purge subtype
+case {Anorexia nervosa} 
+>Extended_AN == 1
+
+AND 
+(Afraid of gaining weight or becoming fat = 1 Yes
+>'29123-0.0' == 1
+
+AND 
+(Experienced episodes of overeating/binge eating during time(s) of low weight = 2 Yes, ONLY at time(s) of low weight OR 1 Yes, BOTH at time(s) of low weight AND at time(s) when I was not at low weight)
+>'29134-0.0' %in% c(1,2)
+
+OR 
+(Methods of controlling body shape or weight when at this low weight = 1 Made yourself vomit OR 2 Used laxatives (pills or liquids meant to stimulate bowel movement) OR 3 Used diuretics (water pills) OR 7 Used other methods to lose weight/stay at low weight)
+>'29130-0.0' %in% c(1, 2, 3, 7)
+
+```{r}
+#Anorexia nervosa - binge/purge subtype
+MHQ2 <- MHQ2 %>%
+  mutate(AN_binge_purge =
+           case_when(Extended_AN == 1 &
+                       `29123-0.0` == 1 &
+                       (`29134-0.0` %in% c(1,2) |
+                        `29130-0.0` %in% c(1, 2, 3, 7))
+            ~ 1,
+         TRUE ~ 0
+  ))
+# #check results
+# View(
+#   MHQ2[,
+#        c(
+#          'Extended_AN',
+#          '29123-0.0',
+#          '29134-0.0',
+#          '29130-0.0',
+#          'AN_binge_purge'
+#        )
+#        ]
+# )
+```
+
+# Anorexia nervosa - restricting subtype
+Case {anorexia nervosa} 
+>Extended_AN == 1
+
+AND 
+EP2b= 01 Yes 
+>'29123-0.0' == 1
+
+AND 
+Methods of controlling body shape or weight when at this low weight: did not include = 1 Made yourself vomit OR 2 Used laxatives OR 3 Used diuretics (water pills) OR 7 other methods 
+>!'29130-0.0' %in% c(1, 2, 3, 7)
+
+AND 
+(Ever had recurrent episodes of excessive overeating or binge eating = 0 No
+>'29132-0.0' == 0
+
+OR 
+Experienced episodes of overeating/binge eating during time(s) of low weigh = 0 No, only at time(s) when I was NOT at low weight) 
+>'29134-0.0' == 0
+
+AND 
+Methods of controlling body shape or weight when at this low weight = 4 Used weight loss pills (over the counter or prescription) OR 5 Exercised excessively, felt compelled to exercise, felt uneasy or distressed if unable to exercise or prioritised exercise over your health or important activities OR 6 Fasted or not eaten for eight waking hours or more
+>'29130-0.0' %in% c(4,5,6)
+
+```{r}
+#Anorexia nervosa - restricting subtype
+MHQ2 <- MHQ2 %>%
+  mutate(AN_restrict =
+           case_when(Extended_AN == 1 &
+                       `29123-0.0` == 1 &
+                       !(`29130-0.0` %in% c(1, 2, 3, 7)) &
+                       (`29132-0.0` == 0 |
+                        `29134-0.0` == 0) &
+                       `29130-0.0` %in% c(4,5,6)
+            ~ 1,
+         TRUE ~ 0
+  ))
+# #check results
+# View(
+#   MHQ2[,
+#        c(
+#          'Extended_AN',
+#          'BMI',
+#          '29123-0.0',
+#          '29132-0.0',
+#          '29134-0.0',
+#          '29130-0.0',
+#          'AN_restrict'
+#        )
+#        ]
+# )
+```
+
+
