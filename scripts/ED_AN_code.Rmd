@@ -8,14 +8,14 @@ date: "2023-10-07"
 
 ## Set-up
 
-```{r}
+```{r, purl=FALSE}
 library("dplyr")
 library("tidyverse")
 library("summarytools")
 ```
 
 ## Import data
-```{r}
+```{r, purl=FALSE}
 MHQ2 <-
 readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
 ```
@@ -103,7 +103,6 @@ Lowest weight during period when underweight [metric] /
 
 > I assumed the column name for height follows the same naming pattern as the other columns. However, I don't have the data for this variable, which I assume will be in another data subset. So not sure if the column name ('12144-1.0') is correct for height?
 
-++OVERARCHING
 Please check the column name for height and if the data for height contains code for 'not applicable'
 
 ```{r}
@@ -113,7 +112,7 @@ Please check the column name for height and if the data for height contains code
 MHQ2 <- MHQ2 %>%
   mutate(BMI =
            case_when(is.na(`29125-0.0`) |
-                     is.na(`12144-1.0`) |
+                     is.na(`12144-1.0`) | #fetched from external dataset +++JZ: WHICH?
                      `29125-0.0` %in% c(0, -1, -3) ~ NA,
                      TRUE ~ `29125-0.0` / (`12144-1.0`/100)^2)
         )

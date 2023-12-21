@@ -28,7 +28,7 @@ remove(list = ls())
 
 ```{r Load dependencies}
 
-packages <- c("data.table", "tidyverse", "dplyr")
+packages <- c("summarytools","data.table", "tidyverse", "dplyr")
 lapply(X = packages, FUN = require, character.only = TRUE)
 
 ```
@@ -45,10 +45,11 @@ meta.scripts.dependency<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED","SelfReported")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("LT_DEPRESSION","MHQ2_Lifetime_Depression")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MANIA","MHQ2_Mania_v1")
-meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("POLAR_DEPRESSION","MHQ2_Polar_Depression")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MORE_DEPRESSION","MHQ2_More_Depression")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("AN","ED_AN_code")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("E_BE","Extended_BE")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED_DSM5","BED_DSM5")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED_ICD11","BED_ICD11")
-meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("E_BE","Extended_BE")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PHQ9","MHQ2_PHQ9")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_HARM","self-harm_mhq2_jgm")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("TRAUMA","trauma")
@@ -57,6 +58,7 @@ meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("TRAUMA","t
 #dependencies between them - not sure we need this, but maybe
 meta.scripts.dependency[nrow(meta.scripts.dependency)+1,c("code","dependency")]<-c("MANIA","LT_DEPRESSION")
 meta.scripts.dependency[nrow(meta.scripts.dependency)+1,c("code","dependency")]<-c("POLAR_DEPRESSION","MANIA")
+meta.scripts.dependency[nrow(meta.scripts.dependency)+1,c("code","dependency")]<-c("BED_DSM5","AN")
 
 ```
 
@@ -71,6 +73,15 @@ MHQ2 <- readRDS('data/MHQ2_Anonymous.rds')
 
 ```
 
+# Temporary hacks
+
+```{r hacks}
+
+MHQ2$'12144-1.0'<-169.0 #height in cm, temporary value - everybody are 169cm.
+
+```
+
+
 # Process
 
 Process and execute all scripts from the source. These must be configured to be compatible with this process.
@@ -79,6 +90,8 @@ Process and execute all scripts from the source. These must be configured to be 
 
 for(iDS in 1:nrow(meta.scripts)){
   #iDS <- 4 #test
+  
+  if(iDS>8) break #WIP, validated up until BED_ICD11
   cCode<-meta.scripts[iDS,c("code")]
   cFilename<-meta.scripts[iDS,c("filename.ex.suffix")]
   #as R - this puts the files in the working directory root though
@@ -89,8 +102,10 @@ for(iDS in 1:nrow(meta.scripts)){
     paste0(cFilename,".R")
     )
   
-  if(iDS>5) break
+  
 }
+
+skimr::skim(MHQ2)
 
 
 ```
