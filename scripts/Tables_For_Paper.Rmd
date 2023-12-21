@@ -1,0 +1,226 @@
+---
+title: "Tables for Davis et al (MHQ2)"
+author: "Jonathan RI Coleman"
+date: "2023-12-21"
+output: html_document
+---
+
+This is a script containing code to generate tables for the forthcoming decriptive paper for the 2023 mental health follow-up questionnaire.
+This requires that the algorithm generating code for the same has already been run.
+
+# Set up
+
+Configure global options for all chunks
+
+```{r Setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "",
+  prompt = FALSE,
+  cache = FALSE
+)
+
+```
+
+Clear global environment prior to initiation
+
+```{r Clear global environment}
+
+remove(list = ls())
+
+```
+# Install dependencies - THIS SHOULD BE UNNECESSARY GIVEN THE ALGORITHM SCRIPT IS ALREADY RUN, BUT IS RETAINED REGARDLESS
+
+Import package_install function
+
+```{r Define package_install}
+
+package_install <- function(packages) {
+  for (x in packages) {
+    install.packages(x, dependencies = TRUE)
+  }
+}
+
+```
+
+```{r Install dependencies - remove hashes to install}
+
+# packages <- c("data.table","tidyverse","dplyr")
+# package_install(packages)
+
+```
+
+# Load dependencies
+
+```{r Load dependencies}
+
+packages <- c("data.table", "tidyverse", "dplyr")
+lapply(X = packages, FUN = require, character.only = TRUE)
+
+```
+
+# Read in the data - THIS ASSUMES THE ALGORITHM SCRIPT HAS BEEN RUN!
+
+```{r Read in data}
+
+~TODO~ Full_Data <- fread(...)
+~TODO~ MHQ2 <- fread(args[1], data.table = FALSE)
+
+
+```
+
+# Merge Full data with MHQ2 data
+
+```{r Merge data}
+
+~TODO~ MHQ_Data_Fields_Without_EID <-
+
+~TODO~ Full_Data_No_MHQ2 <- Full_Data[, -MHQ_Data_Fields_Without_EID]  <- THIS, BUT IN TIDYVERSE
+
+Full_Data_MHQ2 <- inner_join(Full_Data_No_MHQ2, MHQ2)
+
+
+```
+
+# Table 1 - Sample sizes
+
+```{r Table1}
+
+# Completed MHQ2: Marked as having completed the first section (SR mental health) 29197 != NULL
+
+MHQ2_Completed <- sum(!is.na(Full_Data_MHQ2$`29197-0.0`))
+
+sink("Table1.txt")
+
+message("UK.Population: DEFINED.ELSEWHERE")
+message("Invites: DEFINED.ELSEWHERE") 
+message("Started: DEFINED ELSEWHERE")
+message(paste0("Completed: ", MHQ2_Completed))  
+
+sink()
+
+```
+
+# Table 2 – Sample characteristics
+
+Rows:
+
+Age (10 y bands) + ?median
+Sex
+Ethnicity (% White)
+TDS (% most deprived (>=2))
+Highest qual (% degree)
+Housing tenure (% rent social or rent private)
+Social Factors from baseline
+Longstanding illness etc (%) at baseline
+Neuroticism score, mean (sd)
+Current smoker at baseline
+Physical activity at least three times a week
+
+Columns:
+
+MHQ2 new cohort
+MHQ1 old cohort
+Difference MHQ2 > MHQ1
+UKB in general
+Difference MHQ2 > UKB
+
+# Table 3 – Sample characteristics by lifetime disorder
+# Supplementary Table 3a – Sample characteristics by lifetime disorder (female sex)
+# Supplementary Table 3b – Sample characteristics by lifetime disorder (male sex)
+
+Rows:
+
+Age (10 y bands) + ?median
+Gender
+Ethnicity (% White)
+TDS (% most deprived (>=2))
+Highest qual (% degree)
+Housing tenure (% rent social or rent private)
+Risk factors from baseline only
+Neuroticism mean (sd)
+Longstanding illness etc (%) at baseline
+Current smoker at baseline
+Physical activity at least three times a week
+Childhood adverse experience
+Adult adverse experience
+Social isolation
+Loneliness from UCLA score
+Low resilience from Brief Resilience Score
+EQ-5D VAS score mean (sd) (higher is better health)
+
+Columns:
+
+Overall
+No lifetime criteria
+Depression (MHQ2)
+Bipolar type I (MHQ2)
+Panic Disorder
+Any full threshold eating disorder
+
+# Table 4 - NOT DEFINED
+
+# Figure 5 – Upset plot of disorder overlap
+
+Symptom based outcomes:
+depression ever case
+bipolar affective disorder type1 case
+panic disorder ever case
+Anorexia Nervosa ever case
+Bulimia nervosa ever case
+Purging disorder ever case
+Harm to self ever case
+
+# Table 6 – MHQ1 vs MHQ2 – Current illness by Age
+
+Rows: 
+N positive (%)
+Under 52
+52-58
+59-65
+66-74
+75-81
+Over 81
+
+Columns
+PHQ9 case
+GAD7 case
+AUDIT harmful case
+(Split by sex)
+(Split by MHQ1, MHQ2)
+
+
+# Table 7a – MHQ1 vs MHQ2 - Lifetime syndromes (Not excluding new onset)
+# Table 7b – MHQ1 vs MHQ2 - Lifetime syndromes (Excluding new onset)
+
+Rows
+Depression
+Bipolar
+Self-harm
+Cannabis
+Any SR clinician diagnosis
+
+Columns
+Met in both
+Met 1 not 2
+Met 2 not 1*
+Neither Kappa
+
+# Table 8 – Deeper exploration of depression ()
+
+Rows
+Sex
+Median current age (or 5y bands)
+Ave PHQ9 score
+Ave GAD7 score
+Median age onset
+% single episode depression
+% recurrent depression
+% bipolar affective disorder
+
+Columns
+Met criteria in both
+Met criteria 1 not 2
+Met criteria 2 not 1
+Never met criteria
