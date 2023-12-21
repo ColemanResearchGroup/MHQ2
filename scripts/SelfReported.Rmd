@@ -12,7 +12,7 @@ These differ in several places from the equivalent items from the 2016 mental he
 
 Configure global options for all chunks
 
-```{r Setup, include=FALSE}
+```{r Setup, include=FALSE, purl=FALSE}
 
 knitr::opts_chunk$set(
   echo = TRUE,
@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 Clear global environment prior to initiation
 
-```{r Clear global environment}
+```{r Clear global environment, purl=FALSE}
 
 remove(list = ls())
 
@@ -34,7 +34,7 @@ remove(list = ls())
 
 Import package_install function
 
-```{r Define package_install}
+```{r Define package_install, purl=FALSE}
 
 package_install <- function(packages) {
   for (x in packages) {
@@ -53,7 +53,7 @@ package_install <- function(packages) {
 
 # Load dependencies – NOTE THAT THESE SHOULD BE MERGED TO A SINGLE DEPENDENCIES LIST IN THE FINAL SCRIPT.
 
-```{r Load dependencies}
+```{r Load dependencies, purl=FALSE}
 
 packages <- c("data.table", "tidyverse", "dplyr")
 lapply(X = packages, FUN = require, character.only = TRUE)
@@ -62,7 +62,7 @@ lapply(X = packages, FUN = require, character.only = TRUE)
 
 # Read in the data – SINGLE RUN IN THE FINAL SCRIPT
 
-```{r Read in data}
+```{r Read in data, purl=FALSE}
 
 MHQ2 <- fread(args[1], data.table = FALSE)
 
@@ -154,7 +154,7 @@ MHQ2$SelfReportedEatingDisorder <- grep_reports(
 
 # Any algorithmic diagnosis
 
-```{r Any algorithmic diagnosis}
+```{r Any algorithmic diagnosis, purl=FALSE}
 
 ~~TODO: This needs to be done as part of the overarching script as it relies on otuput from multiple modules~~
 

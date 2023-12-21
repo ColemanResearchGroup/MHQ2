@@ -7,7 +7,7 @@ output: html_document
 Lifetime depression algorithm of MHQ2 UK Biobank 
 
 Configuration of global options 
-```{r Setup, include=FALSE}
+```{r Setup, include=FALSE, purl=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
   comment = '',
@@ -16,19 +16,19 @@ knitr::opts_chunk$set(
   )
 ```
 
-```{r Clean global environment}
+```{r Clean global environment, purl=FALSE}
 rm(list = ls())
 ```
 
-```{r Load packages}
+```{r Load packages, purl=FALSE}
 library(data.table)
 library(tidyverse)
 ```
 
-```{r Read data}
+```{r Read data, purl=FALSE}
 setwd('/scratch/prj/ukbiobank/UKB_MHQ2_Anonymised')
-# dat <- fread('ukb675453_MHQ2_Anonymised.csv', data.table=F)
-dat <- readRDS('data/MHQ2_Anonymous.rds')
+# MHQ2 <- fread('ukb675453_MHQ2_Anonymised.csv', data.table=F)
+MHQ2 <- readRDS('data/MHQ2_Anonymous.rds')
 ```
 
 # 1. Depression ever case
@@ -53,8 +53,8 @@ Thinking about death 29029 (Yes (1))
 ```{r Depression ever case}
 
 cidid_symptoms <- c('29011-0.0', '29012-0.0', '29018-0.0', '29022-0.0', '29026-0.0', '29027-0.0', '29029-0.0')
-dat <- 
-    dat %>% 
+MHQ2 <- 
+    MHQ2 %>% 
     mutate(
         # missingness of core symptoms (yes = either symptoms are missing)
         cidid.no.info = case_when(
@@ -138,9 +138,9 @@ AND NOT PHQ full score >= 5 (see below)
 ```{r Depression ever control}
 
 phq_symptoms <- c('29002-0.0', '29003-0.0', '29004-0.0', '29005-0.0', '29006-0.0', '29007-0.0', '29008-0.0', '29009-0.0', '29010-0.0')
-dat$tmp_29000 <- apply(dat[, grepl('29000-0', colnames(dat))], 1, function(x) {"1" %in% x}) 
-dat <- 
-    dat %>% 
+MHQ2$tmp_29000 <- apply(MHQ2[, grepl('29000-0', colnames(MHQ2))], 1, function(x) {"1" %in% x}) 
+MHQ2 <- 
+    MHQ2 %>% 
     # change coding format of PHQ 9 symptoms
     mutate(
         across(all_of(phq_symptoms), ~ case_when(
@@ -190,9 +190,9 @@ PHQ full score >= 5 (see below)
 •	Moving slowly (29009) = More than half of the days (2) or Nearly every day (3)
 •	Thoughts death (29010) = Several days (1) More than half of the days (2) or Nearly every day (3)
 ```{r subthreshold depressive symptoms ever}
-dat$tmp_29000 <- apply(dat[, grepl('29000-0', colnames(dat))], 1, function(x) {"1" %in% x}) 
-dat <- 
-    dat %>% 
+MHQ2$tmp_29000 <- apply(MHQ2[, grepl('29000-0', colnames(MHQ2))], 1, function(x) {"1" %in% x}) 
+MHQ2 <- 
+    MHQ2 %>% 
     mutate(
         subthreshold = case_when(
             (`29011-0.0` == 1 | 
@@ -217,223 +217,8 @@ dat <-
 
 ```
 
-# 4. Single episode unipolar depression
-Case {depression ever}
-AND
-Number of episodes (29033)= One (1)
-AND
-NOT case {bipolar type I}
++++JZ: Polar depresion and everything after point 3 moved to other script as these are dependent on mania
 
-Excluded if number of episodes missing or bipolar state missing 
-```{r bipolar type I cases }
-# this is the variable of biopolar type I from mania algorithm needed for single and recurrent unipolar depression
-
-bipolar.type.I 
-# dat$bipolar.type.I: bipolar type 1 case = 1, not case = 0
-
-```
-```{r Single episode unipolar depression}
-dat <- 
-    dat %>% 
-    mutate(
-        depression.single = case_when(
-            depression.ever.case == 1 & 
-            `29033-0.0` == 1 & 
-            bipolar.type.I == 0 ~ 1,
-            depression.ever.case == 0 | 
-            (`29033-0.0` > 1 & !is.na(`29033-0.0`)) | 
-            `29033-0.0` == -4  | 
-            bipolar.type.I == 1 ~ 0,
-            .default = NA_real_
-        )
-    )
-
-```
-
-# 5. Recurrent unipolar depression 
-Case {depression ever}
-AND
-Number of episodes (29033) = Several >1
-AND
-NOT case {bipolar type I}
-
-Excluded if number of episodes missing or bipolar state missing
-```{r Recurrent unipolar depression}
-dat <- 
-    dat %>% 
-    mutate(
-        depression.recurrent = case_when(
-            depression.ever.case == 1 & 
-            (!is.na(`29033-0.0`) & (`29033-0.0` > 1 | `29033-0.0` == -4)) & 
-            bipolar.type.I == 0 ~ 1,
-            depression.ever.case == 0 | 
-            bipolar.type.I == 1 | 
-            `29033-0.0` == 1  ~ 0,
-            .default = NA_real_
-        )
-    )
-
-```
-
-# 6. Single episode unipolar depression triggered by event 
-Case {depression single episode}
-AND
-start within two months of event (29013) = Yes (1)
-```{r Single episode unipolar depression triggered by event}
-dat <- 
-    dat %>% 
-    mutate(
-        depression.single.event = case_when(
-            depression.single == 1 & `29013-0.0` == 1 ~ 1,
-            depression.single == 0 | `29013-0.0` == 0 ~ 0,
-            .default = NA_real_
-        )
-    )
-```
-
-# 7. Post-natal depression 
-Case {depression ever}
-AND
-Did this first episode occur within months of giving birth? Or has it been suggested that you had post-natal depression? (29035) = Yes (1)
-```{r Post-natal depression}
-dat <- 
-    dat %>% 
-    mutate(
-        depression.postnatal = case_when(
-            depression.ever.case == 1 & `29035-0.0` == 1 ~ 1,
-            depression.ever.case == 0 | `29035-0.0` == 0 ~ 0,
-            .default = NA_real_
-        )
-    )
-```
-
-# 8. Worst depressive episode likely melancholic features (melancholic-like depression) 
-Case {depression ever}
-AND
-(Loss of interest (29012) = Yes (1)
-OR
-Did your mood brighten in response to positive events (29016) = No (0)
-AND 
-(> 2) of:
-•	Was your mood worse (29017) = “in the morning” (0)
-•	Appetite (29020) = “decreased appetite” (2) OR Weight change (29021) = “lost weight” (1)
-(counts as 1 item)
-•	Sleep change (29022) = Yes (1) AND Waking too early (29024) = Yes (1)
-•	Guilt (29028) = Yes (1)
-
-```{r Melancholic-like depression}
-dat <- 
-    dat %>% 
-    mutate(
-        mood.worse = case_when(
-            `29017-0.0` == 0 ~ 1,
-            `29017-0.0` == 1 | `29017-0.0` == 2 ~ 0,
-            .default = NA_real_
-        ),
-        appetite.weight = case_when(
-            (`29020-0.0` == 2 | `29021-0.0` == 1) ~ 1,
-            (`29020-0.0` == 0 & (`29021-0.0` == 0 | `29021-0.0` == 2 | `29021-0.0` == 3)) | 
-            (`29020-0.0` == 1 & (`29021-0.0` == 0 | `29021-0.0` == 2 | `29021-0.0` == 3)) ~ 0,
-            .default = NA_real_
-        ),
-        wake.early = case_when(
-            `29022-0.0` == 1 & `29024-0.0` == 1 ~ 1,
-            `29022-0.0` == 0 | `29024-0.0` == 0 ~ 0,
-            .default = NA_real_
-        ),
-        guilt = case_when(
-            `29028-0.0` == 1 ~ 1,
-            `29028-0.0` == 0 ~ 0,
-            .default = NA_real_
-        )
-    ) %>% 
-    mutate(
-        melan.symptom.score = rowSums(select(., mood.worse, appetite.weight, wake.early, guilt), na.rm=TRUE) * NA_real_^(rowSums(!is.na(select(., mood.worse, appetite.weight, wake.early, guilt))) == 0)
-    ) %>% 
-    mutate(
-        depression.melancholic = case_when(
-            depression.ever.case == 1 & 
-            (`29012-0.0` == 1 | `29016-0.0` == 0) &
-            (melan.symptom.score > 2 & 
-            !is.na(melan.symptom.score)) ~ 1,
-            depression.ever.case == 0 | 
-            (`29012-0.0` == 0 & `29016-0.0` == 1) 
-            | melan.symptom.score <= 2 ~ 0,
-            .default = NA_real_
-        )
-    ) %>% 
-    select(-mood.worse, -appetite.weight, -wake.early, -guilt, -melan.symptom.score)
-
-```
-
-# 9. Worst depressive episode likely atypical features (atypical depression)
-Case {depression ever}
-AND
-NOT Case {worst depressive episode melancholic}
-AND
-Did your mood brighten in response to positive events (29016) = Yes (1)
-AND
-(>1) of:
-•	Appetite (29020) = “increased appetite” (1) OR Weight (29021) = “gained weight” (0)
-(counts as 1 item)
-•	Sleep change (29022) = Yes (1) AND Sleeping too much (29025) = Yes (1)
-•	Heavy feelings (29019) = Yes (1)
-•	Coping with rejection, even when not  depressed (29032) = “Yes, and this has caused problems in work or social relationships” (0)
-```{r Atypical depression}
-dat <- 
-    dat %>% 
-    mutate(
-        appetite.weight = case_when(
-            `29020-0.0` == 1 | `29021-0.0` == 0 ~ 1,
-            (`29020-0.0` == 0 & (`29021-0.0` == 1 | `29021-0.0` == 2 | `29021-0.0` == 3)) | 
-            (`29020-0.0` == 2 & (`29021-0.0` == 1 | `29021-0.0` == 2 | `29021-0.0` == 3)) ~ 0,
-            .default = NA_real_
-        ),
-        sleep.much = case_when(
-            `29022-0.0` == 1 & `29025-0.0` == 1 ~ 1,
-            `29022-0.0` == 0 | `29025-0.0` == 0 ~ 0,
-            .default = NA_real_
-        ),
-        heavy.feeling = case_when(
-            `29019-0.0` == 1 ~ 1,
-            `29019-0.0` == 0 ~ 0,
-            .default = NA_real_
-        ),
-        rejection = case_when(
-            `29032-0.0` == 0 ~ 1,
-            `29032-0.0` == 1 | `29032-0.0` == 2 ~ 0,
-            .default = NA_real_
-        )
-    ) %>%  
-    mutate(
-        atypical.symptom.score = rowSums(select(., appetite.weight, sleep.much, heavy.feeling, rejection), na.rm=TRUE) * NA_real_^(rowSums(!is.na(select(., appetite.weight, sleep.much, heavy.feeling, rejection))) == 0) 
-    ) %>%   
-    mutate(
-        depression.atypical = case_when(
-            depression.ever.case == 1 & 
-            depression.melancholic == 0 &
-            `29016-0.0` == 1 &
-            (atypical.symptom.score > 1 & 
-            !is.na(atypical.symptom.score)) ~ 1,
-            depression.ever.case == 0 | 
-            depression.melancholic == 1 | 
-            `29016-0.0` == 0 | 
-            atypical.symptom.score <= 1 ~ 0, 
-            .default = NA_real_
-        )
-    ) %>% 
-    select(-appetite.weight, -sleep.much, -heavy.feeling, -rejection, -atypical.symptom.score)
-```
-
-# extract the data
-```{r extract data}
-dat <- 
-    dat %>% 
-    select(depression.ever.case, depression.ever.control, depression.subthreshold, depression.single, depression.recurrent, depression.single.event, depression.postnatal, depression.melancholic, depression.atypical)
-
-saveRDS(dat, 'life_time_depression.rds')
-
-```
 
 
 

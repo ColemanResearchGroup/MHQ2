@@ -5,14 +5,14 @@ date: "2023-10-08"
 output: html_document
 ---
 
-```{r}
+```{r, purl=FALSE}
 library("summarytools")
 library("dplyr")
 library("tidyverse")
 ```
 
-```{r read in data}
-dat <- readRDS("/Users/helenadavies/werk/UKB_MHQ2_algorithms/anon_data/MHQ2_Anonymous.rds")
+```{r read in data, purl=FALSE}
+MHQ2 <- readRDS("/Users/helenadavies/werk/UKB_MHQ2_algorithms/anon_data/MHQ2_Anonymous.rds")
 ```
 
 
@@ -70,7 +70,7 @@ During the time(s) when you were regularly overeating/binge eating, have you don
 ## Not during AN criteria
 From the DSM5: "Does not occur exclusively during the course of anorexia nervosa"
 ```{r not during AN criteria}
-dat <- dat %>%
+MHQ2 <- MHQ2 %>%
   mutate(not_during_AN =
            case_when(
              # "If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight?"
@@ -103,7 +103,7 @@ dat <- dat %>%
 NB: Question was asked when Field 29132 ("Ever had recurrent episodes of excessive overeating or binge eating") was Yes.
 ```{r sumscore BE behaviours}
 # Create numeric variables
-dat <- dat %>%
+MHQ2 <- MHQ2 %>%
   mutate(rapid_eating_numeric =
            case_when(`29136-0.0` == 1 |
                      `29136-0.1` == 1 |
@@ -176,49 +176,49 @@ dat <- dat %>%
          )
 
 # Check (expecting 6,312)
-dat %>%
+MHQ2 %>%
   freq(rapid_eating_numeric)
 
 # Check (expecting 10,920)
-dat %>%
+MHQ2 %>%
   freq(feeling_uncomf_full_numeric)
 
 # Check (expecting 9,963)
-dat %>%
+MHQ2 %>%
   freq(large_amounts_not_hungry_numeric)
 
 # Check (expecting 5,798)
-dat %>%
+MHQ2 %>%
   freq(eaten_alone_embarrassed_numeric)
 
 # Check (expecting 8,341)
-dat %>%
+MHQ2 %>%
   freq(disgusted_depressed_after_numeric)
 
 # Check (expecting 2,429)
-dat %>%
+MHQ2 %>%
   freq(no_BE_behaviours_numeric)
 
 # Check (expecting 97)
-dat %>%
+MHQ2 %>%
   freq(PNTA_BE_behaviours_numeric)
 
 
 # Create sumscore
-BE_behaviours_items <- dat %>% select(rapid_eating_numeric,
+BE_behaviours_items <- MHQ2 %>% select(rapid_eating_numeric,
                                       feeling_uncomf_full_numeric,
                                       large_amounts_not_hungry_numeric,
                                       eaten_alone_embarrassed_numeric,
                                       disgusted_depressed_after_numeric)
 
-dat <- dat %>%
+MHQ2 <- MHQ2 %>%
     mutate(
         BE_behaviours_sumscore = rowSums(BE_behaviours_items,
                                          na.rm = TRUE)
     )
 
 # Check (expecting maximum 5, minimum 0)
-dat %>%
+MHQ2 %>%
   descr(BE_behaviours_sumscore)
 ```
 NB: This sumscore should only be used in the BED DSM5 algorithm, i.e., to indicate if participants have a score of 3 or above. A score of 0 is not informative because it includes people who did not answer the question or were not shown the question because of their answer to Field 29132.
@@ -229,27 +229,27 @@ For remaining questions in algorithm
 ```{r sanity checks}
 # Excessive overeating or binge eating
 # Expecting 3,338 for "Yes, at least once a week" (2)
-dat %>%
+MHQ2 %>%
   freq(`29132-0.0`)
 
 # Loss of control
 # Expecting 3,904 for "At least once a week for at least 3 months" (0)
-dat %>%
+MHQ2 %>%
   freq(`29135-0.0`)
 
 # Duration of overeating/binge eating
 # Expecting 2,479 for "At least 3 months" (0)
-dat %>%
+MHQ2 %>%
   freq(`29133-0.0`)
 
 # Distress re. binge eating
 # Expecting 10,960 for "Yes" (1)
-dat %>%
+MHQ2 %>%
   freq(`29137-0.0`)
               
 # Compensatory behaviours to control for body shape or weight
 # Expecting 1,124 for "None of the above" (0)
-dat %>%
+MHQ2 %>%
   freq(`29140-0.0`)
                 
 # Binge eating during low weight
@@ -257,13 +257,13 @@ dat %>%
 # Expecting 1,352 for "Both at times of low weight and when not at low weight" (1)
 # Expecting 241 for "Only at time(s) of low weight" (0)
 # Expecting 15,049 for "Not applicable, as did not have low weight" (-4)
-dat %>%
+MHQ2 %>%
   freq(`29134-0.0`)
 ```
 
 ## BED DSM5 algorithm
 ```{r BED DSM5 algorithm}
-dat <- dat %>%
+MHQ2 <- MHQ2 %>%
   mutate(DSM5_BED_algorithm =
            case_when(
              
@@ -291,7 +291,7 @@ dat <- dat %>%
   )
 
 # Check
-dat %>%
+MHQ2 %>%
   freq(DSM5_BED_algorithm)
 ```
 

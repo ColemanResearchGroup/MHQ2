@@ -81,7 +81,7 @@ Case(depression ever) AND symptoms (Mania ever)
 
 MHQ2$BD1 <- with(MHQ2,
                  ifelse(
-                   (!is.na(Depressed.Ever) & Depressed.Ever ==1) & #Depressed.Ever defined elsewhere
+                   (!is.na(depression.ever.case) & depression.ever.case ==1) & #depression.ever.case EXTERNAL FROM LT_DEPRESSION
                      (!is.na(Mania.Ever) & Mania.Ever == 1),
                    1,
                    0
@@ -93,7 +93,7 @@ Case (depression ever) AND Symptoms (hypomania/mania ever)
 ```{r}
 MHQ2$Wider.Bipolar <- with(MHQ2,
                            ifelse(
-                           (!is.na(Depressed.Ever) & Depressed.Ever == 1 ) &
+                           (!is.na(depression.ever.case) & depression.ever.case == 1 ) &
                              (!is.na(Hypomania.Ever) & Hypomania.Ever == 1),
                            1, 0
                            ))

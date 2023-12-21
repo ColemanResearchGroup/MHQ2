@@ -1,0 +1,97 @@
+---
+title: "Overarching Script"
+author: "Johan Zvrskovec"
+date: '2023-12-20'
+output: html_document
+---
+
+THIS IS A PROOF OF CONCEPT / DEMO AT THE MOMENT, AS THE TRAIT SPECIFIC SCRIPTS ARE STILL BEING REVIEWED
+
+# Configuration of global options 
+
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+# Clear global environment prior to initiation
+
+```{r Clear global environment}
+remove(list = ls())
+```
+
+# Load dependencies
+
+```{r Load dependencies}
+
+packages <- c("data.table", "tidyverse", "dplyr")
+lapply(X = packages, FUN = require, character.only = TRUE)
+
+```
+
+# MHQ metadata
+
+```{r metadata}
+
+#datasets/instruments/scripts
+meta.scripts<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
+meta.scripts.dependency<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
+
+
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED","SelfReported")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("LT_DEPRESSION","MHQ2_Lifetime_Depression")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MANIA","MHQ2_Mania_v1")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("POLAR_DEPRESSION","MHQ2_Polar_Depression")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED_DSM5","BED_DSM5")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED_ICD11","BED_ICD11")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("E_BE","Extended_BE")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PHQ9","MHQ2_PHQ9")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_HARM","self-harm_mhq2_jgm")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("TRAUMA","trauma")
+
+
+#dependencies between them - not sure we need this, but maybe
+meta.scripts.dependency[nrow(meta.scripts.dependency)+1,c("code","dependency")]<-c("MANIA","LT_DEPRESSION")
+meta.scripts.dependency[nrow(meta.scripts.dependency)+1,c("code","dependency")]<-c("POLAR_DEPRESSION","MANIA")
+
+```
+
+
+# Read data
+
+All scripts must use the same variable for holding the data; MHQ2
+
+```{r Read data, purl=FALSE}
+
+MHQ2 <- readRDS('data/MHQ2_Anonymous.rds')
+
+```
+
+# Process
+
+Process and execute all scripts from the source. These must be configured to be compatible with this process.
+
+```{r process}
+
+for(iDS in 1:nrow(meta.scripts)){
+  #iDS <- 4 #test
+  cCode<-meta.scripts[iDS,c("code")]
+  cFilename<-meta.scripts[iDS,c("filename.ex.suffix")]
+  #as R - this puts the files in the working directory root though
+  knitr::purl(
+    file.path("scripts",paste0(cFilename,".Rmd"))
+    )
+  source(
+    paste0(cFilename,".R")
+    )
+  
+  if(iDS>5) break
+}
+
+
+```
+
