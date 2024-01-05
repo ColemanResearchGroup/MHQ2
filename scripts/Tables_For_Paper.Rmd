@@ -86,11 +86,11 @@ MHQ2 <- fread(args[2], data.table = FALSE)
 
 ```{r Merge data}
 
-MHQ2_Data_Fields_Without_EID <- names(MHQ2)[-names(MHQ2)['eid']]
+MHQ2_Data_Fields_Without_EID <- names(MHQ2)[names(MHQ2) != 'eid']
 
 Full_Data_No_MHQ2 <- select(Full_Data, -any_of(MHQ2_Data_Fields_Without_EID))
 
-Full_Data_MHQ2 <- inner_join(Full_Data_No_MHQ2, MHQ2)
+Full_Data_MHQ2 <- full_join(Full_Data_No_MHQ2, MHQ2)
 
 ```
 
@@ -104,11 +104,11 @@ MHQ2_Completed <- sum(!is.na(Full_Data_MHQ2$`29197-0.0`))
 
 sink("Table1.txt")
 
-message("Stage Number")
-message("UK.Population: DEFINED.ELSEWHERE")
-message("Invites: DEFINED.ELSEWHERE")
-message("Started: DEFINED ELSEWHERE")
-message(paste0("Completed: ", MHQ2_Completed))
+writeLines("Stage Number")
+writeLines("UK.Population DEFINED.ELSEWHERE")
+writeLines("Invites DEFINED.ELSEWHERE")
+writeLines("Started DEFINED.ELSEWHERE")
+writeLines(paste0("Completed ", MHQ2_Completed))
 
 sink()
 
@@ -135,34 +135,37 @@ Age
 define_age <- function(data, date.field, cohort){
 
   if(cohort == "UKB"){
-    as.numeric(
-      with(data,
-        `21003-0.0` +
-	  ceiling(
+    return(
+      as.numeric(
+        with(data,
+          `21003-0.0` +
+  	  ceiling(
 	    difftime(
-	      median(as.Date(date.field), na.rm = TRUE),
+              median(as.Date(data[,date.field]), na.rm = TRUE),
 	      as.Date(`53-0.0`),
 	      units="days"
 	    )
-	  /365.25
-	  ),
-	)
+	    /365.25
+	  )
+        )
       )
     )
   }
 
-  else(){
-    as.numeric(
-      with(data,
-        `21003-0.0` +
+  else{
+    return(
+      as.numeric(
+        with(data,
+          `21003-0.0` +
 	  ceiling(
 	    difftime(
-	      as.Date(date.field),
+              as.Date(data[,date.field]),
 	      as.Date(`53-0.0`),
 	      units="days"
 	    )
-	  /365.25
-	),
+	    /365.25
+	  )
+	)
       )
     )
   }
@@ -173,7 +176,7 @@ define_age <- function(data, date.field, cohort){
 
 Full_Data_MHQ2$UKB.Age <- define_age(
   data = Full_Data_MHQ2,
-  date.field = `29197-0.0`,
+  date.field = "29197-0.0",
   cohort = "UKB"
 )
 
@@ -181,7 +184,7 @@ Full_Data_MHQ2$UKB.Age <- define_age(
 
 Full_Data_MHQ2$MHQ1.Age <- define_age(
   data = Full_Data_MHQ2,
-  date.field = `20400-0.0`,
+  date.field = "20400-0.0",
   cohort = "MHQ1"
 )
 
@@ -189,7 +192,7 @@ Full_Data_MHQ2$MHQ1.Age <- define_age(
 
 Full_Data_MHQ2$MHQ2.Age <- define_age(
   data = Full_Data_MHQ2,
-  date.field = `29197-0.0`,
+  date.field = "29197-0.0",
   cohort = "MHQ2"
 )
 
@@ -198,16 +201,14 @@ Full_Data_MHQ2$MHQ2.Age <- define_age(
 define_age_bands <- function(data, age.variable){
   return(
     ordered(
-      with(data,
-        case_when(is.na(age.variable) ~ NA_real_,
-	  age.variable >= 45 & age.variable <= 54 ~ "45to54",
-	  age.variable >= 55 & age.variable <= 64 ~ "55to64",
-	  age.variable >= 65 & age.variable <= 74 ~ "65to74",
-	  age.variable >= 75 & age.variable <= 84 ~ "75to84",
-	  age.variable >= 85 ~ "85Plus",
-	  .default ~ NA_real_
-	)
-      )
+      case_when(is.na(data[,age.variable]) ~ NA_character_,
+	data[,age.variable] >= 45 & data[,age.variable] <= 54 ~ "45to54",
+	data[,age.variable] >= 55 & data[,age.variable] <= 64 ~ "55to64",
+	data[,age.variable] >= 65 & data[,age.variable] <= 74 ~ "65to74",
+	data[,age.variable] >= 75 & data[,age.variable] <= 84 ~ "75to84",
+	data[,age.variable] >= 85 ~ "85Plus",
+	.default = NA_character_
+      ),
       levels=c("45to54", "55to64", "65to74", "75to84", "85Plus")
     )
   )
@@ -217,21 +218,21 @@ define_age_bands <- function(data, age.variable){
 
 Full_Data_MHQ2$UKB.Age.Bands <- define_age_bands(
   data = Full_Data_MHQ2,
-  age.variable = UKB.Age
+  age.variable = "UKB.Age"
 )
 
 # MHQ1
 
 Full_Data_MHQ2$MHQ1.Age.Bands <- define_age_bands(
   data = Full_Data_MHQ2,
-  age.variable = MHQ1.Age
+  age.variable = "MHQ1.Age"
 )
 
 # MHQ2
 
 Full_Data_MHQ2$MHQ2.Age.Bands <- define_age_bands(
   data = Full_Data_MHQ2,
-  age.variable = MHQ2.Age
+  age.variable = "MHQ2.Age"
 )
 
 ## Age median
@@ -260,11 +261,12 @@ Sex (31-0.0)
 
 define_sex <- function(data, cohort.identifier){
   return(
-    with(data,
-      ifelse(!is.na(cohort.identifier),
-        `31-0.0`,
-	NA
-      )
+    factor(
+      x = ifelse(!is.na(data[,cohort.identifier]),
+        data[,"31-0.0"],
+        NA
+      ),
+      labels=c("Female","Male")
     )
   )
 }
@@ -273,21 +275,21 @@ define_sex <- function(data, cohort.identifier){
 
 Full_Data_MHQ2$UKB.Sex <- define_sex(
   data = Full_Data_MHQ2,
-  cohort.identifier = `31-0.0`
+  cohort.identifier = "31-0.0"
 )
 
 # MHQ1
 
 Full_Data_MHQ2$MHQ1.Sex <- define_sex(
   data = Full_Data_MHQ2,
-  cohort.identifier = `20400-0.0`
+  cohort.identifier = "20400-0.0"
 )
 
 # MHQ2
 
 Full_Data_MHQ2$MHQ2.Sex <- define_sex(
   data = Full_Data_MHQ2,
-  cohort.identifier = `29197-0.0`
+  cohort.identifier = "29197-0.0"
 )
 
 ```
@@ -303,7 +305,7 @@ define_ethnicity <- function(data, cohort.identifier){
   return(
     ordered(
       with(data,
-        ifelse(!is.na(cohort.identifier),
+        ifelse(!is.na(data[,cohort.identifier]),
           case_when(
             is.na(`21000-0.0`) | `21000-0.0` < 0 ~ NA_character_,
             `21000-0.0` > 1000 & `21000-0.0` < 1999 ~ "White",
@@ -312,7 +314,7 @@ define_ethnicity <- function(data, cohort.identifier){
 	    `21000-0.0` > 4000 & `21000-0.0` < 4999 ~ "Black",
 	    `21000-0.0` == 5 ~ "Chinese",
 	    `21000-0.0` == 6 ~ "Other",
-	    .default ~ NA_character_
+	    .default = NA_character_
           ),
           NA_character_
         )
@@ -326,21 +328,21 @@ define_ethnicity <- function(data, cohort.identifier){
 
 Full_Data_MHQ2$UKB.Ethnicity <- define_ethnicity(
   data = Full_Data_MHQ2,
-  cohort.identifier = `21000-0.0`
+  cohort.identifier = "21000-0.0"
 )
 
 # MHQ1
 
 Full_Data_MHQ2$MHQ1.Ethnicity <- define_ethnicity(
   data = Full_Data_MHQ2,
-  cohort.identifier = `20400-0.0`
+  cohort.identifier = "20400-0.0"
 )
 
 # MHQ2
 
 Full_Data_MHQ2$MHQ2.Ethnicity <- define_ethnicity(
   data = Full_Data_MHQ2,
-  cohort.identifier = `29197-0.0`
+  cohort.identifier = "29197-0.0"
 )
 
 ```
@@ -356,13 +358,13 @@ define_TDI <- function(data, cohort.identifier){
   return(
     ordered(
       with(data,
-        ifelse(!is.na(cohort.identifier),
+        ifelse(!is.na(data[,cohort.identifier]),
           case_when(
             is.na(`189-0.0`) ~ NA_character_,
             `189-0.0` >= 2 ~ "Most",
             `189-0.0` < 2 & `189-0.0` > -2 ~ "Average",
             `189-0.0` <= -2 ~ "Least",
-            .default ~ NA_character_
+            .default = NA_character_
           ),
           NA_character_
         )
@@ -376,21 +378,21 @@ define_TDI <- function(data, cohort.identifier){
 
 Full_Data_MHQ2$UKB.TDI <- define_TDI(
   data = Full_Data_MHQ2,
-  cohort.identifier = `189-0.0`
+  cohort.identifier = "189-0.0"
 )
 
 # MHQ1
 
 Full_Data_MHQ2$MHQ1.TDI <- define_TDI(
   data = Full_Data_MHQ2,
-  cohort.identifier = `20400-0.0`
+  cohort.identifier = "20400-0.0"
 )
 
 # MHQ2
 
 Full_Data_MHQ2$MHQ2.TDI <- define_TDI(
   data = Full_Data_MHQ2,
-  cohort.identifier = `29197-0.0`
+  cohort.identifier = "29197-0.0"
 )
 
 ```
@@ -406,7 +408,7 @@ define_qualifications <- function(data, cohort.identifier){
   return(
     ordered(
       with(data,
-        ifelse(!is.na(cohort.identifier),
+        ifelse(!is.na(data[,cohort.identifier]),
           case_when(
             is.na(`6138-0.0`) | ( !is.na(`6138-0.0`) & `6138-0.0` == -3 ) ~ NA_character_,
             `6138-0.0` == -7 ~ "NoneOfTheAbove",
@@ -414,7 +416,7 @@ define_qualifications <- function(data, cohort.identifier){
             `6138-0.0` == 2 ~ "ALevel",
             `6138-0.0` <= 5 ~ "GCSE",
             `6138-0.0` == 6 ~ "Other",
-            .default ~ NA_character_
+            .default = NA_character_
           ),
           NA_character_
         )
@@ -428,21 +430,21 @@ define_qualifications <- function(data, cohort.identifier){
 
 Full_Data_MHQ2$UKB.Highest.Qualification <- define_qualifications(
   data = Full_Data_MHQ2,
-  cohort.identifier = `6138-0.0`
+  cohort.identifier = "6138-0.0"
 )
 
 # MHQ1
 
 Full_Data_MHQ2$MHQ1.Highest.Qualification <- define_qualifications(
   data = Full_Data_MHQ2,
-  cohort.identifier = `20400-0.0`
+  cohort.identifier = "20400-0.0"
 )
 
 # MHQ2
 
 Full_Data_MHQ2$MHQ2.Highest.Qualification <- define_qualifications(
   data = Full_Data_MHQ2,
-  cohort.identifier = `29197-0.0`
+  cohort.identifier = "29197-0.0"
 )
 
 ```
@@ -458,20 +460,20 @@ define_housing <- function(data, cohort.identifier){
   return(
     ordered(
       with(data,
-        ifelse(!is.na(cohort.identifier),
+        ifelse(!is.na(data[,cohort.identifier]),
           case_when(
 	    is.na(`680-0.0`) ~ NA_character_,
-	    `680-0.0` == 1, "OwnOutright",
-	    `680-0.0` == 2, "OwnMortgage",
-	    `680-0.0` == 3, "RentSocial",
-	    `680-0.0` == 4, "RentPrivate",
-	    `680-0.0` > 4 & `680-0.0` == -7, "Other",
-            .default ~ NA_character_
+	    `680-0.0` == 1 ~ "OwnOutright",
+	    `680-0.0` == 2 ~ "OwnMortgage",
+	    `680-0.0` == 3 ~ "RentSocial",
+	    `680-0.0` == 4 ~ "RentPrivate",
+	    `680-0.0` > 4 & `680-0.0` == -7 ~ "Other",
+            .default = NA_character_
           ),
           NA_character_
         )
       ),
-      levels=c("OwnOutright", "OwnMortgage", "RentSocial", "RentPrivate", "Other"))
+      levels=c("OwnOutright", "OwnMortgage", "RentSocial", "RentPrivate", "Other")
     )
   )
 }
@@ -480,21 +482,21 @@ define_housing <- function(data, cohort.identifier){
 
 Full_Data_MHQ2$UKB.Housing <- define_housing(
   data = Full_Data_MHQ2,
-  cohort.identifier = `680-0.0`
+  cohort.identifier = "680-0.0"
 )
 
 # MHQ1
 
 Full_Data_MHQ2$MHQ1.Housing <- define_housing(
   data = Full_Data_MHQ2,
-  cohort.identifier = `20400-0.0`
+  cohort.identifier = "20400-0.0"
 )
 
 # MHQ2
 
 Full_Data_MHQ2$MHQ2.Housing <- define_housing(
   data = Full_Data_MHQ2,
-  cohort.identifier = `29197-0.0`
+  cohort.identifier = "29197-0.0"
 )
 
 ```
@@ -509,7 +511,7 @@ Longstanding illness (2188-0.0)
 define_illness <- function(data, cohort.identifier){
   return(
     with(data,
-      ifelse(!is.na(cohort.identifier),
+      ifelse(!is.na(data[,cohort.identifier]),
         ifelse(is.na(`2188-0.0`) | `2188-0.0` < 0,
 	  NA_real_,
 	  `2188-0.0`
@@ -524,21 +526,21 @@ define_illness <- function(data, cohort.identifier){
 
 Full_Data_MHQ2$UKB.Longstanding.Illness <- define_illness(
   data = Full_Data_MHQ2,
-  cohort.identifier = `2188-0.0`
+  cohort.identifier = "2188-0.0"
 )
 
 # MHQ1
 
 Full_Data_MHQ2$MHQ1.Longstanding.Illness <- define_illness(
   data = Full_Data_MHQ2,
-  cohort.identifier = `20400-0.0`
+  cohort.identifier = "20400-0.0"
 )
 
 # MHQ2
 
 Full_Data_MHQ2$MHQ2.Longstanding.Illness <- define_illness(
   data = Full_Data_MHQ2,
-  cohort.identifier = `29197-0.0`
+  cohort.identifier = "29197-0.0"
 )
 
 ```
@@ -553,7 +555,7 @@ Neuroticism (20127-0.0)
 define_neuroticism <- function(data, cohort.identifier){
   return(
     with(data,
-      ifelse(!is.na(cohort.identifier),
+      ifelse(!is.na(data[,cohort.identifier]),
         ifelse(is.na(`20127-0.0`) | `20127-0.0` < 0,
 	  NA_real_,
 	  `20127-0.0`
@@ -568,21 +570,21 @@ define_neuroticism <- function(data, cohort.identifier){
 
 Full_Data_MHQ2$UKB.Neuroticism <- define_neuroticism(
   data = Full_Data_MHQ2,
-  cohort.identifier = `20127-0.0`
+  cohort.identifier = "20127-0.0"
 )
 
 # MHQ1
 
 Full_Data_MHQ2$MHQ1.Neuroticism <- define_neuroticism(
   data = Full_Data_MHQ2,
-  cohort.identifier = `20400-0.0`
+  cohort.identifier = "20400-0.0"
 )
 
 # MHQ2
 
 Full_Data_MHQ2$MHQ2.Neuroticism <- define_neuroticism(
   data = Full_Data_MHQ2,
-  cohort.identifier = `29197-0.0`
+  cohort.identifier = "29197-0.0"
 )
 
 ```
@@ -598,18 +600,18 @@ define_smoking <- function(data, cohort.identifier){
   return(
     ordered(
       with(data,
-        ifelse(!is.na(cohort.identifier),
+        ifelse(!is.na(data[,cohort.identifier]),
           case_when(
 	    is.na(`20116-0.0`) | `20116-0.0` < 0 ~ NA_character_,
             `20116-0.0` == 2 ~ "Current",
             `20116-0.0` == 1 ~ "Former",
             `20116-0.0` == 0 ~ "Never",
-            .default ~ NA_character_
+            .default = NA_character_
           ),
           NA_character_
         )
       ),
-      levels=c("Current", "Former", "Never"))
+      levels=c("Current", "Former", "Never")
     )
   )
 }
@@ -618,21 +620,21 @@ define_smoking <- function(data, cohort.identifier){
 
 Full_Data_MHQ2$UKB.Smoking <- define_smoking(
   data = Full_Data_MHQ2,
-  cohort.identifier = `20116-0.0`
+  cohort.identifier = "20116-0.0"
 )
 
 # MHQ1
 
 Full_Data_MHQ2$MHQ1.Smoking <- define_smoking(
   data = Full_Data_MHQ2,
-  cohort.identifier = `20400-0.0`
+  cohort.identifier = "20400-0.0"
 )
 
 # MHQ2
 
 Full_Data_MHQ2$MHQ2.Smoking <- define_smoking(
   data = Full_Data_MHQ2,
-  cohort.identifier = `29197-0.0`
+  cohort.identifier = "29197-0.0"
 )
 
 ```
@@ -647,11 +649,11 @@ Physical activity (884-0.0)
 define_physical_activity <- function(data, cohort.identifier){
   return(
     with(data,
-      ifelse(!is.na(cohort.identifier),
+      ifelse(!is.na(data[,cohort.identifier]),
         case_when(
 	  is.na(`884-0.0`) | `884-0.0` < 0 ~ NA_real_,
 	  `884-0.0` > 2 ~ 1,
-	  .default ~ 0
+	  .default = 0
 	),
         NA_real_
       )
@@ -663,21 +665,21 @@ define_physical_activity <- function(data, cohort.identifier){
 
 Full_Data_MHQ2$UKB.Physical.Activity <- define_physical_activity(
   data = Full_Data_MHQ2,
-  cohort.identifier = `884-0.0`
+  cohort.identifier = "884-0.0"
 )
 
 # MHQ1
 
 Full_Data_MHQ2$MHQ1.Physical.Activity <- define_physical_activity(
   data = Full_Data_MHQ2,
-  cohort.identifier = `20400-0.0`
+  cohort.identifier = "20400-0.0"
 )
 
 # MHQ2
 
 Full_Data_MHQ2$MHQ2.Physical.Activity <- define_physical_activity(
   data = Full_Data_MHQ2,
-  cohort.identifier = `29197-0.0`
+  cohort.identifier = "29197-0.0"
 )
 
 ```
