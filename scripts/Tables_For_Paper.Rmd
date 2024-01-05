@@ -30,7 +30,20 @@ Clear global environment prior to initiation
 remove(list = ls())
 
 ```
-# Install dependencies - THIS SHOULD BE UNNECESSARY GIVEN THE ALGORITHM SCRIPT IS ALREADY RUN, BUT IS RETAINED REGARDLESS
+
+# Initialise command line arguments
+
+```{r Initialise command line arguments}
+
+args <- commandArgs(trailingOnly=TRUE)
+
+if(length(args)!=2){
+    stop("Please provide full paths to input files containing 1) all fields and 2) all MHQ2 fields", call.=FALSE)
+}
+
+```
+
+# Install dependencies
 
 Import package_install function
 
@@ -64,9 +77,8 @@ lapply(X = packages, FUN = require, character.only = TRUE)
 
 ```{r Read in data}
 
-~TODO~ Full_Data <- fread(...)
-~TODO~ MHQ2 <- fread(args[1], data.table = FALSE)
-
+Full_Data <- fread(args[1], data.table = FALSE)
+MHQ2 <- fread(args[2], data.table = FALSE)
 
 ```
 
@@ -74,12 +86,11 @@ lapply(X = packages, FUN = require, character.only = TRUE)
 
 ```{r Merge data}
 
-~TODO~ MHQ_Data_Fields_Without_EID <-
+MHQ2_Data_Fields_Without_EID <- names(MHQ2)[-names(MHQ2)['eid']]
 
-~TODO~ Full_Data_No_MHQ2 <- Full_Data[, -MHQ_Data_Fields_Without_EID]  <- THIS, BUT IN TIDYVERSE
+Full_Data_No_MHQ2 <- select(Full_Data, -any_of(MHQ2_Data_Fields_Without_EID))
 
 Full_Data_MHQ2 <- inner_join(Full_Data_No_MHQ2, MHQ2)
-
 
 ```
 
@@ -93,12 +104,581 @@ MHQ2_Completed <- sum(!is.na(Full_Data_MHQ2$`29197-0.0`))
 
 sink("Table1.txt")
 
+message("Stage Number")
 message("UK.Population: DEFINED.ELSEWHERE")
-message("Invites: DEFINED.ELSEWHERE") 
+message("Invites: DEFINED.ELSEWHERE")
 message("Started: DEFINED ELSEWHERE")
-message(paste0("Completed: ", MHQ2_Completed))  
+message(paste0("Completed: ", MHQ2_Completed))
 
 sink()
+
+```
+
+# Define characteristics for Table 2
+
+This section uses code from the 2016 MHQ paper Davis et al (2020)
+
+Age
+  Age is defined as:
+    the age at initial assessment centre visit (21003-0.0)
+    plus the difference between
+      the date of the initial assessment centre visit (53-0.0)
+      and the date of the questionnaire (date.field, variable between questionnaires)
+  Age for the whole UKB is the age at median completion date of the MHQ2
+  Age for MHQ1 subset is the age for each individual when they completed the MHQ1
+  Age for MHQ2 subset is the age for each individual when they completed the MHQ2
+
+```{r DefineAge}
+
+## Age
+
+define_age <- function(data, date.field, cohort){
+
+  if(cohort == "UKB"){
+    as.numeric(
+      with(data,
+        `21003-0.0` +
+	  ceiling(
+	    difftime(
+	      median(as.Date(date.field), na.rm = TRUE),
+	      as.Date(`53-0.0`),
+	      units="days"
+	    )
+	  /365.25
+	  ),
+	)
+      )
+    )
+  }
+
+  else(){
+    as.numeric(
+      with(data,
+        `21003-0.0` +
+	  ceiling(
+	    difftime(
+	      as.Date(date.field),
+	      as.Date(`53-0.0`),
+	      units="days"
+	    )
+	  /365.25
+	),
+      )
+    )
+  }
+
+}
+
+# UKB
+
+Full_Data_MHQ2$UKB.Age <- define_age(
+  data = Full_Data_MHQ2,
+  date.field = `29197-0.0`,
+  cohort = "UKB"
+)
+
+# MHQ1
+
+Full_Data_MHQ2$MHQ1.Age <- define_age(
+  data = Full_Data_MHQ2,
+  date.field = `20400-0.0`,
+  cohort = "MHQ1"
+)
+
+# MHQ2
+
+Full_Data_MHQ2$MHQ2.Age <- define_age(
+  data = Full_Data_MHQ2,
+  date.field = `29197-0.0`,
+  cohort = "MHQ2"
+)
+
+## Age bands - derived from Davis et al
+
+define_age_bands <- function(data, age.variable){
+  return(
+    ordered(
+      with(data,
+        case_when(is.na(age.variable) ~ NA_real_,
+	  age.variable >= 45 & age.variable <= 54 ~ "45to54",
+	  age.variable >= 55 & age.variable <= 64 ~ "55to64",
+	  age.variable >= 65 & age.variable <= 74 ~ "65to74",
+	  age.variable >= 75 & age.variable <= 84 ~ "75to84",
+	  age.variable >= 85 ~ "85Plus",
+	  .default ~ NA_real_
+	)
+      )
+      levels=c("45to54", "55to64", "65to74", "75to84", "85Plus")
+    )
+  )
+}
+
+# UKB
+
+Full_Data_MHQ2$UKB.Age.Bands <- define_age_bands(
+  data = Full_Data_MHQ2,
+  age.variable = UKB.Age
+)
+
+# MHQ1
+
+Full_Data_MHQ2$MHQ1.Age.Bands <- define_age_bands(
+  data = Full_Data_MHQ2,
+  age.variable = MHQ1.Age
+)
+
+# MHQ2
+
+Full_Data_MHQ2$MHQ2.Age.Bands <- define_age_bands(
+  data = Full_Data_MHQ2,
+  age.variable = MHQ2.Age
+)
+
+## Age median
+
+# UKB
+
+UKB.Age.Median <- median(Full_Data_MHQ2$UKB.Age, na.rm = TRUE)
+
+# MHQ1
+
+MHQ1.Age.Median <- median(Full_Data_MHQ2$MHQ1.Age, na.rm = TRUE)
+
+# MHQ2
+
+MHQ2.Age.Median <- median(Full_Data_MHQ2$MHQ2.Age, na.rm = TRUE)
+
+```
+
+Sex (31-0.0)
+  Can be updated by participants, so might reflect self-reported rather than assigned sex in some cases
+  UKB is the whole cohort
+  MHQ1 is everyone with a valid completion for MHQ1 (20400-0.0)
+  MHQ2 is everyone with a valid completion for MHQ2 (29197-0.0)
+
+```{r Sex}
+
+define_sex <- function(data, cohort.identifier){
+  return(
+    with(data,
+      ifelse(!is.na(cohort.identifier),
+        `31-0.0`,
+	NA
+      )
+    )
+  )
+}
+
+# UKB
+
+Full_Data_MHQ2$UKB.Sex <- define_sex(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `31-0.0`
+)
+
+# MHQ1
+
+Full_Data_MHQ2$MHQ1.Sex <- define_sex(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `20400-0.0`
+)
+
+# MHQ2
+
+Full_Data_MHQ2$MHQ2.Sex <- define_sex(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `29197-0.0`
+)
+
+```
+
+Ethnicity (21000-0.0)
+  UKB is the whole cohort
+  MHQ1 is everyone with a valid completion for MHQ1 (20400-0.0)
+  MHQ2 is everyone with a valid completion for MHQ2 (29197-0.0)
+
+```{r Define ethnicity}
+
+define_ethnicity <- function(data, cohort.identifier){
+  return(
+    ordered(
+      with(data,
+        ifelse(!is.na(cohort.identifier),
+          case_when(
+            is.na(`21000-0.0`) | `21000-0.0` < 0 ~ NA_character_,
+            `21000-0.0` > 1000 & `21000-0.0` < 1999 ~ "White",
+  	    `21000-0.0` > 2000 & `21000-0.0` < 2999 ~ "Mixed",
+	    `21000-0.0` > 3000 & `21000-0.0` < 3999 ~ "Asian",
+	    `21000-0.0` > 4000 & `21000-0.0` < 4999 ~ "Black",
+	    `21000-0.0` == 5 ~ "Chinese",
+	    `21000-0.0` == 6 ~ "Other",
+	    .default ~ NA_character_
+          ),
+          NA_character_
+        )
+      ),
+      levels=c("White","Black","Asian","Chinese","Mixed","Other")
+    )
+  )
+}
+
+# UKB
+
+Full_Data_MHQ2$UKB.Ethnicity <- define_ethnicity(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `21000-0.0`
+)
+
+# MHQ1
+
+Full_Data_MHQ2$MHQ1.Ethnicity <- define_ethnicity(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `20400-0.0`
+)
+
+# MHQ2
+
+Full_Data_MHQ2$MHQ2.Ethnicity <- define_ethnicity(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `29197-0.0`
+)
+
+```
+
+Townsend Deprivation Index (189-0.0)
+  UKB is the whole cohort
+  MHQ1 is everyone with a valid completion for MHQ1 (20400-0.0)
+  MHQ2 is everyone with a valid completion for MHQ2 (29197-0.0)
+
+```{r Define TDI}
+
+define_TDI <- function(data, cohort.identifier){
+  return(
+    ordered(
+      with(data,
+        ifelse(!is.na(cohort.identifier),
+          case_when(
+            is.na(`189-0.0`) ~ NA_character_,
+            `189-0.0` >= 2 ~ "Most",
+            `189-0.0` < 2 & `189-0.0` > -2 ~ "Average",
+            `189-0.0` <= -2 ~ "Least",
+            .default ~ NA_character_
+          ),
+          NA_character_
+        )
+      ),
+      levels=c("Most","Average","Least")
+    )
+  )
+}
+
+# UKB
+
+Full_Data_MHQ2$UKB.TDI <- define_TDI(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `189-0.0`
+)
+
+# MHQ1
+
+Full_Data_MHQ2$MHQ1.TDI <- define_TDI(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `20400-0.0`
+)
+
+# MHQ2
+
+Full_Data_MHQ2$MHQ2.TDI <- define_TDI(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `29197-0.0`
+)
+
+```
+
+Qualifications (6138-0.0)
+  UKB is the whole cohort
+  MHQ1 is everyone with a valid completion for MHQ1 (20400-0.0)
+  MHQ2 is everyone with a valid completion for MHQ2 (29197-0.0)
+
+```{r Define qualifications}
+
+define_qualifications <- function(data, cohort.identifier){
+  return(
+    ordered(
+      with(data,
+        ifelse(!is.na(cohort.identifier),
+          case_when(
+            is.na(`6138-0.0`) | ( !is.na(`6138-0.0`) & `6138-0.0` == -3 ) ~ NA_character_,
+            `6138-0.0` == -7 ~ "NoneOfTheAbove",
+            `6138-0.0` == 1 ~ "Degree",
+            `6138-0.0` == 2 ~ "ALevel",
+            `6138-0.0` <= 5 ~ "GCSE",
+            `6138-0.0` == 6 ~ "Other",
+            .default ~ NA_character_
+          ),
+          NA_character_
+        )
+      ),
+      levels=c("NoneOfTheAbove", "Other", "GCSE", "ALevel", "Degree")
+    )
+  )
+}
+
+# UKB
+
+Full_Data_MHQ2$UKB.Highest.Qualification <- define_qualifications(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `6138-0.0`
+)
+
+# MHQ1
+
+Full_Data_MHQ2$MHQ1.Highest.Qualification <- define_qualifications(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `20400-0.0`
+)
+
+# MHQ2
+
+Full_Data_MHQ2$MHQ2.Highest.Qualification <- define_qualifications(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `29197-0.0`
+)
+
+```
+
+Housing (680-0.0))
+  UKB is the whole cohort
+  MHQ1 is everyone with a valid completion for MHQ1 (20400-0.0)
+  MHQ2 is everyone with a valid completion for MHQ2 (29197-0.0)
+  
+```{r Define housing}
+
+define_housing <- function(data, cohort.identifier){
+  return(
+    ordered(
+      with(data,
+        ifelse(!is.na(cohort.identifier),
+          case_when(
+	    is.na(`680-0.0`) ~ NA_character_,
+	    `680-0.0` == 1, "OwnOutright",
+	    `680-0.0` == 2, "OwnMortgage",
+	    `680-0.0` == 3, "RentSocial",
+	    `680-0.0` == 4, "RentPrivate",
+	    `680-0.0` > 4 & `680-0.0` == -7, "Other",
+            .default ~ NA_character_
+          ),
+          NA_character_
+        )
+      ),
+      levels=c("OwnOutright", "OwnMortgage", "RentSocial", "RentPrivate", "Other"))
+    )
+  )
+}
+
+# UKB
+
+Full_Data_MHQ2$UKB.Housing <- define_housing(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `680-0.0`
+)
+
+# MHQ1
+
+Full_Data_MHQ2$MHQ1.Housing <- define_housing(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `20400-0.0`
+)
+
+# MHQ2
+
+Full_Data_MHQ2$MHQ2.Housing <- define_housing(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `29197-0.0`
+)
+
+```
+
+Longstanding illness (2188-0.0)
+  UKB is the whole cohort
+  MHQ1 is everyone with a valid completion for MHQ1 (20400-0.0)
+  MHQ2 is everyone with a valid completion for MHQ2 (29197-0.0)
+  
+```{r Define illness}
+
+define_illness <- function(data, cohort.identifier){
+  return(
+    with(data,
+      ifelse(!is.na(cohort.identifier),
+        ifelse(is.na(`2188-0.0`) | `2188-0.0` < 0,
+	  NA_real_,
+	  `2188-0.0`
+	),
+        NA_real_
+      )
+    )
+  )
+}
+
+# UKB
+
+Full_Data_MHQ2$UKB.Longstanding.Illness <- define_illness(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `2188-0.0`
+)
+
+# MHQ1
+
+Full_Data_MHQ2$MHQ1.Longstanding.Illness <- define_illness(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `20400-0.0`
+)
+
+# MHQ2
+
+Full_Data_MHQ2$MHQ2.Longstanding.Illness <- define_illness(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `29197-0.0`
+)
+
+```
+
+Neuroticism (20127-0.0)
+  UKB is the whole cohort
+  MHQ1 is everyone with a valid completion for MHQ1 (20400-0.0)
+  MHQ2 is everyone with a valid completion for MHQ2 (29197-0.0)
+  
+```{r Define neuroticism}
+
+define_neuroticism <- function(data, cohort.identifier){
+  return(
+    with(data,
+      ifelse(!is.na(cohort.identifier),
+        ifelse(is.na(`20127-0.0`) | `20127-0.0` < 0,
+	  NA_real_,
+	  `20127-0.0`
+	),
+        NA_real_
+      )
+    )
+  )
+}
+
+# UKB
+
+Full_Data_MHQ2$UKB.Neuroticism <- define_neuroticism(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `20127-0.0`
+)
+
+# MHQ1
+
+Full_Data_MHQ2$MHQ1.Neuroticism <- define_neuroticism(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `20400-0.0`
+)
+
+# MHQ2
+
+Full_Data_MHQ2$MHQ2.Neuroticism <- define_neuroticism(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `29197-0.0`
+)
+
+```
+
+Smoking status (20116-0.0)
+  UKB is the whole cohort
+  MHQ1 is everyone with a valid completion for MHQ1 (20400-0.0)
+  MHQ2 is everyone with a valid completion for MHQ2 (29197-0.0)
+
+```{r Define smoking status}
+
+define_smoking <- function(data, cohort.identifier){
+  return(
+    ordered(
+      with(data,
+        ifelse(!is.na(cohort.identifier),
+          case_when(
+	    is.na(`20116-0.0`) | `20116-0.0` < 0 ~ NA_character_,
+            `20116-0.0` == 2 ~ "Current",
+            `20116-0.0` == 1 ~ "Former",
+            `20116-0.0` == 0 ~ "Never",
+            .default ~ NA_character_
+          ),
+          NA_character_
+        )
+      ),
+      levels=c("Current", "Former", "Never"))
+    )
+  )
+}
+
+# UKB
+
+Full_Data_MHQ2$UKB.Smoking <- define_smoking(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `20116-0.0`
+)
+
+# MHQ1
+
+Full_Data_MHQ2$MHQ1.Smoking <- define_smoking(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `20400-0.0`
+)
+
+# MHQ2
+
+Full_Data_MHQ2$MHQ2.Smoking <- define_smoking(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `29197-0.0`
+)
+
+```
+
+Physical activity (884-0.0)
+  UKB is the whole cohort
+  MHQ1 is everyone with a valid completion for MHQ1 (20400-0.0)
+  MHQ2 is everyone with a valid completion for MHQ2 (29197-0.0)
+
+```{r Define physical activity}
+
+define_physical_activity <- function(data, cohort.identifier){
+  return(
+    with(data,
+      ifelse(!is.na(cohort.identifier),
+        case_when(
+	  is.na(`884-0.0`) | `884-0.0` < 0 ~ NA_real_,
+	  `884-0.0` > 2 ~ 1,
+	  .default ~ 0
+	),
+        NA_real_
+      )
+    )
+  )
+}
+
+# UKB
+
+Full_Data_MHQ2$UKB.Physical.Activity <- define_physical_activity(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `884-0.0`
+)
+
+# MHQ1
+
+Full_Data_MHQ2$MHQ1.Physical.Activity <- define_physical_activity(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `20400-0.0`
+)
+
+# MHQ2
+
+Full_Data_MHQ2$MHQ2.Physical.Activity <- define_physical_activity(
+  data = Full_Data_MHQ2,
+  cohort.identifier = `29197-0.0`
+)
 
 ```
 
@@ -126,6 +706,19 @@ Difference MHQ2 > MHQ1
 UKB in general
 Difference MHQ2 > UKB
 
+```{r Table 2}
+
+sink("Table2.txt")
+
+message("Measure MHQ2 MHQ1 MHQ2-MHQ1 UKB MHQ2-UKB")
+
+~TODO~
+
+sink()
+
+```
+
+
 # Table 3 – Sample characteristics by lifetime disorder
 # Supplementary Table 3a – Sample characteristics by lifetime disorder (female sex)
 # Supplementary Table 3b – Sample characteristics by lifetime disorder (male sex)
@@ -133,7 +726,7 @@ Difference MHQ2 > UKB
 Rows:
 
 Age (10 y bands) + ?median
-Gender
+Sex
 Ethnicity (% White)
 TDS (% most deprived (>=2))
 Highest qual (% degree)
@@ -174,7 +767,7 @@ Harm to self ever case
 
 # Table 6 – MHQ1 vs MHQ2 – Current illness by Age
 
-Rows: 
+Rows:
 N positive (%)
 Under 52
 52-58
