@@ -1,0 +1,201 @@
+---
+title: "Social Situations"
+author: Zhaoying YU
+output: html_document
+date: "2024-01-16"
+---
+
+## Set-up
+
+```{r}
+library("dplyr")
+library("tidyverse")
+```
+
+## Import data
+```{r}
+MHQ2 <-
+readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
+```
+
+## Algorithms
+# Social Isolation
+
+If Household (SS1, 29162)= Only me (0). Score +1 
+If See in person (SS2, 29163) = Never (0) or Once every few months (1). Score +1 
+Attend weekly (SS4, 29167) = None of the above (0). Score +1 
+EVALUATE Score > 1 = positive
+ >>> I think this logic might be a bit complicated for the code, and since the criteria is if two out of the three is met, social isolation is 'positive'. So I wrote the code this way:
+ 
+```{r}
+MHQ2 <- MHQ2 %>%
+  mutate(social_isolation = case_when(
+    is.na(`29162-0.0`) |
+    is.na(`29163-0.0`) |
+    is.na(`29167-0.0`) ~ NA_real_,
+    (`29162-0.0` == 0 & `29163-0.0` %in% c(0, 1)) |
+    (`29162-0.0` == 0 & `29167-0.0` == 0) |
+    (`29163-0.0` %in% c(0, 1) & `29167-0.0` == 0) ~ 1,
+    TRUE ~ 0
+  ))
+
+```
+
+
+# Virtually connected
+
+Positive if: Video calls (SS2a, 29164) = About once a week (3), 2-4 times a week (4) or Daily or almost daily (5) 
+OR Virtual weekly (SS4a, 29168) NOT= None of the above (0)
+
+```{r}
+MHQ2 <- MHQ2 %>%
+  mutate(virtually_connected = case_when(
+    is.na(`29164-0.0`) |
+    is.na(`29168-0.0`) ~ NA_real_,
+    `29164-0.0` %in% c(3, 4, 5) |
+    !`29168-0.0` == 0 ~ 1,
+    TRUE ~0
+  ))
+
+```
+
+
+# Short scale UCLA loneliness
+
+Sum scores on individual items after converting to 1-3 (Hardly ever (1) to Often (3)): 
+Companionship (SS7, 29172) , Left out (SS8, 29173) , Isolated (SS9, 29174)
+
+There are two further questions included for compatibility / comparison with previous UKB surveys: SS3 “How often are you able to confide…” and SS6 “In tune with the people around you”. Those are not included in this score
+
+Original coding:
+0	Hardly ever
+1	Some of the time
+2	Often
+-1	Do not know
+-3	Prefer not to answer
+
+
+```{r}
+##Re-code scores to 1-3
+#Companionship, 29172
+MHQ2 <- MHQ2 %>%
+  mutate(`29172-0.0` = recode(as.character(`29172-0.0`),
+    "0" = 1,
+    "1" = 2,
+    "2" = 3,
+    "-1" = NA_real_,
+    "-3" = NA_real_,
+    .default = NA_real_))
+
+#Left out, 29173
+MHQ2 <- MHQ2 %>%
+  mutate(`29173-0.0` = recode(as.character(`29173-0.0`),
+    "0" = 1,
+    "1" = 2,
+    "2" = 3,
+    "-1" = NA_real_,
+    "-3" = NA_real_,
+    .default = NA_real_))
+
+#Isolated, 29174
+MHQ2 <- MHQ2 %>%
+  mutate(`29174-0.0` = recode(as.character(`29174-0.0`),
+    "0" = 1,
+    "1" = 2,
+    "2" = 3,
+    "-1" = NA_real_,
+    "-3" = NA_real_,
+    .default = NA_real_))
+
+##Sum of UCLA scores
+MHQ2$UCLA_lonliness_sum <- rowSums(MHQ2[,c("29172-0.0","29173-0.0","29174-0.0")], na.rm = FALSE)
+
+```
+
+
+# Brief Resilience Scale
+
+SUM
+Bounce back (BRS1, 29175), recover (BRS3, 29177) and little trouble (BRS5, 29179), score:
+1. Strongly disagree
+2. Disagree
+3. Neutral
+4. Agree
+5. Strongly agree
+
+Hard time (BRS2, 29176), hard to snap back (BRS4, 29178), and setbacks (BRS6, 29180) score:
+5. Strongly disagree
+4. Disagree
+3. Neutral
+2. Agree
+1. Strongly agree
+
+DIVIDE BY 6
+
+```{r}
+##Re-code scores
+#Bounce back, BRS1, 29175
+MHQ2 <- MHQ2 %>%
+  mutate(`29175-0.0` = recode(as.character(`29175-0.0`),
+    "0" = 1,
+    "1" = 2,
+    "2" = 3,
+    "3" = 4,
+    "4" = 5,
+    .default = NA_real_))
+
+#Recover, BRS3, 29177
+MHQ2 <- MHQ2 %>%
+  mutate(`29177-0.0` = recode(as.character(`29177-0.0`),
+    "0" = 1,
+    "1" = 2,
+    "2" = 3,
+    "3" = 4,
+    "4" = 5,
+    .default = NA_real_))
+
+#Little Trouble, BRS5, 29179
+MHQ2 <- MHQ2 %>%
+  mutate(`29179-0.0` = recode(as.character(`29179-0.0`),
+    "0" = 1,
+    "1" = 2,
+    "2" = 3,
+    "3" = 4,
+    "4" = 5,
+    .default = NA_real_))
+
+#Hard time, BRS2, 29176
+MHQ2 <- MHQ2 %>%
+  mutate(`29176-0.0` = recode(as.character(`29176-0.0`),
+    "0" = 5,
+    "1" = 4,
+    "2" = 3,
+    "3" = 2,
+    "4" = 1,
+    .default = NA_real_))
+
+#Hard to snap back, BRS4, 29178
+MHQ2 <- MHQ2 %>%
+  mutate(`29178-0.0` = recode(as.character(`29178-0.0`),
+    "0" = 5,
+    "1" = 4,
+    "2" = 3,
+    "3" = 2,
+    "4" = 1,
+    .default = NA_real_))
+
+#Setbacks, BRS6, 29180
+MHQ2 <- MHQ2 %>%
+  mutate(`29180-0.0` = recode(as.character(`29180-0.0`),
+    "0" = 5,
+    "1" = 4,
+    "2" = 3,
+    "3" = 2,
+    "4" = 1,
+    .default = NA_real_))
+
+##BRS score sum
+MHQ2 <- MHQ2 %>%
+  mutate(BRS = (`29175-0.0` + `29177-0.0` + `29179-0.0` + `29176-0.0` + `29178-0.0` + `29180-0.0`) / 6)
+
+```
