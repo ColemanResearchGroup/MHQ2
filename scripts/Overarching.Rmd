@@ -5,7 +5,7 @@ date: '2023-12-20'
 output: html_document
 ---
 
-THIS IS A PROOF OF CONCEPT / DEMO AT THE MOMENT, AS THE TRAIT SPECIFIC SCRIPTS ARE STILL BEING REVIEWED
+This is the overarching script. It works as a wrapper around the coding scripts for individual parts of MHQ2, as of now. It may be easier in the end to just paste all code into one script, when most of the reviews are done.
 
 # Configuration of global options 
 
@@ -26,9 +26,11 @@ remove(list = ls())
 
 # Load dependencies
 
+Summarytools is not needed for the overarching script
+
 ```{r Load dependencies}
 
-packages <- c("summarytools","data.table", "tidyverse", "dplyr")
+packages <- c("data.table", "tidyverse", "dplyr") #"summarytools"
 lapply(X = packages, FUN = require, character.only = TRUE)
 
 ```
@@ -43,10 +45,12 @@ meta.scripts.dependency<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
 
 
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED","SelfReported")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("ANXIETY","Anxiety")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("LT_DEPRESSION","MHQ2_Lifetime_Depression")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MANIA","MHQ2_Mania_v1")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MORE_DEPRESSION","MHQ2_More_Depression")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("AN","ED_AN_code")
+meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BN_PURGING","Bulimia_purging_code")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("E_BE","Extended_BE")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED_DSM5","BED_DSM5")
 meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED_ICD11","BED_ICD11")
@@ -89,9 +93,8 @@ Process and execute all scripts from the source. These must be configured to be 
 ```{r process}
 
 for(iDS in 1:nrow(meta.scripts)){
-  #iDS <- 4 #test
+  #iDS <- 11 #test
   
-  if(iDS>8) break #WIP, validated up until BED_ICD11
   cCode<-meta.scripts[iDS,c("code")]
   cFilename<-meta.scripts[iDS,c("filename.ex.suffix")]
   #as R - this puts the files in the working directory root though
@@ -105,8 +108,18 @@ for(iDS in 1:nrow(meta.scripts)){
   
 }
 
-skimr::skim(MHQ2)
+#skimr::skim(MHQ2)
 
 
 ```
+
+
+Comngratulations! Your data should be in the MHQ2 variable now.
+
+
+
+
+
+
+
 

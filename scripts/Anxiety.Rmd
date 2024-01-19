@@ -6,7 +6,7 @@ output: html_document
 ---
 
 # Set up
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, purl=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
   comment = '',
@@ -16,30 +16,30 @@ knitr::opts_chunk$set(
 ```
 
 Install packages
-```{r Install packages}
+```{r Install packages, purl=FALSE}
 #install.packages("tidyverse")
 ```
 
 Load packages from library 
-```{r Load packages from library}
+```{r Load packages from library, purl=FALSE}
 library(summarytools)
 library(tidyverse)
 ```
 
-```{r Clear global environment}
+```{r Clear global environment, purl=FALSE}
 rm(list=ls())
 ```
 
-```{r Get system date}
+```{r Get system date, purl=FALSE}
 date <- Sys.Date()
 date
 ```
 
 ## Read in data
 /Users/abiterkuile/OneDrive/UCL/Postdoc/ukb/mhq2/anon_data/MHQ2_Anonymous.rds
-```{r read in pheno_covar file}
+```{r read in pheno_covar file, purl=FALSE}
 
-MHQ <- readRDS(file = "/Users/abiterkuile/OneDrive/UCL/Postdoc/ukb/mhq2/anon_data/MHQ2_Anonymous.rds")
+MHQ2 <- readRDS(file = "/Users/abiterkuile/OneDrive/UCL/Postdoc/ukb/mhq2/anon_data/MHQ2_Anonymous.rds")
                
 ```
 
@@ -54,13 +54,13 @@ anx_pad_field_numbers <- as.character(29058:29075)
 
 # select anxiety & panic field numbers into dataframe
 ```{r}
-anx_pad_data <- MHQ %>% 
+anx_pad_data <- MHQ2 %>% 
   select(matches(paste(anx_pad_field_numbers, 
                        collapse = "|")))
 
 # Inspect data
-glimpse(anx_pad_data)
-summary(anx_pad_data)
+# glimpse(anx_pad_data)
+# summary(anx_pad_data)
 ```
 # Convert data to numeric and recode -3 (prefer not to answer) to NA
 To avoid overwriting raw data, save changes in new columns with suffix "_mod" (modified)
@@ -75,7 +75,7 @@ anx_pad_data <- anx_pad_data %>%
 ```
 
 # Inspect data of modified columns
-```{r}
+```{r, purl=FALSE}
 modified_columns <- anx_pad_data %>%
   select(ends_with("_mod"))
 
@@ -306,7 +306,7 @@ anx_pad_data %>%
   freq(PanicDisorder)
 ```
 # Save the data
-```{r save data}
+```{r save data, purl=FALSE}
 anx_pad_data %>% 
   select(Gad7Score,
          GadCurrent,

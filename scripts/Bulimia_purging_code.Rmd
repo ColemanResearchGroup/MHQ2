@@ -7,20 +7,20 @@ date: "2023-11-07"
 
 ## Set-up
 
-```{r}
+```{r, purl=FALSE}
 library("dplyr")
 library("tidyverse")
 library("summarytools")
 ```
 
 ## Import data
-```{r}
+```{r, purl=FALSE}
 MHQ2 <-
 readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
 ```
 
 ##Sanity Checks
-```{r}
+```{r, purl=FALSE}
 #Ever had recurrent episodes of excessive overeating or binge eating
 #Expecting 149,732 for 'No' (0)
 MHQ2 %>%
