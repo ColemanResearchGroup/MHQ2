@@ -2,10 +2,12 @@
 Ever thought life was not worth living (29108) (HB1). Yes, once (01) OR Yes, more than once (02) (Symptoms)
 
 ```{r}
-MHQ2$Not.Worth.Living <- with(MHQ2, case_when(
-  is.na(`29108-0.0`) | `29108-0.0` < 0 ~ NA_real_,
-  TRUE ~ `29108-0.0`
-))
+MHQ2$Not.Worth.Living <- with(MHQ2,
+  case_when(
+    is.na(`29108-0.0`) | `29108-0.0` < 0 ~ NA,
+    TRUE ~ `29108-0.0`
+  )
+)
 ```
 
 # Harm To Self Ever
