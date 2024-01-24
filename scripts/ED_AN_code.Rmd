@@ -268,7 +268,7 @@ Case {anorexia nervosa}
 
 AND 
 EP2b= 01 Yes 
->'29124-0.0' == 1
+>'29123-0.0' == 1
 
 AND 
 Have you done any of the following as a way to control your body shape or weight (EP5) did not include!= 01 Made yourself vomit OR 02 Used laxatives OR 03 Used diuretics (water pills) OR 07 other methods 
@@ -289,13 +289,31 @@ Have you done any of the following as a way to control your body shape or weight
 ```{r}
 #Anorexia nervosa - restricting subtype
 MHQ2 <- MHQ2 %>%
-  mutate(AN_restrict =
-           case_when(Extended_AN == 1 &
-                       `29124-0.0` == 1 &
-                       !(`29130-0.0` %in% c(1, 2, 3, 7)) &
-                       (`29132-0.0` == 0 |
-                        `29134-0.0` == 0) &
-                        `29130-0.0` %in% c(4,5,6)
+  mutate(AN_restricting =
+#Criteria A
+           case_when(#BMI at low weight <= 18.55 kg/m2
+                       BMI <= 18.55 &
+#Criteria B
+           #(Afraid that you might gain weight or become fat = 1 Yes
+                       (`29124-0.0` == 1 |
+
+          #Have you done any of the following as a way to control your body shape or weight? = 5 OR 6)
+#Discuss with Helena: if should be 4, 5, 6 or 5, 6 only. What do we decide on weight loss pills
+                        `29130-0.0` %in% c(5,6)) &
+
+#Criteria C
+           #(Did you feel fat? = 1 Yes
+                       (`29122-0.0` == 1 |
+
+           #During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
+                        `29124-0.0` == 1 |
+
+           #Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
+                        `29128-0.0` == 0 |
+
+           #Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount)
+                        `29129-0.0` %in% c(1,2)) &
+
             ~ 1,
          TRUE ~ 0
   ))
