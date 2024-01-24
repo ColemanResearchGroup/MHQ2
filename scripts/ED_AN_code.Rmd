@@ -120,11 +120,8 @@ MHQ2 <- MHQ2 %>%
 ```
               
 #Anorexia nervosa
-Case {Extended anorexia phenotype}
->Extended_AN == 1
 
-AND
-{BMI at low weight} <= 18.55 kg/m2
+BMI at low weight <= 18.55 kg/m2
 >BMI <= 18.55
 
 AND
@@ -157,8 +154,6 @@ AND
 #Anorexia nervosa
 MHQ2 <- MHQ2 %>%
   mutate(AN =
-           #Case {Extended anorexia phenotype}
-           case_when(Extended_AN == 1 &
 
            #{BMI at low weight} <= 18.55 kg/m2
                        BMI <= 18.55 &
@@ -203,8 +198,7 @@ MHQ2 <- MHQ2 %>%
 ```
 
 # Anorexia nervosa - binge/purge subtype
-case {Anorexia nervosa} 
->Extended_AN == 1
+
 
 AND 
 (Afraid that you might gain weight or become fat (EP2b) = 1 Yes
@@ -222,8 +216,26 @@ AND
 #Anorexia nervosa - binge/purge subtype
 MHQ2 <- MHQ2 %>%
   mutate(AN_binge_purge =
-           case_when(Extended_AN == 1 &
-                       `29124-0.0` == 1 &
+           case_when(#{BMI at low weight} <= 18.55 kg/m2
+                       BMI <= 18.55 &
+
+           #(Did you feel fat? = 1 Yes
+                       (`29122-0.0` == 1 |
+
+           #During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
+                        `29124-0.0` == 1 |
+
+           #Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
+                        `29128-0.0` == 0 |
+
+           #Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount)
+                        `29129-0.0` %in% c(1,2)) &
+
+           #(Afraid that you might gain weight or become fat = 1 Yes
+                       (`29124-0.0` == 1 |
+
+           #Have you done any of the following as a way to control your body shape or weight? = any of 1 to 7)
+                        `29130-0.0` %in% c(1,2,3,4,5,6,7))
                        (`29134-0.0` %in% c(1,2) |
                         `29130-0.0` %in% c(1, 2, 3, 7))
             ~ 1,
