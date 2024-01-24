@@ -216,9 +216,17 @@ AND
 #Anorexia nervosa - binge/purge subtype
 MHQ2 <- MHQ2 %>%
   mutate(AN_binge_purge =
-           case_when(#{BMI at low weight} <= 18.55 kg/m2
+#Criteria A
+           case_when(#BMI at low weight <= 18.55 kg/m2
                        BMI <= 18.55 &
+#Criteria B
+           #(Afraid that you might gain weight or become fat = 1 Yes
+                       (`29124-0.0` == 1 |
 
+          #Have you done any of the following as a way to control your body shape or weight? = any of 1 to 7)
+                        `29130-0.0` %in% c(1,2,3,4,5,6,7)) &
+
+#Criteria C
            #(Did you feel fat? = 1 Yes
                        (`29122-0.0` == 1 |
 
@@ -231,13 +239,12 @@ MHQ2 <- MHQ2 %>%
            #Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount)
                         `29129-0.0` %in% c(1,2)) &
 
-           #(Afraid that you might gain weight or become fat = 1 Yes
-                       (`29124-0.0` == 1 |
-
-           #Have you done any of the following as a way to control your body shape or weight? = any of 1 to 7)
-                        `29130-0.0` %in% c(1,2,3,4,5,6,7))
+#ANBP criteria
+          #(Have you had recurrent episodes of excessive overeating or binge eating (EP6c) = 2 Yes, ONLY at time(s) of low weight OR 1 Yes, BOTH at time(s) of low weight AND at time(s) when I was not at low weight)
                        (`29134-0.0` %in% c(1,2) |
-                        `29130-0.0` %in% c(1, 2, 3, 7))
+
+          #Have you done any of the following as a way to control your body shape or weight (EP5) = 1 Made yourself vomit OR 2 Used laxatives (pills or liquids meant to stimulate bowel movement) OR 3 Used diuretics (water pills) 
+                        `29130-0.0` %in% c(1, 2, 3))
             ~ 1,
          TRUE ~ 0
   ))
