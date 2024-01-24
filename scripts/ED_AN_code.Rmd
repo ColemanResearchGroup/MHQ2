@@ -140,12 +140,12 @@ AND
   >'29128-0.0' == 0
 
   OR
-  Was your self-esteem dependent on your body shape or weight (EP4d/29129) = 2 A great deal OR 1 A moderate amount)
+  When you are/were at this low weight, how much is/was your self-esteem dependent on your body shape or weight? (EP4d/29129) = 2 A great deal OR 1 A moderate amount)
   >'29129-0.0' %in% c(1,2) 
 
 AND
-(Afraid that you might gain weight or become fat (EP2b/29124) = 1 Yes
->'29124-0.0' == 1
+(During the time when you were at this low weight: Were you afraid that you might gain weight or become fat? (EP2b/29123) = 1 Yes
+>'29123-0.0' == 1
 
   OR
   Have you done any of the following as a way to control your body shape or weight? (EP5/29130) = any of 1 to 7)
