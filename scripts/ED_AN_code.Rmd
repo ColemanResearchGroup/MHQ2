@@ -136,8 +136,8 @@ AND
   >'29125-0.0' == 1
 
   OR
-  Did/do you ever think your low weight had/has negative consequences for your health? (EP4c/29128) = 1 Yes
-  >'29128-0.0' == 1
+  Did/do you ever think your low weight had/has negative consequences for your health? (EP4c/29128) = 0 No
+  >'29128-0.0' == 0
 
   OR
   Was your self-esteem dependent on your body shape or weight (EP4d/29129) = 2 A great deal OR 1 A moderate amount)
@@ -169,8 +169,8 @@ MHQ2 <- MHQ2 %>%
            #Did you think or feel that your body or parts of your body were larger than they really were? = 1 Yes
                         `29125-0.0` == 1 |
 
-           #Did/do you ever think your low weight had/has negative consequences for your health? = 1 Yes
-                        `29128-0.0` == 1 |
+           #Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
+                        `29128-0.0` == 0 |
 
            #Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount)
                         `29129-0.0` %in% c(1,2)) &
