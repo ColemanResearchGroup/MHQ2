@@ -105,7 +105,7 @@ Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 1 
     
     AND 
     NOT Case {Extended anorexia phenotype})
-    >Extended_AN == 0) &
+    >!Extended_AN == 0) &
 
 AND 
 During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (EP7) = 0 At least once a week for at least three months
