@@ -132,8 +132,8 @@ AND
 >'29122-0.0' == 1
 
   OR
-  Did you think or feel that your body or parts of your body were larger than they really were? (EP2c/29125) = 1 Yes
-  >'29125-0.0' == 1
+  During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? (EP2c/29124) = 1 Yes
+  >'29124-0.0' == 1
 
   OR
   Did/do you ever think your low weight had/has negative consequences for your health? (EP4c/29128) = 0 No
@@ -166,8 +166,8 @@ MHQ2 <- MHQ2 %>%
            #(Did you feel fat? = 1 Yes
                        (`29122-0.0` == 1 |
 
-           #Did you think or feel that your body or parts of your body were larger than they really were? = 1 Yes
-                        `29125-0.0` == 1 |
+           #During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
+                        `29124-0.0` == 1 |
 
            #Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
                         `29128-0.0` == 0 |
