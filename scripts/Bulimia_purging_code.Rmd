@@ -142,14 +142,7 @@ MHQ2 <- MHQ2 %>%
             #AND What was the longest amount of time where you were overeating/binge eating at least once a week? (EP6b) = 0 At least three months
                      `29133-0.0` == 0 &
 
-            #AND Excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 1 Both, 2 No or -4 not underweight
-                     (`29134-0.0` %in% c(1,2,-4) |
-
-            #OR  (Excessive overeating/binge eating during your time(s) of low weight? (EP6c)  = 2 Yes
-                        (`29134-0.0` == 0 &
-
-            # AND NOT Case {Extended anorexia phenotype})
-                         !Extended_AN == 0)) &
+### Replace with Helena's Not during AN
 
             #AND During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (EP7) = 0 At least once a week for at least three months
                      `29135-0.0` == 0 &
