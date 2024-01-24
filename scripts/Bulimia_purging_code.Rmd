@@ -175,7 +175,7 @@ MHQ2 <- MHQ2 %>%
 ```
 
 # Extended purging phenotype
-Control of body weight outside of periods of low weight or regular overeating/binge eating = 1 Yes, at least once a week
+Was there a time in your life when you made yourself vomit, used laxatives, diuretics or pills, on their own or in combination, at least once a week as a way to control your body shape or weight? (EP11a) = 1 Yes, at least once a week 
 >'29144-0.0' == 1
 
 ```{r}
@@ -188,16 +188,17 @@ MHQ2 <- MHQ2 %>%
 ```
 
 # Purging disorder
-Control of body weight outside of periods of low weight or regular overeating/binge eating = 1 Yes, at least once a week
+Was there a time in your life when you made yourself vomit, used laxatives, diuretics or pills, on their own or in combination, at least once a week as a way to control your body shape or weight? (EP11a) = 1 Yes, at least once a week 
 >'29144-0.0' == 1
 
 AND
-Longest amount of time that engaged in these behaviours outside of periods of low weight or overeating/binge eating = 0 At least three months
+Outside any periods of low weight or regular overeating/binge eating that you may have told us about, what was the longest amount of time where you engaged in any of the behaviours (made yourself vomit, used laxatives, diuretics or pills), on their own or in combination, at least once a week? (EP11b) = 0 At least three months
+#Algorithm should be changed, at least three months is 0
 >'29145-0.0' == 0
 
 AND
-During the time when you were engaging in these behaviours, how dependent was your self-worth on your body shape or weight? (EP11c) = 02 A great deal OR 01 A moderate amount
->'29143-0.0' %in% c(1,2)
+During the time when you were engaging in these behaviours, how dependent was your self-worth on your body shape or weight? (EP11c) = 2 A great deal OR 1 A moderate amount
+>'29146-0.0' %in% c(1,2)
 
 ```{r}
 #Purging disorder
@@ -205,7 +206,7 @@ MHQ2 <- MHQ2 %>%
   mutate(Purging = 
            case_when(`29144-0.0` == 1 &
                      `29145-0.0` == 0 &
-                     `29143-0.0` %in% c(1,2)
+                     `29146-0.0` %in% c(1,2)
            ~ 1,
         TRUE ~ 0
         )
