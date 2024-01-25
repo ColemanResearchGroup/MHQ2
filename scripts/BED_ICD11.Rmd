@@ -46,40 +46,7 @@ AND
 Do/did you feel distressed about your episodes of excessive overeating/binge eating? (EP9) =01 Yes 
  
 AND 
-During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? EP10= None of the above 
-
-
-## Not during AN criteria
-From the ICD11: "The individual may be of normal weight or even low weight (though not sufficiently to meet the diagnostic requirements for Anorexia Nervosa)"
-```{r not during AN criteria}
-dat <- dat %>%
-  mutate(not_during_AN =
-           case_when(
-             # "If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight?"
-             
-             # "Only at time(s) when I was not at low weight"
-            (
-             `29134-0.0` == 2 |
-               
-            # "Both at times of low weight and when not at low weight"   
-             `29134-0.0` == 1 |
-              
-            # "Not applicable, as did not have low weight"
-             `29134-0.0` == -4
-            ) |
-              
-            # "Only at time(s) of low weight"
-             (
-               `29134-0.0` == 0 &
-                
-            # No lifetime anorexia nervosa
-              DSM_AN_algorithm == 0 &
-              self_reported_AN == 0 
-            # +++ add any other reports of AN
-            ) ~ 1
-           )
-  )
-```
+During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? EP10= None of the above
 
 # Checks
 For questions in algorithm
@@ -135,8 +102,8 @@ dat <- dat %>%
         # "During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?" = "None of the above"
           `29140-0.0` == 0 &
         
-       # ICD11 criteria: "The individual may be of normal weight or even low weight (though not sufficiently to meet the diagnostic requirements for Anorexia Nervosa)" (calculated above)
-          not_during_AN == 1 ~ 1
+       # ICD11 criteria: "The individual may be of normal weight or even low weight (though not sufficiently to meet the diagnostic requirements for Anorexia Nervosa)" (calculated in separate chunk)
+          BE_not_during_AN == 1 ~ 1
            )
   )
 
