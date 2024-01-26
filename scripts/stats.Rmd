@@ -3,9 +3,6 @@ title: "Statistics for comparing with UK Biobank Showcase"
 author: "Johan Zvrskovec"
 date: '2024-01-24'
 output: html_document
-editor_options: 
-  markdown: 
-    wrap: 72
 ---
 
 ```{r Clear global environment}
@@ -32,7 +29,6 @@ setDT(dat,key = "ID")
 #Binge Eating behaviours, as used in BED_DSM5.Rmd
 
 ## Checks
-
 ```{r}
 
 nrow(dat[`29136-0.0`==`29136-0.1`,])
@@ -47,16 +43,17 @@ freq(dat$`29140-0.0`)
 
 ## Merge and freq
 
-###29130 - Methods of controlling body shape or weight when at this low
-weight
+###29130 - Methods of controlling body shape or weight when at this low weight
 
-1 Made yourself vomit 2 Used laxatives (pills or liquids) [data: 587 vs
-1050] 3 Used diuretics (water pills) [data: 54 vs 247] 4 Used weight
-loss pills [data: 84 vs 288] 5 Exercised excessively or felt distressed
-if unable to exercise [data: 1188 vs 1917] 6 Fasted or not eaten for
-eight waking hours or more [data: 1046 vs 2403] 7 Other methods to lose
-weight/stay at low weight [375 vs 823] 0 None of above -3 Prefer not to
-answer
+1              Made yourself vomit
+2              Used laxatives (pills or liquids) [data: 587 vs 1050]
+3              Used diuretics (water pills) [data: 54 vs 247]
+4              Used weight loss pills [data: 84 vs 288]
+5              Exercised excessively or felt distressed if unable to exercise [data: 1188 vs 1917]
+6              Fasted or not eaten for eight waking hours or more [data: 1046 vs 2403]
+7              Other methods to lose weight/stay at low weight [375 vs 823]
+0              None of above
+-3            Prefer not to answer
 
 ```{r}
 
@@ -81,13 +78,14 @@ freq(dat$n29130_7)
 
 ```
 
-###29136 - Actions and feelings during periods of overeating/binge
-eating 1 Eaten much more rapidly than normal 2 Eaten until feeling
-uncomfortably full [data: 6690 vs 10920] 3 Eaten large amounts of food
-when not physically hungry [data: 2803 vs 9963] 4 Eaten alone because of
-feeling embarrassed by overeating [data 644 vs 5793] 5 Felt disgusted,
-depressed or very guilty afterward [706 vs 8341] 0 Done none of the
-above -3 Prefer not to answer
+###29136 - Actions and feelings during periods of overeating/binge eating
+1              Eaten much more rapidly than normal
+2              Eaten until feeling uncomfortably full [data: 6690 vs 10920]
+3              Eaten large amounts of food when not physically hungry [data: 2803 vs 9963]
+4              Eaten alone because of feeling embarrassed by overeating [data 644 vs 5793]
+5              Felt disgusted, depressed or very guilty afterward [706 vs 8341]
+0              Done none of the above
+-3            Prefer not to answer
 
 ```{r}
 
@@ -108,15 +106,17 @@ freq(dat$n29136_5)
 
 ```
 
-###29140 - Methods of controlling body shape or weight when
-overeating/binge eating
+###29140 - Methods of controlling body shape or weight when overeating/binge eating
 
-1 Made yourself vomit 2 Used laxatives (pills or liquids) [data 253 vs
-500] 3 Used diuretics (water pills) [data 29 vs 145] 4 Used weight loss
-pills [191 vs 434] 5 Exercised excessively or felt distressed if unable
-to exercise [data 185 vs 441] 6 Fasted or not eaten for eight waking
-hours or more [data 285 vs 798] 7 Other methods to lose weight/stay at
-low weight [data 237 vs 622] 0 None of above -3 Prefer not to answer
+1              Made yourself vomit
+2              Used laxatives (pills or liquids) [data 253 vs 500]
+3              Used diuretics (water pills) [data 29 vs 145]
+4              Used weight loss pills [191  vs 434]
+5              Exercised excessively or felt distressed if unable to exercise [data 185 vs 441]
+6              Fasted or not eaten for eight waking hours or more [data 285 vs 798]
+7              Other methods to lose weight/stay at low weight [data 237 vs 622]
+0              None of above
+-3            Prefer not to answer
 
 ```{r}
 
@@ -141,8 +141,11 @@ freq(dat$n29140_7)
 
 ```
 
-# Run all from here
 
+# Run all from here
 ```{r}
 
 ```
+
+
+
