@@ -76,22 +76,6 @@ MHQ2 %>%
 ```
 
 ## Algorithms
-# Extended anorexia phenotype
-
-Period in life when was underweight = 1 Yes
->'29120-0.0' == 1
-
-```{r}
-#Extended anorexia phenotype
-MHQ2 <- MHQ2 %>%
-  mutate(Extended_AN = 
-           case_when(`29120-0.0` == 1 ~ 1,
-                     `29120-0.0` == 0 ~ 0,
-                     TRUE ~ NA
-                     )
-        )
-```
-
 # BMI at low weight
 
 
