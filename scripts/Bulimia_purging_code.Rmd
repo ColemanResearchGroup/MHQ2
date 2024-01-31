@@ -173,6 +173,34 @@ During the time when you were overeating/binge eating, how dependent was your se
 >'29143-0.0' %in% c(1,2)
 
 ```{r}
+dat <- dat %>%
+  mutate(not_during_AN =
+           case_when(
+             # "If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight?"
+             
+             # "Only at time(s) when I was not at low weight"
+            (
+             `29134-0.0` == 2 |
+               
+            # "Both at times of low weight and when not at low weight"   
+             `29134-0.0` == 1 |
+              
+            # "Not applicable, as did not have low weight"
+             `29134-0.0` == -4
+            ) |
+              
+            # "Only at time(s) of low weight"
+             (
+               `29134-0.0` == 0 &
+                
+            # No lifetime anorexia nervosa
+              DSM_AN_algorithm == 0 &
+              self_reported_AN == 0 
+            # +++ add any other reports of AN
+            ) ~ 1
+           )
+  )
+
 MHQ2 <- MHQ2 %>%
   mutate(bulimia_nervosa_DSM5_algorithm = 
             #Have you had recurrent episodes of excessive overeating or binge eating (EP6a) = 2 Yes, at least once a week
@@ -182,6 +210,8 @@ MHQ2 <- MHQ2 %>%
                      `29133-0.0` == 0 &
 
 ### Replace with Helena's Not during AN
+            #AND not during AN
+                      not_during_AN == 1 &
 
             #AND During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (EP7) = 0 At least once a week for at least three months
                      `29135-0.0` == 0 &
