@@ -712,7 +712,29 @@ Difference MHQ2 > UKB
 
 sink("Table2.txt")
 
-message("Measure MHQ2 MHQ1 MHQ2-MHQ1 UKB MHQ2-UKB")
+## Header
+cat("Measure Sub-measure MHQ2 MHQ1 MHQ2-MHQ1 UKB MHQ2-UKB\n")
+
+## Age
+cat("Age 30-40")
+
+
+cat("Age 40-50 ")
+
+cat("Age 50-60 ")
+
+cat("Age 60-70 ")
+
+cat("Age 70-80 ")
+
+cat("Age 80+ ")
+
+cat("Age Median ")
+cat(MHQ2.Age.Median, " ")
+cat(MHQ1.Age.Median, " ")
+cat(MHQ2.Age.Median - MHQ1.Age.Median, " ")
+cat(UKB.Age.Median, " ")
+cat(MHQ2.Age.Median - UKB.Age.Median, " ")
 
 ~TODO~
 
