@@ -23,8 +23,6 @@ dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Anonymous.rds")
 Lowest weight during period when underweight [metric] / Height [cm]/100)^2
 
 ```{r}
-
-
 #FOR TESTING: MHQ2$'12144-1.0'<-169.0
 MHQ2 <- dat %>%
   mutate(BMI =
@@ -35,7 +33,7 @@ MHQ2 <- dat %>%
         )
 ```
               
-#Anorexia nervosa
+# Anorexia nervosa
 
 BMI at low weight <= 18.55 kg/m2
 >BMI <= 18.55
