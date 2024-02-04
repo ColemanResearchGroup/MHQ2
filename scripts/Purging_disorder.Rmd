@@ -14,7 +14,8 @@ library("tidyverse")
 # Import data
 
 ```{r}
-dat <- readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
+#dat <- readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
+dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Anonymous.rds")
 ```
 
 # Purging disorder
@@ -42,10 +43,10 @@ dat <- dat %>%
         # Purging behaviours & once a week
         `29144-0.0` == 1 &
           
-          # at least three months
+          # & at least three months
           `29145-0.0` == 0 &
           
-          # self-worth dependent on body shape/weight during purging
+          # & self-worth dependent on body shape/weight during purging
           `29146-0.0` %in% c(1, 2)
         ~ 1,
         
@@ -53,3 +54,13 @@ dat <- dat %>%
         )
   )
 ```
+
+
+Purging disorder
+```{r}
+dat %>%
+  count(Purging_disorder)
+```
+
+
+
