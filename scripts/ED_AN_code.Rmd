@@ -1,7 +1,6 @@
 ---
-title: "ED_AN_code"
-version: 2.0
-author: Zhaoying YU
+title: "MHQ2 Anorexia nervosa DSM-5 algoritm"
+author: "Zhaoying Yu, Helena Davies, Christopher Huebel, Johan Z"
 output: html_document
 date: "2023-10-07"
 ---
