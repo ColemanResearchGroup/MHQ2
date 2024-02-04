@@ -6,41 +6,27 @@ output: html_document
 date: "2023-10-07"
 ---
 
-## Set-up
-
 ```{r}
-library("dplyr")
 library("tidyverse")
 ```
 
-## Import data
+# Import data
+
 ```{r}
-dat <-
-readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
+dat <- readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
+dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Anonymous.rds")
 ```
 
 
-
-## Algorithms
 # BMI at low weight
 
-
-Lowest weight during period when underweight [metric] /
-((f.12144.1) Physical measures  Height [cm]/100)^2
-
-
-> '29125-0.0'/('12144-1.0')^2
-
-> I assumed the column name for height follows the same naming pattern as the other columns. However, I don't have the data for this variable, which I assume will be in another data subset. So not sure if the column name ('12144-1.0') is correct for height?
-
-++OVERARCHING
-Please check the column name for height and if the data for height contains code for 'not applicable'
+Lowest weight during period when underweight [metric] / Height [cm]/100)^2
 
 ```{r}
-#BMI at low weight
+
 
 #FOR TESTING: MHQ2$'12144-1.0'<-169.0
-MHQ2 <- MHQ2 %>%
+MHQ2 <- dat %>%
   mutate(BMI =
            case_when(is.na(`29125-0.0`) |
                      is.na(`12144-1.0`) |
@@ -82,7 +68,7 @@ AND
 
 ```{r}
 #Anorexia nervosa
-MHQ2 <- MHQ2 %>%
+dat <- dat %>%
   mutate(AN =
 
            #{BMI at low weight} <= 18.55 kg/m2
@@ -108,23 +94,6 @@ MHQ2 <- MHQ2 %>%
             ~ 1,
          TRUE ~ 0
   ))
-
-# #check results
-# View(
-#   MHQ2[,
-#        c(
-#          'Extended_AN',
-#          'BMI',
-#          '29122-0.0',
-#          '29125-0.0',
-#          '29128-0.0',
-#          '29129-0.0',
-#          '29124-0.0',
-#          '29130-0.0',
-#          'AN'
-#        )
-#        ]
-# )
 ```
 
 # Anorexia nervosa - binge/purge subtype
