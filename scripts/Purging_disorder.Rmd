@@ -1,5 +1,5 @@
 ---
-title: "MHQ2 Bulimia nervosa DSM-5 algorithm"
+title: "MHQ2 Purging disorder DSM-5 algorithm"
 author: "Zhaoying YU, Helena Davies, Christopher Huebel, Johan"
 output: html_document
 date: "2023-11-07"
@@ -49,7 +49,7 @@ dat <- dat %>%
           `29146-0.0` %in% c(1, 2)
         ~ 1,
         
-        TRUE ~ 0
+        TRUE ~ NA_real_
         )
   )
 ```

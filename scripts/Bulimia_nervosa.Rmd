@@ -1,26 +1,20 @@
 ---
 title: "MHQ2 Bulimia nervosa DSM-5 algorithm"
-author: Zhaoying YU, Helena Davies, Christopher Huebel
+author: "Zhaoying YU, Helena Davies, Christopher Huebel, Johan Zv"
 output: html_document
 date: "2023-11-07"
 ---
 
-## Set-up
-
 ```{r}
-library("dplyr")
 library("tidyverse")
-library("summarytools")
 ```
 
-## Import data
+# Import data
 ```{r}
-dat <-
-readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
+dat <- readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
 ```
 
 
-## Algorithms
 # Bulimia Nervosa
 
 Have you had recurrent episodes of excessive overeating or binge eating (EP6a) = 2 Yes, at least once a week
@@ -99,7 +93,10 @@ dat <- dat %>%
             ) ~ 1
            )
   )
+```
 
+
+```{r}
 dat <- dat %>%
   mutate(bulimia_nervosa_DSM5_algorithm = 
 #Criteria A
@@ -139,41 +136,4 @@ dat <- dat %>%
          )
 ```
 
-# Extended purging phenotype
-Was there a time in your life when you made yourself vomit, used laxatives, diuretics or pills, on their own or in combination, at least once a week as a way to control your body shape or weight?  = 1 Yes, at least once a week 
->'29144-0.0' == 1
 
-```{r}
-#Extended purging phenotype
-dat <- dat %>%
-  mutate(Extended_purg = 
-           case_when(`29144-0.0` == 1 ~ 1,
-                     TRUE ~ 0)
-  )
-```
-
-# Purging disorder
-Was there a time in your life when you made yourself vomit, used laxatives, diuretics or pills, on their own or in combination, at least once a week as a way to control your body shape or weight? = 1 Yes, at least once a week 
->'29144-0.0' == 1
-
-AND
-Outside any periods of low weight or regular overeating/binge eating that you may have told us about, what was the longest amount of time where you engaged in any of the behaviours (made yourself vomit, used laxatives, diuretics or pills), on their own or in combination, at least once a week? = 0 At least three months
-#Algorithm should be changed, at least three months is 0
->'29145-0.0' == 0
-
-AND
-During the time when you were engaging in these behaviours, how dependent was your self-worth on your body shape or weight? = 2 A great deal OR 1 A moderate amount
->'29146-0.0' %in% c(1,2)
-
-```{r}
-#Purging disorder
-dat <- dat %>%
-  mutate(Purging = 
-           case_when(`29144-0.0` == 1 &
-                     `29145-0.0` == 0 &
-                     `29146-0.0` %in% c(1,2)
-           ~ 1,
-        TRUE ~ 0
-        )
-  )
-```
