@@ -15,7 +15,7 @@ library("tidyverse")
 
 ## Import data
 ```{r}
-MHQ2 <-
+dat <-
 readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
 ```
 
@@ -247,20 +247,6 @@ MHQ2 <- MHQ2 %>%
             ~ 1,
          TRUE ~ 0
   ))
-# #check results
-# View(
-#   MHQ2[,
-#        c(
-#          'Extended_AN',
-#          'BMI',
-#          '29124-0.0',
-#          '29132-0.0',
-#          '29134-0.0',
-#          '29130-0.0',
-#          'AN_restrict'
-#        )
-#        ]
-# )
 ```
 
 
