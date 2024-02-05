@@ -69,40 +69,49 @@ During the time(s) when you were regularly overeating/binge eating, have you don
 
 
 # Pre-algorithm code
-## Not during AN criteria
-From the DSM5: "Does not occur exclusively during the course of anorexia nervosa"
+
+# Not during AN criteria
+
+DSM-5 Criterion XXX: "Does not occur exclusively during the course of anorexia nervosa"
 ```{r not during AN criteria}
 dat <- dat %>%
-  mutate(not_during_AN =
-           case_when(
-             # "If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight?"
-             
-             # "Only at time(s) when I was not at low weight"
-            (
-             `29134-0.0` == 2 |
-               
+  mutate(
+    BE_not_during_AN =
+      case_when(
+        # "If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight?"
+        
+        # "Only at time(s) when I was not at low weight"
+        (
+          `29134-0.0` == 2 |
+            
             # "Both at times of low weight and when not at low weight"   
-             `29134-0.0` == 1 |
-              
+            `29134-0.0` == 1 |
+            
             # "Not applicable, as did not have low weight"
-             `29134-0.0` == -4
-            ) |
+            `29134-0.0` == -4
+          ) |
+          
+          # "Only at time(s) of low weight"
+          (
+            `29134-0.0` == 0 &
               
-            # "Only at time(s) of low weight"
-             (
-               `29134-0.0` == 0 &
-                
-            # No lifetime anorexia nervosa
+              # No lifetime anorexia nervosa MHQ2 algorithm
               DSM_AN_algorithm == 0 &
-              self_reported_AN == 0 
-            # +++ add any other reports of AN
+              
+              SelfReportedAnorexiaNervosa == 0 
+            
             ) ~ 1
-           )
-  )
+        )
+    )
 ```
 
-## Create sumscore of binge eating behaviours (need at least 3 for DSM5 BED)
-NB: Question was asked when Field 29132 ("Ever had recurrent episodes of excessive overeating or binge eating") was Yes.
+# Sumscore of binge eating characteristics
+
+(need at least 3 of 5 to qualify for a DSM-5 binge-eating disorder diagnosis)
+
+NB: Question was asked when Field 29132 
+("Ever had recurrent episodes of excessive overeating or binge eating") was Yes.
+
 ```{r sumscore BE behaviours}
 # Create numeric variables
 dat <- dat %>%
