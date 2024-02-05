@@ -1,6 +1,6 @@
 ---
 title: "MHQ2 Purging disorder DSM-5 algorithm"
-author: "Zhaoying YU, Helena Davies, Christopher Huebel, Johan"
+author: "Zhaoying Yu, Helena Davies, Christopher Huebel, Johan Zvrskovec"
 output: html_document
 date: "2023-11-07"
 ---
