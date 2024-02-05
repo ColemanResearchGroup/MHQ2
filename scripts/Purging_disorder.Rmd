@@ -67,6 +67,9 @@ dat %>%
     `29146-0.0`,
     `29205-0.0`,
     Purging_disorder
+  ) %>%
+  filter(
+    Purging_disorder == 1
   )
 ```
 
