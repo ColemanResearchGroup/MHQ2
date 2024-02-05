@@ -1,6 +1,6 @@
 ---
 title: "UKB MHQ2 Binge-eating disorder (BED) DSM-5 algorithm"
-author: "Helena Davies, Christopher Huebel, "
+author: "Helena Davies, Christopher Huebel, Johan Zvrskovec"
 date: "2023-10-08"
 output: html_document
 ---
