@@ -40,7 +40,8 @@ PLUS
 Have you had recurrent episodes of excessive overeating or binge eating (EP6a) = 02 Yes, at least once a week 
 AND 
 What was the longest amount of time where you were overeating/binge eating at least once a week? (EP6b) = 03 At least three months 
- 
+
++++CH: needs updating 
 AND 
 NOT Case {Extended anorexia phenotype} 
 OR 
@@ -96,14 +97,31 @@ dat <- dat %>%
             `29134-0.0` == 0 &
               
               # No lifetime anorexia nervosa MHQ2 algorithm
-              DSM_AN_algorithm == 0 &
-              
+###              Anorexia_nervosa == 0 &
+#+++CH needs fixing after AN script is finished              
               SelfReportedAnorexiaNervosa == 0 
             
             ) ~ 1
         )
     )
 ```
+
+
+
+```{r}
+dat %>%
+  select(
+    `29134-0.0`,
+    SelfReportedAnorexiaNervosa,
+    BE_not_during_AN
+  ) 
+```
+
+```{r}
+dat %>%
+  count(BE_not_during_AN)
+```
+
 
 # Sumscore of binge eating characteristics
 
@@ -324,45 +342,8 @@ dat %>%
 ```
 NB: This sumscore should only be used in the BED DSM5 algorithm, i.e., to indicate if participants have a score of 3 or above. A score of 0 is not informative because it includes people who did not answer the question or were not shown the question because of their answer to Field 29132.
 
-# Algorithm
-## Checks
-For remaining questions in algorithm
-```{r sanity checks}
-# Excessive overeating or binge eating
-# Expecting 3,338 for "Yes, at least once a week" (2)
-dat %>%
-  freq(`29132-0.0`)
 
-# Loss of control
-# Expecting 3,904 for "At least once a week for at least 3 months" (0)
-dat %>%
-  freq(`29135-0.0`)
-
-# Duration of overeating/binge eating
-# Expecting 2,479 for "At least 3 months" (0)
-dat %>%
-  freq(`29133-0.0`)
-
-# Distress re. binge eating
-# Expecting 10,960 for "Yes" (1)
-dat %>%
-  freq(`29137-0.0`)
-              
-# Compensatory behaviours to control for body shape or weight
-# Expecting 1,124 for "None of the above" (0)
-dat %>%
-  freq(`29140-0.0`)
-                
-# Binge eating during low weight
-# Expecting 2,767 for "Only at time(s) when I was not at low weight" (2)
-# Expecting 1,352 for "Both at times of low weight and when not at low weight" (1)
-# Expecting 241 for "Only at time(s) of low weight" (0)
-# Expecting 15,049 for "Not applicable, as did not have low weight" (-4)
-dat %>%
-  freq(`29134-0.0`)
-```
-
-## BED DSM5 algorithm
+# Binge-eating disorder DSM-5 algorithm
 ```{r BED DSM5 algorithm}
 dat <- dat %>%
   mutate(DSM5_BED_algorithm =
@@ -387,12 +368,29 @@ dat <- dat %>%
           `29140-0.0` == 0 &
 
         # DSM5 criteria: "Does not occur exclusively during the course of anorexia nervosa" (calculated above)
-          not_during_AN == 1 ~ 1
+          BE_not_during_AN == 1 ~ 1
            )
   )
+```
 
+
+```{r}
+dat %>%
+  select(
+    `29132-0.0`,
+    `29135-0.0`,
+    `29133-0.0`,
+    BE_characteristics_sumscore,
+    `29137-0.0`,
+    `29140-0.0`,
+    BE_not_during_AN
+  )
+```
+
+
+```{r}
 # Check
 dat %>%
-  freq(DSM5_BED_algorithm)
+  count(DSM5_BED_algorithm)
 ```
 

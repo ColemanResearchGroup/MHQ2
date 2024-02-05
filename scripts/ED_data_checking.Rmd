@@ -179,9 +179,9 @@ summary(dat$`29130_7`)
 
 # 29134 Experienced episodes of overeating/binge eating during time(s) of low weight [matches showcase]
 0	Only at time(s) of low weight [241]
-1	Both at times of low weight and when not at low weight
-2	Only at time(s) when I was not at low weight
--4	Not applicable, as did not have low weight
+1	Both at times of low weight and when not at low weight [1,352]
+2	Only at time(s) when I was not at low weight [2,767]
+-4	Not applicable, as did not have low weight [15,049]
 -3	Prefer not to answer
 
 ```{r}
@@ -192,7 +192,7 @@ dat %>%
 # Binge eating
 
 29132 Ever had recurrent episodes of excessive overeating or binge eating [not matching]
-2	Yes, at least once a week
+2	Yes, at least once a week [3,338]
 1	Yes, occasionally
 0	No [data: 149,732 vs 149,731]
 -3	Prefer not to answer
@@ -205,7 +205,7 @@ dat %>%
 
 
 # 29133 Longest amount of time that overate or binge ate at least once a week [matches showcase]
-0	At least 3 months
+0	At least 3 months [2,479]
 1	More than 1 month but less than 3 months
 2	Less than 1 month
 -3	Prefer not to answer
@@ -230,7 +230,7 @@ dat %>%
 
 
 29137 Distress about episodes of overeating/binge eating [matches showcase]
-1	Yes
+1	Yes [10,960]
 0	No [8,446]
 -3	Prefer not to answer
 
