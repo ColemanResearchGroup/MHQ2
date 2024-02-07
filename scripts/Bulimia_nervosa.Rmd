@@ -15,71 +15,210 @@ library("tidyverse")
 # Import data
 
 ```{r}
-#dat <- readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
-dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Height_Alcohol_Field_Anonymous.rds")
+dat <- readRDS("/Users/lilian/Desktop/MHQ2_Height_Alcohol_Field_Anonymous.rds")
+#dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Height_Alcohol_Field_Anonymous.rds")
 ```
 
+# Recode multiple choice questions
+29140 Methods of controlling body shape or weight when overeating/binge eating
+1	Made yourself vomit
+2	Used laxatives (pills or liquids)
+3	Used diuretics (water pills)
+4	Used weight loss pills
+5	Exercised excessively or felt distressed if unable to exercise
+6	Fasted or not eaten for eight waking hours or more
+7	Other methods to lose weight/stay at low weight
+0	None of above
+-3	Prefer not to answer
+
+```{r made yourself vomit}
+dat <- dat %>%
+  mutate(
+    BE_made_yourself_vomit =
+      case_when(
+        `29140-0.0` == 1 |
+        `29140-0.1` == 1 |
+        `29140-0.2` == 1 | 
+        `29140-0.3` == 1 |
+        `29140-0.4` == 1 |
+        `29140-0.5` == 1 |
+        `29140-0.6` == 1 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29140-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 581)
+dat %>%
+  count(BE_made_yourself_vomit)
+```
+
+```{r used laxatives}
+dat <- dat %>%
+  mutate(
+    BE_used_laxatives =
+      case_when(
+        `29140-0.0` == 2 |
+        `29140-0.1` == 2 |
+        `29140-0.2` == 2 | 
+        `29140-0.3` == 2 |
+        `29140-0.4` == 2 |
+        `29140-0.5` == 2 |
+        `29140-0.6` == 2 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29140-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 500)
+dat %>%
+  count(BE_used_laxatives)
+```
+
+```{r used diuretics}
+dat <- dat %>%
+  mutate(
+    BE_used_diuretics =
+      case_when(
+        `29140-0.0` == 3 |
+        `29140-0.1` == 3 |
+        `29140-0.2` == 3 | 
+        `29140-0.3` == 3 |
+        `29140-0.4` == 3 |
+        `29140-0.5` == 3 |
+        `29140-0.6` == 3 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29140-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 145)
+dat %>%
+  count(BE_used_diuretics)
+```
+
+```{r used weight loss pills}
+dat <- dat %>%
+  mutate(
+    BE_used_weight_loss_pills =
+      case_when(
+        `29140-0.0` == 4 |
+        `29140-0.1` == 4 |
+        `29140-0.2` == 4 | 
+        `29140-0.3` == 4 |
+        `29140-0.4` == 4 |
+        `29140-0.5` == 4 |
+        `29140-0.6` == 4 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29140-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 434)
+dat %>%
+  count(BE_used_weight_loss_pills)
+```
+
+```{r excessive exercise}
+dat <- dat %>%
+  mutate(
+    BE_excessive_exercise =
+      case_when(
+        `29140-0.0` == 5 |
+        `29140-0.1` == 5 |
+        `29140-0.2` == 5 | 
+        `29140-0.3` == 5 |
+        `29140-0.4` == 5 |
+        `29140-0.5` == 5 |
+        `29140-0.6` == 5 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29140-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 441)
+dat %>%
+  count(BE_excessive_exercise)
+```
+
+```{r fasten}
+dat <- dat %>%
+  mutate(
+    BE_fasten =
+      case_when(
+        `29140-0.0` == 6 |
+        `29140-0.1` == 6 |
+        `29140-0.2` == 6 | 
+        `29140-0.3` == 6 |
+        `29140-0.4` == 6 |
+        `29140-0.5` == 6 |
+        `29140-0.6` == 6 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29140-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 798)
+dat %>%
+  count(BE_fasten)
+```
+
+```{r other weight control}
+dat <- dat %>%
+  mutate(
+    BE_other_weight_control =
+      case_when(
+        `29140-0.0` == 7 |
+        `29140-0.1` == 7 |
+        `29140-0.2` == 7 | 
+        `29140-0.3` == 7 |
+        `29140-0.4` == 7 |
+        `29140-0.5` == 7 |
+        `29140-0.6` == 7 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29140-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 622)
+dat %>%
+  count(BE_other_weight_control)
+```
 
 # Bulimia Nervosa
-
-Have you had recurrent episodes of excessive overeating or binge eating
-(EP6a) = 2 Yes, at least once a week \> '29132-0.0' == 2 &
-
-AND What was the longest amount of time where you were overeating/binge
-eating at least once a week? (EP6b) = 0 At least three months #Algorithm
-should be changed, at least three months is 0 on UKBB showcase
-\>'29133-0.0' == 0 &
-
-AND Excessive overeating/binge eating during your time(s) of low weight?
-(EP6c) = 1 Both, 2 No or -4 not underweight #What is 'No' option
-\>'29134-0.0' %in% c(1,2,-4) \|
-
-OR (Excessive overeating/binge eating during your time(s) of low weight?
-(EP6c) = 2 Yes #What is 'Yes' option \>('29134-0.0' == 0 &
-
-    AND 
-    NOT Case {Extended anorexia phenotype})
-    >!Extended_AN == 0) &
-
-AND During your episodes of excessive overeating/binge eating, how often
-have you felt like you did not have control over your eating (EP7) = 0
-At least once a week for at least three months #Algorithm should be
-changed, at lease once a week for at least three months is 0
-\>'29135-0.0' == 0 &
-
-AND Do/did you feel distressed about your episodes of excessive
-overeating/binge eating? (EP9) = 1 Yes \>'29137-0.0' == 1 &
-
-AND During the time(s) when you were regularly overeating/binge eating,
-have you done any of the following as a way to control your body shape
-or weight? (EP10) = 1 Made yourself vomit OR 2 Used laxatives (pills or
-liquids meant to stimulate bowel movements) OR 3 Used diuretics (water
-pills) OR 4 Used weight loss pills (over the counter or prescription) OR
-5 Exercised excessively, felt compelled to exercise, felt uneasy or
-distressed if unable to exercise or prioritised exercise over your
-health or important activities OR 6 Fasted or not eaten for eight waking
-hours or more OR 7 Used other methods to lose weight/stay at low weight)
-\>'29140-0.0' %in% c(1,2,3,4,5,6,7) &
-
-AND During the time when you were regularly overeating/binge eating, did
-you ever use any of these behaviours (made yourself vomit, used pills,
-exercised excessively or fasted), on their own or in combination, at
-least once a week? (EP10a) = 1 Yes, at least once a week \>'29141-0.0'
-== 1 &
-
-AND What was the longest amount of time when you were overeating/binge
-eating and you engaged in any of these behaviours (EP10b) = 0 At least
-three months #Algorothm document should be changed, at least three
-months is 0 \>'29142-0.0' == 0 &
-
-AND During the time when you were overeating/binge eating, how dependent
-was your self-worth on your body shape or weight? (EP10c) = 2 A great
-deal OR 1 A moderate amount \>'29143-0.0' %in% c(1,2)
 
 ```{r}
 dat <- dat %>%
   mutate(
-    BE_not_during_AN =
+      not_during_AN =
       case_when(
         # "If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight?"
              
@@ -99,9 +238,9 @@ dat <- dat %>%
                `29134-0.0` == 0 &
                 
             # No lifetime anorexia nervosa
-              DSM_AN_algorithm == 0 &
-              self_reported_AN == 0 
-            # +++ add any other reports of AN
+              #SelfReportedAnorexiaNervosa == 0 &
+              # +++ additional code somewhere?
+              Anorexia_nervosa == 0 
             ) ~ 1
            )
   )
@@ -119,17 +258,17 @@ dat <- dat %>%
                      `29135-0.0` == 0) &
 
 #Critaria B
-            #AND During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? = 1 Made yourself vomit OR  2 Used laxatives (pills or liquids meant to stimulate bowel movements) OR 3 Used diuretics (water pills) OR 4 Used weight loss pills (over the counter or prescription) OR 5 Exercised excessively, felt compelled to exercise, felt uneasy or distressed if unable to exercise or prioritised exercise over your health or important activities OR 6 Fasted or not eaten for eight waking hours or more OR 7 Used other methods to lose weight/stay at low weight)
-                     `29140-0.0` %in% c(1,2,3,4,5,6,7) &            
-# Cross-check if we included no.7
+            #AND During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? = 1 Made yourself vomit OR  2 Used laxatives (pills or liquids meant to stimulate bowel movements) OR 3 Used diuretics (water pills) OR 4 Used weight loss pills (over the counter or prescription) OR 5 Exercised excessively, felt compelled to exercise, felt uneasy or distressed if unable to exercise or prioritised exercise over your health or important activities OR 6 Fasted or not eaten for eight waking hours or more
+                     (made_yourself_vomit == 1 |
+                        used_laxatives == 1 |
+                        used_diuretics == 1 |
+                        used_weight_loss_pills == 1 |
+                        excessive_exercise == 1 |
+                        fasten == 1) &            
 
 #Critaria C
             #AND During the time when you were regularly overeating/binge eating, did you ever use any of these behaviours (made yourself vomit, used pills, exercised excessively or fasted), on their own or in combination, at least once a week? = 1 Yes, at least once a week
                      (`29141-0.0` == 1 &
-
-            #AND What was the longest amount of time when you were overeating/binge eating and you engaged in any of these behaviours = 0 At least three months
-#If this is replicated with above
-                     `29142-0.0` == 0 &
 
             #AND What was the longest amount of time where you were overeating/binge eating at least once a week? = 0 At least three months
                      `29133-0.0` == 0) &
@@ -138,7 +277,6 @@ dat <- dat %>%
                      `29143-0.0` %in% c(1,2) &
 
 #Criteria E
-### Replace with Helena's Not during AN
             #AND not during AN
                       not_during_AN == 1 
              ~ 1,
