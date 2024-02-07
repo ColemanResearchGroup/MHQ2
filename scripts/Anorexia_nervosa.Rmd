@@ -282,7 +282,8 @@ dat <- dat %>%
                         used_diuretics == 1 |
                         used_weight_loss_pills == 1 |
                         excessive_exercise == 1 |
-                        fasten == 1 ) &
+                        fasten == 1 |
+                        other_weight_control == 1) &
 
 #Criteria C
            #Did you feel fat? = 1 Yes
