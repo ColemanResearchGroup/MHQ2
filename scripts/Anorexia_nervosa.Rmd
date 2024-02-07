@@ -12,66 +12,229 @@ library("tidyverse")
 # Import data
 
 ```{r}
-dat <- readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
-dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Anonymous.rds")
+dat <- readRDS("/Users/lilian/Desktop/MHQ2_Height_Alcohol_Field_Anonymous.rds")
+#dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Height_Alcohol_Field_Anonymous.rds")
 ```
 
+# Recode multiple choice questions
+29130 Methods of controlling body shape or weight when at this low weight
+1	Made yourself vomit
+2	Used laxatives (pills or liquids)
+3	Used diuretics (water pills)
+4	Used weight loss pills
+5	Exercised excessively or felt distressed if unable to exercise
+6	Fasted or not eaten for eight waking hours or more
+7	Other methods to lose weight/stay at low weight
+0	None of above
+-3	Prefer not to answer
+
+```{r made yourself vomit}
+dat <- dat %>%
+  mutate(
+    made_yourself_vomit =
+      case_when(
+        `29130-0.0` == 1 |
+        `29130-0.1` == 1 |
+        `29130-0.2` == 1 | 
+        `29130-0.3` == 1 |
+        `29130-0.4` == 1 |
+        `29130-0.5` == 1 |
+        `29130-0.6` == 1 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29130-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 1.021)
+dat %>%
+  count(made_yourself_vomit)
+```
+
+```{r used laxatives}
+dat <- dat %>%
+  mutate(
+    used_laxatives =
+      case_when(
+        `29130-0.0` == 2 |
+        `29130-0.1` == 2 |
+        `29130-0.2` == 2 | 
+        `29130-0.3` == 2 |
+        `29130-0.4` == 2 |
+        `29130-0.5` == 2 |
+        `29130-0.6` == 2 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29130-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 1.050)
+dat %>%
+  count(used_laxatives)
+```
+
+```{r used diuretics}
+dat <- dat %>%
+  mutate(
+    used_diuretics =
+      case_when(
+        `29130-0.0` == 3 |
+        `29130-0.1` == 3 |
+        `29130-0.2` == 3 | 
+        `29130-0.3` == 3 |
+        `29130-0.4` == 3 |
+        `29130-0.5` == 3 |
+        `29130-0.6` == 3 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29130-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 247)
+dat %>%
+  count(used_diuretics)
+```
+
+```{r used weight loss pills}
+dat <- dat %>%
+  mutate(
+    used_weight_loss_pills =
+      case_when(
+        `29130-0.0` == 4 |
+        `29130-0.1` == 4 |
+        `29130-0.2` == 4 | 
+        `29130-0.3` == 4 |
+        `29130-0.4` == 4 |
+        `29130-0.5` == 4 |
+        `29130-0.6` == 4 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29130-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 288)
+dat %>%
+  count(used_weight_loss_pills)
+```
+
+```{r excessive exercise}
+dat <- dat %>%
+  mutate(
+    excessive_exercise =
+      case_when(
+        `29130-0.0` == 5 |
+        `29130-0.1` == 5 |
+        `29130-0.2` == 5 | 
+        `29130-0.3` == 5 |
+        `29130-0.4` == 5 |
+        `29130-0.5` == 5 |
+        `29130-0.6` == 5 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29130-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 1,917)
+dat %>%
+  count(excessive_exercise)
+```
+
+```{r fasten}
+dat <- dat %>%
+  mutate(
+    fasten =
+      case_when(
+        `29130-0.0` == 6 |
+        `29130-0.1` == 6 |
+        `29130-0.2` == 6 | 
+        `29130-0.3` == 6 |
+        `29130-0.4` == 6 |
+        `29130-0.5` == 6 |
+        `29130-0.6` == 6 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29130-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 2,403)
+dat %>%
+  count(fasten)
+```
+
+```{r other weight control}
+dat <- dat %>%
+  mutate(
+    other_weight_control =
+      case_when(
+        `29130-0.0` == 7 |
+        `29130-0.1` == 7 |
+        `29130-0.2` == 7 | 
+        `29130-0.3` == 7 |
+        `29130-0.4` == 7 |
+        `29130-0.5` == 7 |
+        `29130-0.6` == 7 ~ 1,
+                     
+        # did not have any weight control behaviour
+        `29130-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
+
+# Check (expecting 823)
+dat %>%
+  count(other_weight_control)
+```
 
 # BMI at low weight
 
 Lowest weight during period when underweight [metric] / Height [cm]/100)^2
 
 ```{r}
-#FOR TESTING: MHQ2$'12144-1.0'<-169.0
-MHQ2 <- dat %>%
+dat <- dat %>%
   mutate(BMI =
            case_when(is.na(`29125-0.0`) |
-                     is.na(`12144-1.0`) |
+                     is.na(`50-0.0`) |
                      `29125-0.0` %in% c(0, -1, -3) ~ NA,
-                     TRUE ~ `29125-0.0` / (`12144-1.0`/100)^2)
+                     TRUE ~ `29125-0.0` / (`50-0.0`/100)^2)
         )
 ```
               
 # Anorexia nervosa
 
-BMI at low weight <= 18.55 kg/m2
->BMI <= 18.55
-
-AND
-(Did you feel fat? (EP2a/29122) = 1 Yes
->'29122-0.0' == 1
-
-  OR
-  During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? (EP2c/29124) = 1 Yes
-  >'29124-0.0' == 1
-
-  OR
-  Did/do you ever think your low weight had/has negative consequences for your health? (EP4c/29128) = 0 No
-  >'29128-0.0' == 0
-
-  OR
-  When you are/were at this low weight, how much is/was your self-esteem dependent on your body shape or weight? (EP4d/29129) = 2 A great deal OR 1 A moderate amount)
-  >'29129-0.0' %in% c(1,2) 
-
-AND
-(During the time when you were at this low weight: Were you afraid that you might gain weight or become fat? (EP2b/29123) = 1 Yes
->'29123-0.0' == 1
-
-  OR
-  Have you done any of the following as a way to control your body shape or weight? (EP5/29130) = any of 1 to 7)
-  >'29130-0.0' %in% c(1,2,3,4,5,6,7)
-
-
-
 ```{r}
 #Anorexia nervosa
 dat <- dat %>%
-  mutate(AN =
+  mutate(Anorexia_nervosa = 
 
-           #{BMI at low weight} <= 18.55 kg/m2
+           ##BMI at low weight <= 18.55 kg/m2
                        BMI <= 18.55 &
 
-           #(Did you feel fat? = 1 Yes
+           #Did you feel fat? = 1 Yes
                        (`29122-0.0` == 1 |
 
            #During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
@@ -80,50 +243,49 @@ dat <- dat %>%
            #Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
                         `29128-0.0` == 0 |
 
-           #Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount)
+           #Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
                         `29129-0.0` %in% c(1,2)) &
 
-           #(Afraid that you might gain weight or become fat = 1 Yes
+           #Afraid that you might gain weight or become fat = 1 Yes
                        (`29124-0.0` == 1 |
 
-           #Have you done any of the following as a way to control your body shape or weight? = any of 1 to 7)
-                        `29130-0.0` %in% c(1,2,3,4,5,6,7))
+           #Have you done any of the following as a way to control your body shape or weight? = any of 1 to 7
+                        made_yourself_vomit == 1 |
+                        used_laxatives == 1 |
+                        used_diuretics == 1 |
+                        used_weight_loss_pills == 1 |
+                        excessive_exercise == 1 |
+                        fasten == 1 |
+                        other_weight_control == 1)
             ~ 1,
          TRUE ~ 0
-  ))
+  )
+)
 ```
 
 # Anorexia nervosa - binge/purge subtype
 
-
-AND 
-(Afraid that you might gain weight or become fat (EP2b) = 1 Yes
->'29124-0.0' == 1
-
-AND 
-(Have you had recurrent episodes of excessive overeating or binge eating (EP6c) = 2 Yes, ONLY at time(s) of low weight OR 1 Yes, BOTH at time(s) of low weight AND at time(s) when I was not at low weight)
->'29134-0.0' %in% c(1,2)
-
-  OR 
-  (Have you done any of the following as a way to control your body shape or weight (EP5) = 01 Made yourself vomit OR 02 Used laxatives (pills or liquids meant to stimulate bowel movement) OR 03 Used diuretics (water pills) OR 07 Used other methods to lose weight/stay at low weight)
-  >'29130-0.0' %in% c(1, 2, 3, 7)
-
 ```{r}
 #Anorexia nervosa - binge/purge subtype
-MHQ2 <- MHQ2 %>%
-  mutate(AN_binge_purge =
+dat <- dat %>%
+  mutate(Anorexia_nervosa_binge_eating_purging =
 #Criteria A
-           case_when(#BMI at low weight <= 18.55 kg/m2
-                       BMI <= 18.55 &
+           #BMI at low weight <= 18.55 kg/m2
+              case_when( BMI <= 18.55 &
 #Criteria B
-           #(Afraid that you might gain weight or become fat = 1 Yes
+           #Afraid that you might gain weight or become fat = 1 Yes
                        (`29124-0.0` == 1 |
 
-          #Have you done any of the following as a way to control your body shape or weight? = any of 1 to 7)
-                        `29130-0.0` %in% c(1,2,3,4,5,6,7)) &
+          #Have you done any of the following as a way to control your body shape or weight? = any of 1 to 6
+                        made_yourself_vomit == 1 |
+                        used_laxatives == 1 |
+                        used_diuretics == 1 |
+                        used_weight_loss_pills == 1 |
+                        excessive_exercise == 1 |
+                        fasten == 1 ) &
 
 #Criteria C
-           #(Did you feel fat? = 1 Yes
+           #Did you feel fat? = 1 Yes
                        (`29122-0.0` == 1 |
 
            #During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
@@ -132,73 +294,42 @@ MHQ2 <- MHQ2 %>%
            #Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
                         `29128-0.0` == 0 |
 
-           #Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount)
+           #Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
                         `29129-0.0` %in% c(1,2)) &
 
 #ANBP criteria
-          #(Have you had recurrent episodes of excessive overeating or binge eating (EP6c) = 2 Yes, ONLY at time(s) of low weight OR 1 Yes, BOTH at time(s) of low weight AND at time(s) when I was not at low weight)
+          #Have you had recurrent episodes of excessive overeating or binge eating (EP6c) = 2 Yes, ONLY at time(s) of low weight OR 1 Yes, BOTH at time(s) of low weight AND at time(s) when I was not at low weight)
                        (`29134-0.0` %in% c(1,2) |
 
           #Have you done any of the following as a way to control your body shape or weight (EP5) = 1 Made yourself vomit OR 2 Used laxatives (pills or liquids meant to stimulate bowel movement) OR 3 Used diuretics (water pills) 
-                        `29130-0.0` %in% c(1, 2, 3))
+                        made_yourself_vomit == 1 |
+                        used_laxatives == 1 |
+                        used_diuretics == 1)
             ~ 1,
          TRUE ~ 0
-  ))
-# #check results
-# View(
-#   MHQ2[,
-#        c(
-#          'Extended_AN',
-#          '29124-0.0',
-#          '29134-0.0',
-#          '29130-0.0',
-#          'AN_binge_purge'
-#        )
-#        ]
-# )
+  )
+)
 ```
 
 # Anorexia nervosa - restricting subtype
-Case {anorexia nervosa} 
->Extended_AN == 1
-
-AND 
-EP2b= 01 Yes 
->'29123-0.0' == 1
-
-AND 
-Have you done any of the following as a way to control your body shape or weight (EP5) did not include!= 01 Made yourself vomit OR 02 Used laxatives OR 03 Used diuretics (water pills) OR 07 other methods 
->!'29130-0.0' %in% c(1, 2, 3, 7)
-
-AND 
-(Have you had recurrent episodes of excessive overeating or binge eating (EP6a) = 0 No
->'29132-0.0' == 0
-
-  OR 
-  Do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight (EP6c) = 00 No, only at time(s) when I was NOT at low weight)
-  >'29134-0.0' == 0
-
-AND 
-Have you done any of the following as a way to control your body shape or weight (EP5) = 04 Used weight loss pills (over the counter or prescription) OR 05 Exercised excessively, felt compelled to exercise, felt uneasy or distressed if unable to exercise or prioritised exercise over your health or important activities OR 06 Fasted or not eaten for eight waking hours or more
->'29130-0.0' %in% c(4,5,6)
 
 ```{r}
 #Anorexia nervosa - restricting subtype
-MHQ2 <- MHQ2 %>%
-  mutate(AN_restricting =
+dat <- dat %>%
+  mutate(Anorexia_nervosa_restricting =
 #Criteria A
-           case_when(#BMI at low weight <= 18.55 kg/m2
-                       BMI <= 18.55 &
+           #BMI at low weight <= 18.55 kg/m2
+              case_when( BMI <= 18.55 &
 #Criteria B
-           #(Afraid that you might gain weight or become fat = 1 Yes
+           #Afraid that you might gain weight or become fat = 1 Yes
                        (`29124-0.0` == 1 |
 
-          #Have you done any of the following as a way to control your body shape or weight? = 5 OR 6)
-#Discuss with Helena: if should be 4, 5, 6 or 5, 6 only. What do we decide on weight loss pills
-                        `29130-0.0` %in% c(5,6)) &
+          #Have you done any of the following as a way to control your body shape or weight? = 5 exercise excessively OR 6 fasten
+                        excessive_exercise == 1 |
+                        fasten == 1) &
 
 #Criteria C
-           #(Did you feel fat? = 1 Yes
+           #Did you feel fat? = 1 Yes
                        (`29122-0.0` == 1 |
 
            #During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
@@ -207,12 +338,11 @@ MHQ2 <- MHQ2 %>%
            #Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
                         `29128-0.0` == 0 |
 
-           #Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount)
+           #Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
                         `29129-0.0` %in% c(1,2)) &
 
             ~ 1,
          TRUE ~ 0
-  ))
+  )
+)
 ```
-
-
