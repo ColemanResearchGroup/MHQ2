@@ -38,9 +38,15 @@ dat <- dat %>%
               SelfReportedAnorexiaNervosa == 0 
             # Here, any other other reports of AN in the UK Biobank,
             # e. g., HES data can be added
-            ) ~ 1
-           )
-  )
+            ) ~ 1,
+                     
+        # did respond to the ED section of the MHQ2
+        `29130-0.0` == 0 ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
+                     )
+         )
 ```
 
 
@@ -50,7 +56,10 @@ dat %>%
     `29134-0.0`,
     SelfReportedAnorexiaNervosa,
     BE_not_during_AN
-  ) 
+  ) %>%
+  filter(
+    !is.na(`29134-0.0`)
+  )
 ```
 
 
