@@ -9,12 +9,6 @@ date: "2023-10-07"
 library("tidyverse")
 ```
 
-# Import data
-
-```{r}
-dat <- readRDS("/Users/lilian/Desktop/MHQ2_Height_Alcohol_Field_Anonymous.rds")
-#dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Height_Alcohol_Field_Anonymous.rds")
-```
 
 # Recode multiple choice questions
 29130 Methods of controlling body shape or weight when at this low weight
@@ -158,10 +152,10 @@ dat %>%
   count(excessive_exercise)
 ```
 
-```{r fasten}
+```{r fasted}
 dat <- dat %>%
   mutate(
-    fasten =
+    fasted =
       case_when(
         `29130-0.0` == 6 |
         `29130-0.1` == 6 |
@@ -181,7 +175,7 @@ dat <- dat %>%
 
 # Check (expecting 2,403)
 dat %>%
-  count(fasten)
+  count(fasted)
 ```
 
 ```{r other weight control}
@@ -255,7 +249,7 @@ dat <- dat %>%
                         used_diuretics == 1 |
                         used_weight_loss_pills == 1 |
                         excessive_exercise == 1 |
-                        fasten == 1 |
+                        fasted == 1 |
                         other_weight_control == 1)
             ~ 1,
          TRUE ~ 0
@@ -282,7 +276,7 @@ dat <- dat %>%
                         used_diuretics == 1 |
                         used_weight_loss_pills == 1 |
                         excessive_exercise == 1 |
-                        fasten == 1 |
+                        fasted == 1 |
                         other_weight_control == 1) &
 
 #Criteria C
@@ -315,31 +309,30 @@ dat <- dat %>%
 # Anorexia nervosa - restricting subtype
 
 ```{r}
-#Anorexia nervosa - restricting subtype
 dat <- dat %>%
   mutate(Anorexia_nervosa_restricting =
-#Criteria A
-           #BMI at low weight <= 18.55 kg/m2
+# Criteria A
+           # BMI at low weight <= 18.55 kg/m2
               case_when( BMI <= 18.55 &
-#Criteria B
-           #Afraid that you might gain weight or become fat = 1 Yes
+# Criteria B
+           # Afraid that you might gain weight or become fat = 1 Yes
                        (`29124-0.0` == 1 |
 
-          #Have you done any of the following as a way to control your body shape or weight? = 5 exercise excessively OR 6 fasten
+          # Have you done any of the following as a way to control your body shape or weight? = 5 exercise excessively OR 6 fasted
                         excessive_exercise == 1 |
-                        fasten == 1) &
+                        fasted == 1) &
 
-#Criteria C
-           #Did you feel fat? = 1 Yes
+# Criteria C
+           # Did you feel fat? = 1 Yes
                        (`29122-0.0` == 1 |
 
-           #During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
+           # During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
                         `29124-0.0` == 1 |
 
-           #Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
+           # Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
                         `29128-0.0` == 0 |
 
-           #Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
+           # Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
                         `29129-0.0` %in% c(1,2)) &
 
             ~ 1,
