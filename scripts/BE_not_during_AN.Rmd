@@ -49,3 +49,18 @@ dat <- dat %>%
   )
 ```
 
+
+```{r}
+dat %>%
+  select(
+    `29134-0.0`,
+    SelfReportedAnorexiaNervosa,
+    BE_not_during_AN
+  ) 
+```
+
+
+```{r}
+dat %>%
+  count(BE_not_during_AN)
+```

@@ -220,6 +220,7 @@ dat <- dat %>%
         )
 ```
 
+
 ```{r}
 dat %>% 
   select(
@@ -232,7 +233,6 @@ dat %>%
 # Anorexia nervosa
 
 ```{r}
-#Anorexia nervosa
 dat <- dat %>%
   mutate(Anorexia_nervosa = 
 
