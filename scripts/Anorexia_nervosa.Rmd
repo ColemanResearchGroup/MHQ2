@@ -235,37 +235,36 @@ dat %>%
 ```{r}
 dat <- dat %>%
   mutate(Anorexia_nervosa = 
-
-           ##BMI at low weight <= 18.55 kg/m2
+           case_when(
+           # BMI at low weight <= 18.55 kg/m2
                        BMI_at_low_weight <= 18.55 &
 
-           #Did you feel fat? = 1 Yes
+           # Did you feel fat? = 1 Yes
                        (`29122-0.0` == 1 |
 
-           #During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
+           # During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
                         `29124-0.0` == 1 |
 
-           #Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
+           # Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
                         `29128-0.0` == 0 |
 
-           #Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
-                        `29129-0.0` %in% c(1,2)) &
+           # Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
+                        `29129-0.0` %in% c(1, 2) ) &
 
-           #Afraid that you might gain weight or become fat = 1 Yes
+           # Afraid that you might gain weight or become fat = 1 Yes
                        (`29124-0.0` == 1 |
 
-           #Have you done any of the following as a way to control your body shape or weight? = any of 1 to 7
+           # Have you done any of the following as a way to control your body shape or weight? = any of 1 to 7
                         made_yourself_vomit == 1 |
                         used_laxatives == 1 |
                         used_diuretics == 1 |
                         used_weight_loss_pills == 1 |
                         excessive_exercise == 1 |
                         fasted == 1 |
-                        other_weight_control == 1)
-            ~ 1,
+                        other_weight_control == 1) ~ 1,
          TRUE ~ 0
+         )
   )
-)
 ```
 
 # Anorexia nervosa - binge-eating/purging subtype

@@ -7,13 +7,7 @@ output: html_document
 
 
 ```{r}
-library("summarytools")
-library("dplyr")
 library("tidyverse")
-```
-
-```{r read in data}
-dat <- readRDS("/Users/helenadavies/werk/UKB_MHQ2_algorithms/anon_data/MHQ2_Anonymous.rds")
 ```
 
 ## Not during AN criteria
