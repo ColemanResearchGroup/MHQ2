@@ -323,9 +323,14 @@ dat <- dat %>%
                         used_laxatives == 1 |
                         used_diuretics == 1)
             ~ 1,
-         TRUE ~ 0
+           
+           # has answered ED section of MHQ2
+           !is.na(`29205-0.0`) ~ 0,
+           
+           # people who have not answered the MHQ2
+           TRUE ~ NA_real_
+         )
   )
-)
 ```
 
 # Anorexia nervosa - restricting subtype
@@ -355,10 +360,15 @@ dat <- dat %>%
                         `29128-0.0` == 0 |
 
            # Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
-                        `29129-0.0` %in% c(1,2)) &
+                        `29129-0.0` %in% c(1,2))
 
             ~ 1,
-         TRUE ~ 0
+           
+           # has answered ED section of MHQ2
+           !is.na(`29205-0.0`) ~ 0,
+           
+           # people who have not answered the MHQ2
+           TRUE ~ NA_real_
+         )
   )
-)
 ```
