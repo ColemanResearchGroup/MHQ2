@@ -263,7 +263,7 @@ dat <- dat %>%
 )
 ```
 
-# Anorexia nervosa - binge/purge subtype
+# Anorexia nervosa - binge-eating/purging subtype
 
 ```{r}
 #Anorexia nervosa - binge/purge subtype

@@ -40,9 +40,10 @@ dat <- dat %>%
                `29134-0.0` == 0 &
                 
             # No lifetime anorexia nervosa
-              DSM_AN_algorithm == 0 &
-              self_reported_AN == 0 
-            # +++ add any other reports of AN
+              Anorexia_nervosa == 0 &
+              SelfReportedAnorexiaNervosa == 0 
+            # Here, any other other reports of AN in the UK Biobank,
+            # e. g., HES data can be added
             ) ~ 1
            )
   )
