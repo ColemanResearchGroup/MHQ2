@@ -10,7 +10,7 @@ library("tidyverse")
 ```
 
 
-# Recode multiple choice questions
+# Recode multiple choice question
 29130 Methods of controlling body shape or weight when at this low weight
 1	Made yourself vomit
 2	Used laxatives (pills or liquids)
@@ -35,7 +35,7 @@ dat <- dat %>%
         `29130-0.5` == 1 |
         `29130-0.6` == 1 ~ 1,
                      
-        # did not have any weight control behaviour
+        # did not engage in any weight control behaviour
         `29130-0.0` == 0 ~ 0,
         
         # people who have not answered the MHQ2
@@ -61,7 +61,7 @@ dat <- dat %>%
         `29130-0.5` == 2 |
         `29130-0.6` == 2 ~ 1,
                      
-        # did not have any weight control behaviour
+        # did not engage in any weight control behaviour
         `29130-0.0` == 0 ~ 0,
         
         # people who have not answered the MHQ2
@@ -87,7 +87,7 @@ dat <- dat %>%
         `29130-0.5` == 3 |
         `29130-0.6` == 3 ~ 1,
                      
-        # did not have any weight control behaviour
+        # did not engage in any weight control behaviour
         `29130-0.0` == 0 ~ 0,
         
         # people who have not answered the MHQ2
@@ -113,7 +113,7 @@ dat <- dat %>%
         `29130-0.5` == 4 |
         `29130-0.6` == 4 ~ 1,
                      
-        # did not have any weight control behaviour
+        # did not engage in any weight control behaviour
         `29130-0.0` == 0 ~ 0,
         
         # people who have not answered the MHQ2
@@ -139,7 +139,7 @@ dat <- dat %>%
         `29130-0.5` == 5 |
         `29130-0.6` == 5 ~ 1,
                      
-        # did not have any weight control behaviour
+        # did not engage in any weight control behaviour
         `29130-0.0` == 0 ~ 0,
         
         # people who have not answered the MHQ2
@@ -165,7 +165,7 @@ dat <- dat %>%
         `29130-0.5` == 6 |
         `29130-0.6` == 6 ~ 1,
                      
-        # did not have any weight control behaviour
+        # did not engage in any weight control behaviour
         `29130-0.0` == 0 ~ 0,
         
         # people who have not answered the MHQ2
@@ -191,7 +191,7 @@ dat <- dat %>%
         `29130-0.5` == 7 |
         `29130-0.6` == 7 ~ 1,
                      
-        # did not have any weight control behaviour
+        # did not engage in any weight control behaviour
         `29130-0.0` == 0 ~ 0,
         
         # people who have not answered the MHQ2
@@ -210,14 +210,25 @@ Lowest weight during period when underweight [metric] / Height [cm]/100)^2
 
 ```{r}
 dat <- dat %>%
-  mutate(BMI =
-           case_when(is.na(`29125-0.0`) |
-                     is.na(`50-0.0`) |
-                     `29125-0.0` %in% c(0, -1, -3) ~ NA,
-                     TRUE ~ `29125-0.0` / (`50-0.0`/100)^2)
+  mutate(
+    BMI_at_low_weight =
+      case_when(
+        is.na(`29125-0.0`) |
+          is.na(`50-0.0`) |
+          `29125-0.0` %in% c(0, -1, -3) ~ NA_real_,
+        TRUE ~ `29125-0.0` / (`50-0.0`/100)^2)
         )
 ```
-              
+
+```{r}
+dat %>% 
+  select(
+    BMI_at_low_weight
+  ) %>% 
+  summary()
+```
+
+
 # Anorexia nervosa
 
 ```{r}
@@ -226,7 +237,7 @@ dat <- dat %>%
   mutate(Anorexia_nervosa = 
 
            ##BMI at low weight <= 18.55 kg/m2
-                       BMI <= 18.55 &
+                       BMI_at_low_weight <= 18.55 &
 
            #Did you feel fat? = 1 Yes
                        (`29122-0.0` == 1 |
@@ -265,7 +276,7 @@ dat <- dat %>%
   mutate(Anorexia_nervosa_binge_eating_purging =
 #Criteria A
            #BMI at low weight <= 18.55 kg/m2
-              case_when( BMI <= 18.55 &
+              case_when( BMI_at_low_weight <= 18.55 &
 #Criteria B
            #Afraid that you might gain weight or become fat = 1 Yes
                        (`29124-0.0` == 1 |
@@ -313,7 +324,7 @@ dat <- dat %>%
   mutate(Anorexia_nervosa_restricting =
 # Criteria A
            # BMI at low weight <= 18.55 kg/m2
-              case_when( BMI <= 18.55 &
+              case_when( BMI_at_low_weight <= 18.55 &
 # Criteria B
            # Afraid that you might gain weight or become fat = 1 Yes
                        (`29124-0.0` == 1 |
