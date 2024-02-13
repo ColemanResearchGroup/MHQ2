@@ -371,7 +371,20 @@ dat <- dat %>%
                         `29128-0.0` == 0 |
 
            # Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
-                        `29129-0.0` %in% c(1,2) )
+                        `29129-0.0` %in% c(1,2) ) &
+
+# Restricting type: During the last 3 months... 
+  
+  #...the individual has not engaged in recurrent episodes of binge eating or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas)...
+                        (`29132-0.0` == 0 | # No
+                        `29134-0.0` == 2 # Only at time(s) when I was not at low weight [2,767]
+                        ) &
+  # During the period of time when you were at your lowest weight, did you use any of the following as a way to control your weight or shape?
+                      (
+                        LW_made_yourself_vomit == 0 | # No
+                        LW_used_laxatives == 0 | # No
+                        LW_used_diuretics == 0 # No
+                        )
 
             ~ 1,
            
@@ -390,6 +403,15 @@ dat <- dat %>%
 dat %>%
   count(Anorexia_nervosa_restricting)
 ```
+
+# Check overlap between ANR and ANBP
+
+```{r}
+dat %>%
+  group_by(Anorexia_nervosa_restricting, Anorexia_nervosa_binge_eating_purging) %>%
+  tally()
+```
+
 
 
 ```{r}
