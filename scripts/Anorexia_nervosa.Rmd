@@ -282,17 +282,16 @@ dat %>%
 # Anorexia nervosa - binge-eating/purging subtype
 
 ```{r}
-#Anorexia nervosa - binge/purge subtype
 dat <- dat %>%
   mutate(Anorexia_nervosa_binge_eating_purging =
-#Criteria A
-           #BMI at low weight <= 18.55 kg/m2
+# Criterion A
+           # BMI at low weight <= 18.55 kg/m2
               case_when( BMI_at_low_weight <= 18.55 &
-#Criteria B
-           #Afraid that you might gain weight or become fat = 1 Yes
+# Criterion B
+           # Afraid that you might gain weight or become fat = 1 Yes
                        (`29124-0.0` == 1 |
 
-          #Have you done any of the following as a way to control your body shape or weight? = any of 1 to 6
+          # Have you done any of the following as a way to control your body shape or weight? = any of 1 to 6
                         made_yourself_vomit == 1 |
                         used_laxatives == 1 |
                         used_diuretics == 1 |
@@ -301,20 +300,20 @@ dat <- dat %>%
                         fasted == 1 |
                         other_weight_control == 1) &
 
-#Criteria C
-           #Did you feel fat? = 1 Yes
+# Criterion C
+           # Did you feel fat? = 1 Yes
                        (`29122-0.0` == 1 |
 
-           #During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
+           # During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
                         `29124-0.0` == 1 |
 
-           #Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
+           # Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
                         `29128-0.0` == 0 |
 
-           #Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
+           # Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
                         `29129-0.0` %in% c(1,2)) &
 
-#ANBP criteria
+# AN binge-eating/purging criterion
           #Have you had recurrent episodes of excessive overeating or binge eating (EP6c) = 2 Yes, ONLY at time(s) of low weight OR 1 Yes, BOTH at time(s) of low weight AND at time(s) when I was not at low weight)
                        (`29134-0.0` %in% c(1,2) |
 
@@ -344,10 +343,10 @@ dat %>%
 ```{r}
 dat <- dat %>%
   mutate(Anorexia_nervosa_restricting =
-# Criteria A
+# Criterion A
            # BMI at low weight <= 18.55 kg/m2
               case_when( BMI_at_low_weight <= 18.55 &
-# Criteria B
+# Criterion B
            # Afraid that you might gain weight or become fat = 1 Yes
                        (`29124-0.0` == 1 |
 
@@ -355,7 +354,7 @@ dat <- dat %>%
                         excessive_exercise == 1 |
                         fasted == 1) &
 
-# Criteria C
+# Criterion C
            # Did you feel fat? = 1 Yes
                        (`29122-0.0` == 1 |
 

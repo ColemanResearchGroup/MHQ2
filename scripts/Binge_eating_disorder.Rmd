@@ -327,7 +327,8 @@ dat %>%
     BE_characteristics_sumscore,
     `29137-0.0`,
     `29140-0.0`,
-    BE_not_during_AN
+    BE_not_during_AN,
+    Binge_eating_disorder
   )
 ```
 
