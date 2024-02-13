@@ -323,9 +323,10 @@ dat <- dat %>%
 # AN purging criterion
           # Have you done any of the following as a way to control your body shape or weight (EP5) = 1 Made yourself vomit OR 2 Used laxatives (pills or liquids meant to stimulate bowel movement) OR 3 Used diuretics (water pills) 
             # when at low weight
-                        LW_made_yourself_vomit == 1 |
+                        (LW_made_yourself_vomit == 1 |
                         LW_used_laxatives == 1 |
                         LW_used_diuretics == 1)
+                  )
             ~ 1,
            
            # has answered ED section of MHQ2
@@ -376,7 +377,7 @@ dat <- dat %>%
 # Restricting type: During the last 3 months... 
   
   #...the individual has not engaged in recurrent episodes of binge eating or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas)...
-                        (`29132-0.0` == 0 | # No
+                        (`29132-0.0` == 0 | # No binge eating
                         `29134-0.0` == 2 # Only at time(s) when I was not at low weight [2,767]
                         ) &
   # During the period of time when you were at your lowest weight, did you use any of the following as a way to control your weight or shape?
@@ -424,5 +425,35 @@ dat %>%
   filter(
     Anorexia_nervosa == 1
   )
+```
+
+
+```{r}
+dat %>%
+  filter(
+    Anorexia_nervosa_binge_eating_purging == 1,
+    Anorexia_nervosa_restricting == 1
+  ) %>%
+  select(
+    # Crit A
+    BMI_at_low_weight,
+    # Crit B
+    `29123-0.0`, # fear
+    made_yourself_vomit,
+    used_laxatives,
+    used_diuretics,
+    used_weight_loss_pills,
+    excessive_exercise,
+    fasted,
+    other_weight_control,
+    # Crit C
+    `29122-0.0`, # feel fat
+    `29124-0.0`, # body dysmorphia
+    `29128-0.0`, # neg consequences
+    `29129-0.0`, # self-esteem
+    # Binge eating
+    `29132-0.0`, # No
+    `29134-0.0`, # BE only at low weight
+  ) 
 ```
 
