@@ -242,7 +242,12 @@ dat <- dat %>%
             #AND not during AN
                       BE_not_during_AN == 1 
              ~ 1,
-            TRUE ~ 0
+        
+        # has answered ED section of MHQ2
+        !is.na(`29205-0.0`) ~ 0,
+        
+        # people who have not answered the MHQ2
+        TRUE ~ NA_real_
            )
          )
 ```
