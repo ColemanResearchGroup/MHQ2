@@ -18,11 +18,10 @@ library(tidyverse)
 
 # Read in data
 
-```{r Read in data}
-dat <- readRDS("/Users/christopherhuebel/work/raw_data/dat_Anonymous.rds")
+```{r}
+#dat <- readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
+dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Height_Alcohol_Field_Anonymous.rds")
 ```
-
-
 _Check data_
 
 # 29120 Period in life when was underweight
