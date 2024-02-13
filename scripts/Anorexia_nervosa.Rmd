@@ -22,6 +22,8 @@ library("tidyverse")
 0	None of above
 -3	Prefer not to answer
 
+Question: 29130: "During your period(s) of low weight, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?
+
 ```{r made yourself vomit}
 dat <- dat %>%
   mutate(
@@ -240,7 +242,7 @@ dat <- dat %>%
            # BMI at low weight <= 18.55 kg/m2
                        BMI_at_low_weight <= 18.55 &
 # Criterion B
-             # Afraid that you might gain weight or become fat = 1 Yes
+             # During the time when you were at this low weight: Afraid that you might gain weight or become fat = 1 Yes
                        (`29123-0.0` == 1 |
 
            # Have you done any of the following as a way to control your body shape or weight? = any of 1 to 7
@@ -253,7 +255,7 @@ dat <- dat %>%
                         LW_fasted == 1 |
                         LW_other_weight_control == 1) &
 # Criterion C  
-           # Did you feel fat? = 1 Yes
+           # Did you feel fat at low weight? = 1 Yes
                        (`29122-0.0` == 1 |
 
            # During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
@@ -262,7 +264,7 @@ dat <- dat %>%
            # Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
                         `29128-0.0` == 0 |
 
-           # Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
+           # When you are/were at this low weight, was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
                         `29129-0.0` %in% c(1, 2) )
             ~ 1,
            
@@ -291,21 +293,21 @@ dat <- dat %>%
            # BMI at low weight <= 18.55 kg/m2
               case_when( BMI_at_low_weight <= 18.55 &
 # Criterion B
-           # Afraid that you might gain weight or become fat = 1 Yes
+           # During the time when you were at this low weight: Afraid that you might gain weight or become fat = 1 Yes
                        (`29123-0.0` == 1 |
 
           # Have you done any of the following as a way to control your body shape or weight? = any of 1 to 7
             # when at low weight
-                        made_yourself_vomit == 1 |
-                        used_laxatives == 1 |
-                        used_diuretics == 1 |
-                        used_weight_loss_pills == 1 |
-                        excessive_exercise == 1 |
-                        fasted == 1 |
-                        other_weight_control == 1) &
+                        LW_made_yourself_vomit == 1 |
+                        LW_used_laxatives == 1 |
+                        LW_used_diuretics == 1 |
+                        LW_used_weight_loss_pills == 1 |
+                        LW_excessive_exercise == 1 |
+                        LW_fasted == 1 |
+                        LW_other_weight_control == 1) &
 
 # Criterion C
-           # Did you feel fat? = 1 Yes
+           # Did you feel fat at low weight? = 1 Yes
                        (`29122-0.0` == 1 |
 
            # During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
@@ -314,12 +316,15 @@ dat <- dat %>%
            # Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
                         `29128-0.0` == 0 |
 
-           # Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
+           # When you are/were at this low weight, was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
                         `29129-0.0` %in% c(1,2) ) &
 
 # AN binge-eating criterion
-          # Have you had recurrent episodes of excessive overeating or binge eating (EP6c) = 2 Yes, ONLY at time(s) of low weight OR 1 Yes, BOTH at time(s) of low weight AND at time(s) when I was not at low weight)
-                       (`29134-0.0` %in% c(1,2) |
+          # Have you had recurrent episodes of excessive overeating or binge eating (EP6c) = 0 ONLY at time(s) of low weight OR 1 BOTH at time(s) of low weight AND at time(s) when I was not at low weight)
+                       (`29134-0.0` %in% c(
+                         0, 	# Only at time(s) of low weight
+                         1	# Both at times of low weight and when not at low weight
+                         ) |
 # AN purging criterion
           # Have you done any of the following as a way to control your body shape or weight (EP5) = 1 Made yourself vomit OR 2 Used laxatives (pills or liquids meant to stimulate bowel movement) OR 3 Used diuretics (water pills) 
             # when at low weight
@@ -353,7 +358,7 @@ dat <- dat %>%
            # BMI at low weight <= 18.55 kg/m2
               case_when( BMI_at_low_weight <= 18.55 &
 # Criterion B
-           # Afraid that you might gain weight or become fat = 1 Yes
+           # During the time when you were at this low weight: Afraid that you might gain weight or become fat = 1 Yes
                        (`29123-0.0` == 1 |
 
           # Have you done any of the following as a way to control your body shape or weight? = 5 exercise excessively OR 6 fasted
@@ -362,7 +367,7 @@ dat <- dat %>%
                         LW_used_weight_loss_pills == 1) &
 
 # Criterion C
-           # Did you feel fat? = 1 Yes
+           # Did you feel fat at low weight? = 1 Yes
                        (`29122-0.0` == 1 |
 
            # During the time when you were at this low weight: Did you think or feel that your body or parts of your body were larger than they actually were? = 1 Yes
@@ -371,14 +376,14 @@ dat <- dat %>%
            # Did/do you ever think your low weight had/has negative consequences for your health? = 0 No
                         `29128-0.0` == 0 |
 
-           # Was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
+           # When you are/were at this low weight, was your self-esteem dependent on your body shape or weight = 2 A great deal OR 1 A moderate amount
                         `29129-0.0` %in% c(1,2) ) &
 
 # Restricting type: During the last 3 months... 
   
   #...the individual has not engaged in recurrent episodes of binge eating or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas)...
-                        (`29132-0.0` == 0 | # No binge eating
-                        `29134-0.0` == 2 # Only at time(s) when I was not at low weight [2,767]
+                        (`29132-0.0` == 0 | # Never binge eating
+                        `29134-0.0` == 2 # Binge eating: Only at time(s) when I was not at low weight [2,767]
                         ) &
   # During the period of time when you were at your lowest weight, did you use any of the following as a way to control your weight or shape?
                       (
@@ -439,13 +444,13 @@ dat %>%
     BMI_at_low_weight,
     # Crit B
     `29123-0.0`, # fear
-    made_yourself_vomit,
-    used_laxatives,
-    used_diuretics,
-    used_weight_loss_pills,
-    excessive_exercise,
-    fasted,
-    other_weight_control,
+    LW_made_yourself_vomit,
+    LW_used_laxatives,
+    LW_used_diuretics,
+    LW_used_weight_loss_pills,
+    LW_excessive_exercise,
+    LW_fasted,
+    LW_other_weight_control,
     # Crit C
     `29122-0.0`, # feel fat
     `29124-0.0`, # body dysmorphia
