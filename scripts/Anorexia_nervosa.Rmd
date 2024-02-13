@@ -236,6 +236,7 @@ dat %>%
 dat <- dat %>%
   mutate(Anorexia_nervosa = 
            case_when(
+# Criterion A             
            # BMI at low weight <= 18.55 kg/m2
                        BMI_at_low_weight <= 18.55 &
 
@@ -252,7 +253,7 @@ dat <- dat %>%
                         `29129-0.0` %in% c(1, 2) ) &
 
            # Afraid that you might gain weight or become fat = 1 Yes
-                       (`29124-0.0` == 1 |
+                       (`29123-0.0` == 1 |
 
            # Have you done any of the following as a way to control your body shape or weight? = any of 1 to 7
              # when at low weight
@@ -290,7 +291,7 @@ dat <- dat %>%
               case_when( BMI_at_low_weight <= 18.55 &
 # Criterion B
            # Afraid that you might gain weight or become fat = 1 Yes
-                       (`29124-0.0` == 1 |
+                       (`29123-0.0` == 1 |
 
           # Have you done any of the following as a way to control your body shape or weight? = any of 1 to 7
             # when at low weight
@@ -351,7 +352,7 @@ dat <- dat %>%
               case_when( BMI_at_low_weight <= 18.55 &
 # Criterion B
            # Afraid that you might gain weight or become fat = 1 Yes
-                       (`29124-0.0` == 1 |
+                       (`29123-0.0` == 1 |
 
           # Have you done any of the following as a way to control your body shape or weight? = 5 exercise excessively OR 6 fasted
                         LW_excessive_exercise == 1 |
