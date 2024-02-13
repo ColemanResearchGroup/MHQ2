@@ -424,6 +424,7 @@ dat %>%
 dat %>%
   select(
     Anorexia_nervosa,
+    SelfReportedAnorexiaNervosa,
     Anorexia_nervosa_binge_eating_purging,
     Anorexia_nervosa_restricting,
   ) %>%
@@ -436,8 +437,7 @@ dat %>%
 ```{r}
 dat %>%
   filter(
-    Anorexia_nervosa_binge_eating_purging == 1,
-    Anorexia_nervosa_restricting == 1
+    Anorexia_nervosa == 1
   ) %>%
   select(
     # Crit A
