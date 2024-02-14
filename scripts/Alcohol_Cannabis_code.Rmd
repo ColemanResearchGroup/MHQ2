@@ -232,7 +232,7 @@ MHQ2 <- MHQ2 %>%
            case_when(
     Sum_AUDIT < 8 &
     `20117-0.0` == 0 &
-    !(`2664-0.0` %in% c(1,2,3))
+    `2664-0.0` %in% c(4,5)
    ~ 1,
   Sum_AUDIT >= 8 |
   `20117-0.0` %in% c(1,2) |
@@ -241,9 +241,6 @@ MHQ2 <- MHQ2 %>%
   TRUE ~ NA_real_
   )
 )
-
-#MHQ2 %>%
-#  count(alcohol_nonuse)
 ```
 
 
