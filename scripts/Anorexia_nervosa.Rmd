@@ -361,7 +361,7 @@ dat <- dat %>%
            # During the time when you were at this low weight: Afraid that you might gain weight or become fat = 1 Yes
                        (`29123-0.0` == 1 |
 
-          # Have you done any of the following as a way to control your body shape or weight? = 5 exercise excessively OR 6 fasted
+          # Have you done any of the following as a way to control your body shape or weight? = 4 Used weight loss pills OR 5 exercise excessively OR 6 fasted
                         LW_excessive_exercise == 1 |
                         LW_fasted == 1 |
                         LW_used_weight_loss_pills == 1) &
