@@ -230,13 +230,20 @@ NOT reason for reducing amount of alcohol drunk 2664 = “ill health”, “doct
 MHQ2 <- MHQ2 %>%
   mutate(alcohol_nonuse = 
            case_when(
-    is.na(Sum_AUDIT) ~ NA_real_,
     Sum_AUDIT < 8 &
-    20117-0.0 == 0 &
-    !(2664-0.0 %in% c(1,2,3))
+    `20117-0.0` == 0 &
+    !(`2664-0.0` %in% c(1,2,3))
    ~ 1,
-  TRUE ~ 0
-  ))
+  Sum_AUDIT >= 8 |
+  `20117-0.0` %in% c(1,2) |
+  `2664-0.0` %in% c(1,2,3)
+  ~ 0,
+  TRUE ~ NA_real_
+  )
+)
+
+#MHQ2 %>%
+#  count(alcohol_nonuse)
 ```
 
 
