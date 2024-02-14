@@ -10,13 +10,6 @@ date: "2023-11-07"
 library("tidyverse")
 ```
 
-# Import data
-
-```{r}
-#dat <- readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
-dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Height_Alcohol_Field_Anonymous.rds")
-```
-
 # Purging disorder
 
 Was there a time in your life when you made yourself vomit, used laxatives, diuretics or pills, on their own or in combination, at least once a week as a way to control your body shape or weight? = 1 Yes, at least once a week 
