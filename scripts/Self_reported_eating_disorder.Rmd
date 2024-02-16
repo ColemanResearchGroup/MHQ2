@@ -1,0 +1,96 @@
+---
+title: "Self-reported eating disorder diagnoses"
+author: "Christopher Huebel, Helena Davies, Johan Zvrskovec, Zhoaying Yu"
+date: "2024-02-05"
+output: html_document
+---
+
+```{r}
+library("tidyverse")
+```
+
+# Import data
+
+```{r}
+#dat <- readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
+dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Height_Alcohol_Field_Anonymous.rds")
+```
+
+
+# Define grep_reports function
+
+```{r Define grep_reports}
+
+grep_reports <- function(data, codes) {
+  return(
+    apply(X = data,
+      MARGIN = 1,
+      FUN = function(selected_row) {
+        if(all(is.na(selected_row))) {
+          return(NA_real_)
+        } else {
+          return(sign(sum(codes %in% selected_row)))
+        }
+      }
+    )
+  )
+}
+
+```
+
+
+# Self-reported eating disorder diagnosis
+
+Eating disorder diagnoses coded in coding 1954 are AN (17), BN (18), BED (19), Other EDs (20)
+
+```{r Any eating disorder diagnosis}
+
+dat$SelfReportedEatingDisorder <- grep_reports(
+  data = dat[, grep("^29000-", colnames(dat))],
+  codes = c(17:20)
+)
+
+```
+
+
+```{r Any eating disorder diagnosis}
+dat$SelfReportedAnorexiaNervosa <- grep_reports(
+  data = dat[, grep("^29000-", colnames(dat))],
+  codes = 17
+)
+```
+
+
+```{r}
+dat %>%
+  count(SelfReportedAnorexiaNervosa)
+```
+
+```{r Any eating disorder diagnosis}
+dat$SelfReportedBulimiaNervosa <- grep_reports(
+  data = dat[, grep("^29000-", colnames(dat))],
+  codes = 18
+)
+```
+
+
+```{r}
+dat %>%
+  count(SelfReportedBulimiaNervosa)
+```
+
+
+```{r Any eating disorder diagnosis}
+dat$SelfReportedBingeEatingDisorder <- grep_reports(
+  data = dat[, grep("^29000-", colnames(dat))],
+  codes = 19
+)
+```
+
+
+```{r}
+dat %>%
+  count(SelfReportedBingeEatingDisorder)
+```
+
+
