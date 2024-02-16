@@ -24,6 +24,7 @@ library("tidyverse")
 
 Question: 29130: "During your period(s) of low weight, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?
 
+1	Made yourself vomit
 ```{r made yourself vomit}
 dat <- dat %>%
   mutate(
@@ -50,6 +51,7 @@ dat %>%
   count(LW_made_yourself_vomit)
 ```
 
+2	Used laxatives (pills or liquids)
 ```{r used laxatives}
 dat <- dat %>%
   mutate(
@@ -76,6 +78,7 @@ dat %>%
   count(LW_used_laxatives)
 ```
 
+3	Used diuretics (water pills)
 ```{r used diuretics}
 dat <- dat %>%
   mutate(
@@ -102,6 +105,7 @@ dat %>%
   count(LW_used_diuretics)
 ```
 
+4	Used weight loss pills
 ```{r used weight loss pills}
 dat <- dat %>%
   mutate(
@@ -128,6 +132,7 @@ dat %>%
   count(LW_used_weight_loss_pills)
 ```
 
+5	Exercised excessively or felt distressed if unable to exercise
 ```{r excessive exercise}
 dat <- dat %>%
   mutate(
@@ -154,6 +159,7 @@ dat %>%
   count(LW_excessive_exercise)
 ```
 
+6	Fasted or not eaten for eight waking hours or more
 ```{r fasted}
 dat <- dat %>%
   mutate(
@@ -180,6 +186,7 @@ dat %>%
   count(LW_fasted)
 ```
 
+7	Other methods to lose weight/stay at low weight
 ```{r other weight control}
 dat <- dat %>%
   mutate(
@@ -208,7 +215,9 @@ dat %>%
 
 # BMI at low weight
 
-Lowest weight during period when underweight [metric] / Height [cm]/100)^2
+29125 Lowest weight during period when underweight [metric] / Height [cm]/100)^2
+
+50-0.0 = Adult height at sign up to UK Biobank. We use this as approximation for the height at low weight
 
 ```{r}
 dat <- dat %>%

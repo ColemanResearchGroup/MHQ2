@@ -55,10 +55,10 @@ dat <- dat %>%
 ```{r}
 dat %>%
   select(
-    `29144-0.0`,
-    `29145-0.0`,
-    `29146-0.0`,
-    `29205-0.0`,
+    `29144-0.0`, # weight loss behaviours once per week
+    `29145-0.0`, # weight loss behaviours duration
+    `29146-0.0`, # weight loss behaviours self-esteem
+    `29205-0.0`, # end date ED section MHQ2
     Purging_disorder
   ) %>%
   filter(
