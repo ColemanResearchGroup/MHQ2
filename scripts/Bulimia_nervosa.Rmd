@@ -8,7 +8,7 @@ editor_options:
     wrap: 72
 ---
 
-```{r}
+```{r, purl=FALSE}
 library("tidyverse")
 ```
 
@@ -260,7 +260,7 @@ dat <- dat %>%
 ```
 
 
-```{r}
+```{r, purl=FALSE}
 dat %>%
   select(
     Bulimia_nervosa,
@@ -283,7 +283,7 @@ dat %>%
 ```
 
 # Check
-```{r}
+```{r, purl=FALSE}
 dat %>%
   count(Bulimia_nervosa)
 ```

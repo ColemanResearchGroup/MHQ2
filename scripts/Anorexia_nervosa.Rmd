@@ -5,7 +5,7 @@ output: html_document
 date: "2023-10-07"
 ---
 
-```{r}
+```{r, purl=FALSE}
 library("tidyverse")
 ```
 
@@ -414,14 +414,14 @@ dat <- dat %>%
 
 
 
-```{r}
+```{r, purl=FALSE}
 dat %>%
   count(Anorexia_nervosa_restricting)
 ```
 
 # Check overlap between ANR and ANBP
 
-```{r}
+```{r, purl=FALSE}
 dat %>%
   group_by(Anorexia_nervosa_restricting, Anorexia_nervosa_binge_eating_purging) %>%
   tally()
@@ -429,7 +429,7 @@ dat %>%
 
 
 
-```{r}
+```{r, purl=FALSE}
 dat %>%
   select(
     Anorexia_nervosa,
@@ -443,7 +443,7 @@ dat %>%
 ```
 
 
-```{r}
+```{r, purl=FALSE}
 dat %>%
   filter(
     Anorexia_nervosa == 1

@@ -37,7 +37,7 @@ date
 
 Read in data
 ```{r read in data file, purl=FALSE}
-MHQ2 <- readRDS(file = "/file/path/MHQ2_Anonymous.rds")
+dat <- readRDS(file = "/file/path/MHQ2_Anonymous.rds")
 ```
  
 # Make trauma field data frame (for easier inspecting)
@@ -51,7 +51,7 @@ trauma_field_numbers <- as.character(29076:29090)
 
 # select trauma field numbers into dataframe
 ```{r}
-trauma_data <- MHQ2 %>% 
+trauma_data <- dat %>% 
   select(matches(paste(trauma_field_numbers, 
                        collapse = "|")))
 
@@ -280,7 +280,7 @@ selected_columns <- trauma_data %>%
 
 # Add the selected columns back to the MHQ2 dataframe
 ```{r}
-MHQ2_trauma <- cbind(MHQ2,
+MHQ2_trauma <- cbind(dat,
               selected_columns)
 ```
 

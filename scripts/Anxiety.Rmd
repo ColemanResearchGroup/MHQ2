@@ -39,7 +39,7 @@ date
 /Users/abiterkuile/OneDrive/UCL/Postdoc/ukb/mhq2/anon_data/MHQ2_Anonymous.rds
 ```{r read in pheno_covar file, purl=FALSE}
 
-MHQ2 <- readRDS(file = "/Users/abiterkuile/OneDrive/UCL/Postdoc/ukb/mhq2/anon_data/MHQ2_Anonymous.rds")
+dat <- readRDS(file = "/Users/abiterkuile/OneDrive/UCL/Postdoc/ukb/mhq2/anon_data/MHQ2_Anonymous.rds")
                
 ```
 
@@ -54,8 +54,9 @@ anx_pad_field_numbers <- as.character(29058:29075)
 
 # select anxiety & panic field numbers into dataframe
 ```{r}
-anx_pad_data <- MHQ2 %>% 
-  select(matches(paste(anx_pad_field_numbers, 
+anx_pad_data <- dat %>% 
+  select(ID,
+         matches(paste(anx_pad_field_numbers, 
                        collapse = "|")))
 
 # Inspect data
@@ -115,7 +116,7 @@ anx_pad_data <- anx_pad_data %>%
 summary(anx_pad_data$Gad7Score)
 
 anx_pad_data %>%
-  freq(Gad7Score)
+  count(Gad7Score)
 ```
 Create column that counts the number of NAs for GAD7 score
 ```{r}
@@ -146,7 +147,7 @@ anx_pad_data %>%
 
 #check freq
 anx_pad_data %>%
-  freq(Gad7NaCount)
+  count(Gad7NaCount)
 ```
 
 ## Generalised Anxiety Disorder Current (GAD-7 derived GAD case status)
@@ -169,7 +170,7 @@ anx_pad_data <- anx_pad_data %>%
       )
     
 anx_pad_data %>%
-  freq(GadCurrent)
+  count(GadCurrent)
 ```
 
 # Panic attacks ever
@@ -219,7 +220,7 @@ Check frequency of panic attack symptom responses
 ```{r}
 anx_pad_data %>%
   select(matches("^29065-0\\.\\d+_mod$")) %>% # matches regular expression (column names that start with "29065-0.", followed by a digit, and end with "_mod")
-  freq()
+  count()
 ```
 Calculate panic attacks symptoms score          
 ```{r}
@@ -247,7 +248,7 @@ anx_pad_data <- anx_pad_data %>%
   )
 
 anx_pad_data %>% 
-  freq(PanicSymptomsCount)
+  count(PanicSymptomsCount)
 ```
 Create panic attacks ever case 
 ```{r}
@@ -257,7 +258,7 @@ anx_pad_data <- anx_pad_data %>%
                                      PanicSymptomsCount > 3 ~ 1))
 
 anx_pad_data %>% 
-  freq(PanicAttacksEver)
+  count(PanicAttacksEver)
 ```
 ## Panic disorder
 Symptoms {panic attack ever} 
@@ -303,8 +304,23 @@ anx_pad_data <- anx_pad_data %>%
   )
 
 anx_pad_data %>% 
-  freq(PanicDisorder)
+  count(PanicDisorder)
 ```
+
+# Update the original dataset
+```{r Update the original dataset}
+
+setDT(dat,key = "ID")
+setDT(anx_pad_data,key = "ID")
+
+dat[anx_pad_data, on=c('ID'),c('Gad7Score','GadCurrent','PanicSymptomsCount','PanicAttacksEver','PanicDisorder') :=list(i.Gad7Score,i.GadCurrent,i.PanicSymptomsCount,i.PanicAttacksEver,i.PanicDisorder)]
+
+
+dat<-as.data.frame(dat)
+
+```
+
+
 # Save the data
 ```{r save data, purl=FALSE}
 anx_pad_data %>% 

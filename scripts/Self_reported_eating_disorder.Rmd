@@ -11,7 +11,7 @@ library("tidyverse")
 
 # Import data
 
-```{r}
+```{r, purl=FALSE}
 #dat <- readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
 dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Height_Alcohol_Field_Anonymous.rds")
 ```
@@ -53,7 +53,7 @@ dat$SelfReportedEatingDisorder <- grep_reports(
 ```
 
 
-```{r Any eating disorder diagnosis}
+```{r Anorexia nervosa}
 dat$SelfReportedAnorexiaNervosa <- grep_reports(
   data = dat[, grep("^29000-", colnames(dat))],
   codes = 17
@@ -66,7 +66,7 @@ dat %>%
   count(SelfReportedAnorexiaNervosa)
 ```
 
-```{r Any eating disorder diagnosis}
+```{r Bulimia nervosa}
 dat$SelfReportedBulimiaNervosa <- grep_reports(
   data = dat[, grep("^29000-", colnames(dat))],
   codes = 18
@@ -80,7 +80,7 @@ dat %>%
 ```
 
 
-```{r Any eating disorder diagnosis}
+```{r Binge eating disorder}
 dat$SelfReportedBingeEatingDisorder <- grep_reports(
   data = dat[, grep("^29000-", colnames(dat))],
   codes = 19

@@ -5,7 +5,7 @@ date: "2023-10-08"
 output: html_document
 ---
 
-```{r}
+```{r, purl=FALSE}
 library("data.table")
 library("tidyverse")
 ```
@@ -223,7 +223,7 @@ dat %>%
 ```
 
 ## -3 Prefer not to answer
-```{r sumscore BE behaviours}
+```{r sumscore BE behaviours 2}
 dat <- dat %>%
   mutate(
     BE_characteristics_PTNA_numeric =
@@ -324,7 +324,7 @@ dat <- dat %>%
 ```
 
 # Check 1
-```{r}
+```{r, purl=FALSE}
 dat %>%
   select(
     `29132-0.0`, # binge eating
@@ -339,7 +339,7 @@ dat %>%
 ```
 
 # Check 2
-```{r}
+```{r, purl=FALSE}
 dat %>%
   count(Binge_eating_disorder)
 ```

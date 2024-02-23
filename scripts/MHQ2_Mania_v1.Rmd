@@ -9,24 +9,24 @@ Duration=A week or more
 # Define manifestations
 
 ```{r}
-MHQ2$Total.Manifestations<-0
+dat$Total.Manifestations<-0
 
-MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.0`) & `29051-0.0` > 0, Total.Manifestations + 1, Total.Manifestations))
-MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.1`) & `29051-0.1` > 0, Total.Manifestations + 1, Total.Manifestations))
-MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.2`) & `29051-0.2` > 0, Total.Manifestations + 1, Total.Manifestations))
-MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.3`) & `29051-0.3` > 0, Total.Manifestations + 1, Total.Manifestations))
-MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.4`) & `29051-0.4` > 0, Total.Manifestations + 1, Total.Manifestations))
-MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.5`) & `29051-0.5` > 0, Total.Manifestations + 1, Total.Manifestations))
-MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.6`) & `29051-0.6` > 0, Total.Manifestations + 1, Total.Manifestations))
-MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.7`) & `29051-0.7` > 0, Total.Manifestations + 1, Total.Manifestations))
+dat$Total.Manifestations<-with(dat, ifelse(!is.na(`29051-0.0`) & `29051-0.0` > 0, Total.Manifestations + 1, Total.Manifestations))
+dat$Total.Manifestations<-with(dat, ifelse(!is.na(`29051-0.1`) & `29051-0.1` > 0, Total.Manifestations + 1, Total.Manifestations))
+dat$Total.Manifestations<-with(dat, ifelse(!is.na(`29051-0.2`) & `29051-0.2` > 0, Total.Manifestations + 1, Total.Manifestations))
+dat$Total.Manifestations<-with(dat, ifelse(!is.na(`29051-0.3`) & `29051-0.3` > 0, Total.Manifestations + 1, Total.Manifestations))
+dat$Total.Manifestations<-with(dat, ifelse(!is.na(`29051-0.4`) & `29051-0.4` > 0, Total.Manifestations + 1, Total.Manifestations))
+dat$Total.Manifestations<-with(dat, ifelse(!is.na(`29051-0.5`) & `29051-0.5` > 0, Total.Manifestations + 1, Total.Manifestations))
+dat$Total.Manifestations<-with(dat, ifelse(!is.na(`29051-0.6`) & `29051-0.6` > 0, Total.Manifestations + 1, Total.Manifestations))
+dat$Total.Manifestations<-with(dat, ifelse(!is.na(`29051-0.7`) & `29051-0.7` > 0, Total.Manifestations + 1, Total.Manifestations))
 
-MHQ2$Total.Manifestations<-with(MHQ2, ifelse(is.na(`29051-0.0`) | `29051-0.0` < 0, NA, Total.Manifestations))
+dat$Total.Manifestations<-with(dat, ifelse(is.na(`29051-0.0`) | `29051-0.0` < 0, NA, Total.Manifestations))
 
 
 ```
 
 ```{r}
-MHQ2$Hypomania.Ever <- with(MHQ2, 
+dat$Hypomania.Ever <- with(dat, 
   case_when(
     (is.na(`29049-0.0`) | `29049-0.0` < 0) &
       (is.na(`29050-0.0`) | `29050-0.0` < 0) &
@@ -54,7 +54,7 @@ Needed treatment=Yes OR Caused problems=Yes
 
 ```{r}
 
-MHQ2$Mania.Ever <- with(MHQ2,
+dat$Mania.Ever <- with(dat,
   case_when(
     (is.na(`29049-0.0`) | `29049-0.0` < 0) &
       (is.na(`29050-0.0`) | `29050-0.0` < 0) &
@@ -79,7 +79,7 @@ MHQ2$Mania.Ever <- with(MHQ2,
 Case(depression ever) AND symptoms (Mania ever)
 ```{r}
 
-MHQ2$BD1 <- with(MHQ2,
+dat$BD1 <- with(dat,
                  ifelse(
                    (!is.na(depression.ever.case) & depression.ever.case ==1) & #depression.ever.case EXTERNAL FROM LT_DEPRESSION
                      (!is.na(Mania.Ever) & Mania.Ever == 1),
@@ -91,7 +91,7 @@ MHQ2$BD1 <- with(MHQ2,
 # Wide bipolar spectrum
 Case (depression ever) AND Symptoms (hypomania/mania ever)
 ```{r}
-MHQ2$Wider.Bipolar <- with(MHQ2,
+dat$Wider.Bipolar <- with(dat,
                            ifelse(
                            (!is.na(depression.ever.case) & depression.ever.case == 1 ) &
                              (!is.na(Hypomania.Ever) & Hypomania.Ever == 1),

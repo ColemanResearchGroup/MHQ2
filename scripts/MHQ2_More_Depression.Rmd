@@ -27,8 +27,8 @@ library(tidyverse)
 
 ```{r Read data, purl=FALSE}
 setwd('/scratch/prj/ukbiobank/UKB_MHQ2_Anonymised')
-# MHQ2 <- fread('ukb675453_MHQ2_Anonymised.csv', data.table=F)
-MHQ2 <- readRDS('data/MHQ2_Anonymous.rds')
+# dat <- fread('ukb675453_MHQ2_Anonymised.csv', data.table=F)
+dat <- readRDS('data/MHQ2_Anonymous.rds')
 ```
 
 # 4. Single episode unipolar depression
@@ -43,12 +43,12 @@ Excluded if number of episodes missing or bipolar state missing
 # this is the variable of biopolar type I from mania algorithm needed for single and recurrent unipolar depression
 
 #bipolar.type.I 
-# MHQ2$BD1: bipolar type 1 case = 1, not case = 0 #EXTERNAL FROM MANIA
+# dat$BD1: bipolar type 1 case = 1, not case = 0 #EXTERNAL FROM MANIA
 
 ```
 ```{r Single episode unipolar depression}
-MHQ2 <- 
-    MHQ2 %>% 
+dat <- 
+    dat %>% 
     mutate(
         depression.single = case_when(
             depression.ever.case == 1 & 
@@ -73,8 +73,8 @@ NOT case {bipolar type I}
 
 Excluded if number of episodes missing or bipolar state missing
 ```{r Recurrent unipolar depression}
-MHQ2 <- 
-    MHQ2 %>% 
+dat <- 
+    dat %>% 
     mutate(
         depression.recurrent = case_when(
             depression.ever.case == 1 & 
@@ -94,8 +94,8 @@ Case {depression single episode}
 AND
 start within two months of event (29013) = Yes (1)
 ```{r Single episode unipolar depression triggered by event}
-MHQ2 <- 
-    MHQ2 %>% 
+dat <- 
+    dat %>% 
     mutate(
         depression.single.event = case_when(
             depression.single == 1 & `29013-0.0` == 1 ~ 1,
@@ -110,8 +110,8 @@ Case {depression ever}
 AND
 Did this first episode occur within months of giving birth? Or has it been suggested that you had post-natal depression? (29035) = Yes (1)
 ```{r Post-natal depression}
-MHQ2 <- 
-    MHQ2 %>% 
+dat <- 
+    dat %>% 
     mutate(
         depression.postnatal = case_when(
             depression.ever.case == 1 & `29035-0.0` == 1 ~ 1,
@@ -136,8 +136,8 @@ AND
 •	Guilt (29028) = Yes (1)
 
 ```{r Melancholic-like depression}
-MHQ2 <- 
-    MHQ2 %>% 
+dat <- 
+    dat %>% 
     mutate(
         mood.worse = case_when(
             `29017-0.0` == 0 ~ 1,
@@ -194,8 +194,8 @@ AND
 •	Heavy feelings (29019) = Yes (1)
 •	Coping with rejection, even when not  depressed (29032) = “Yes, and this has caused problems in work or social relationships” (0)
 ```{r Atypical depression}
-MHQ2 <- 
-    MHQ2 %>% 
+dat <- 
+    dat %>% 
     mutate(
         appetite.weight = case_when(
             `29020-0.0` == 1 | `29021-0.0` == 0 ~ 1,
@@ -241,11 +241,11 @@ MHQ2 <-
 
 # extract the data
 ```{r extract data, purl=FALSE}
-MHQ2 <- 
-    MHQ2 %>% 
+dat <- 
+    dat %>% 
     select(depression.ever.case, depression.ever.control, depression.subthreshold, depression.single, depression.recurrent, depression.single.event, depression.postnatal, depression.melancholic, depression.atypical)
 
-saveRDS(MHQ2, 'life_time_depression.rds')
+saveRDS(dat, 'life_time_depression.rds')
 
 ```
 
