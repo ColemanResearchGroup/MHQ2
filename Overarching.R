@@ -10,8 +10,22 @@ remove(list = ls())
 
 # Load dependencies
 # Summarytools is not needed for the overarching script
-packages <- c("data.table", "tidyverse", "dplyr") #"summarytools"
+packages <- c("data.table", "tidyverse", "dplyr", "optparse") #"summarytools"
 lapply(X = packages, FUN = require, character.only = TRUE)
+
+#parse command line arguments
+clParser <- OptionParser()
+clParser <- add_option(clParser, c("-i", "--input-data-file-path"), type="character", default=NA,
+                       help="File path to a file to read as the data to process.")
+clParser <- add_option(clParser, c("-o", "--output-data-file-path"), type="character", default=NA,
+                       help="File path to a file to write as the processed data.")
+clParser <- add_option(clParser, c("-v", "--variables"), type="character", default=NA,
+                       help="A comma separated string with variable names to export from the processed data.")
+
+clOptions<-parse_args(clParser)
+argInputDataFilePath<-clOptions$`input-data-file-path`
+argOutputDataFilePath<-clOptions$`output-data-file-path`
+argVariables<-clOptions$variables
 
 #for testing
 #dat <- readRDS('data/MHQ2_Height_Alcohol_Field_Anonymous.rds')
@@ -19,11 +33,19 @@ lapply(X = packages, FUN = require, character.only = TRUE)
 
 runAllScriptsOverarching <- function(
     dat=NULL,
-    variablesToExtract=NULL,
-    inputDataFilePath=NULL,
-    outputDataFilePath="runAllScriptsOverarching.tsv",
+    variablesToExtract=NA,
+    inputDataFilePath=NA,
+    outputDataFilePath=NA,
     writeOutput=F
     ){
+  
+  cat("\nRunning the MHQ2 overarching coding script.")
+  
+  
+  #dedicated argument defaults - we cannot set these in the noraml way because of the hard coded defaults from the run script
+  if(is.na(outputDataFilePath)){
+    outputDataFilePath<-"runAllScriptsOverarching.tsv"
+  }
   
   toReturn<-c()
   
@@ -124,6 +146,17 @@ runAllScriptsOverarching <- function(
     "Purging_disorder"      
   )
   
+  toReturn$producedVariables<-producedVariables
+  
+  if(!is.na(variablesToExtract)){
+    #assess misspecified variables in variablesToExtract
+    misspecifiedVariables <- variablesToExtract[!(variablesToExtract %in% producedVariables)]
+    if(length(misspecifiedVariables)>0){
+      warning("There are specified variables that are not produced by this script. The script will terminate and return further information. A list of misspecified variables is in the return object misspecifiedVariables. Note that the script uses case sensitive matching for specified variables.")
+      toReturn$misspecifiedVariables<-misspecifiedVariables
+      return(toReturn)
+    }
+  }
   
   requiredVariables <- c(
     "50-0.0", #Adult height at sign up to UK Biobank
@@ -197,7 +230,7 @@ runAllScriptsOverarching <- function(
   # Read data
   # All scripts must use the same variable for holding the data; dat
   if(is.null(dat)){
-    if(!is.null(inputDataFilePath)){
+    if(!is.na(inputDataFilePath)){
       #Rds-file
       if(any(grep(pattern = "\\.rds$", x = inputDataFilePath, ignore.case = T))){
         dat <- readRDS(inputDataFilePath)
@@ -213,7 +246,7 @@ runAllScriptsOverarching <- function(
   missingVariables <- requiredVariables[!(requiredVariables %in% colnames(dat))]
   
   if(length(missingVariables)>0){
-    warning("There are required variables missing. The script will terminate and return further information. A list of missing variables is in the return object missingVariables.")
+    warning("There are required variables missing. The script will terminate and return further information. A list of missing variables is in the returned sub-object missingVariables.")
     toReturn$missingVariables<-missingVariables
     return(toReturn)
   }
@@ -241,11 +274,47 @@ runAllScriptsOverarching <- function(
   #export results
   toReturn$processedDat<-dat[,producedVariables]
   
+  if(!is.na(variablesToExtract)){
+    toReturn$processedDat<-toReturn$processedDat[,variablesToExtract] #do we want to have a case-insensitive option here?
+  }
+  
   if(writeOutput){
     data.table::fwrite(x = toReturn$processedDat,file = outputDataFilePath, append = F,quote = F,sep = "\t",col.names = T)
   }
+  
+  cat("\nThe data has been processsed and the resulting dataframe is in the returned sub-object processedDat.")
   
   return(toReturn)
   
 
 }
+
+#execute function if we run from the command line
+if(interactive()==FALSE){
+  cat("\nWelcome to the MHQ2 overarching coding script.")
+  if(!is.na(argInputDataFilePath)){
+    #we need to at least specify an input file to run the script
+    runAllScriptsOverarching(
+      inputDataFilePath = argInputDataFilePath,
+      outputDataFilePath = argOutputDataFilePath,
+      variablesToExtract = ifelse(is.na(argVariables),NA, unlist(strsplit(argVariables,split = ",",fixed = TRUE))),
+      writeOutput = TRUE
+    )
+  } else {
+    print_help(clParser)
+  }
+}
+
+
+#test of whole function
+# result <-runAllScriptsOverarching(
+#   variablesToExtract = c("Depressed.Current","Mania.Ever"),
+#   inputDataFilePath = 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
+#   )
+
+#misspecified variable
+# result <-runAllScriptsOverarching(
+#   variablesToExtract = c("Depressed.Current","Mania.Ever","crap"),
+#   inputDataFilePath = 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
+#   )
+
