@@ -30,6 +30,8 @@ argVariables<-clOptions$variables
 #for testing
 #dat <- readRDS('data/MHQ2_Height_Alcohol_Field_Anonymous.rds')
 #inputDataFilePath <- 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
+#argInputDataFilePath <- 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
+#argVariables <- "Self.Harm.Ever,BD1"
 
 runAllScriptsOverarching <- function(
     dat=NULL,
@@ -148,7 +150,7 @@ runAllScriptsOverarching <- function(
   
   toReturn$producedVariables<-producedVariables
   
-  if(!is.na(variablesToExtract)){
+  if(length(variablesToExtract)>0){
     #assess misspecified variables in variablesToExtract
     misspecifiedVariables <- variablesToExtract[!(variablesToExtract %in% producedVariables)]
     if(length(misspecifiedVariables)>0){
@@ -274,7 +276,7 @@ runAllScriptsOverarching <- function(
   #export results
   toReturn$processedDat<-dat[,producedVariables]
   
-  if(!is.na(variablesToExtract)){
+  if(length(variablesToExtract)>0){
     toReturn$processedDat<-toReturn$processedDat[,variablesToExtract] #do we want to have a case-insensitive option here?
   }
   
@@ -294,10 +296,14 @@ if(interactive()==FALSE){
   cat("\nWelcome to the MHQ2 overarching coding script.")
   if(!is.na(argInputDataFilePath)){
     #we need to at least specify an input file to run the script
+    
+    argVariables2<-NA
+    if(!is.na(argVariables)) argVariables2<-unlist(strsplit(argVariables,split = ",",fixed = TRUE))
+    
     runAllScriptsOverarching(
       inputDataFilePath = argInputDataFilePath,
       outputDataFilePath = argOutputDataFilePath,
-      variablesToExtract = ifelse(is.na(argVariables),NA, unlist(strsplit(argVariables,split = ",",fixed = TRUE))),
+      variablesToExtract = argVariables2,
       writeOutput = TRUE
     )
   } else {
