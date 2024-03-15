@@ -1,86 +1,14 @@
----
-title: "Tables for Davis et al (MHQ2)"
-author: "Jonathan RI Coleman"
-date: "2023-12-21"
-output: html_document
----
-
-This is a script containing code to generate tables for the forthcoming decriptive paper for the 2023 mental health follow-up questionnaire.
-This requires that the algorithm generating code for the same has already been run.
-
-# Set up
-
-Configure global options for all chunks
-
-```{r Setup, include=FALSE}
-
-knitr::opts_chunk$set(
-  echo = TRUE,
-  comment = "",
-  prompt = FALSE,
-  cache = FALSE
-)
-
-```
-
-Clear global environment prior to initiation
-
-```{r Clear global environment}
-
-remove(list = ls())
-
-```
-
-# Initialise command line arguments
-
-```{r Initialise command line arguments}
-
-args <- commandArgs(trailingOnly=TRUE)
-
-if(length(args)!=2){
-    stop("Please provide full paths to input files containing 1) all fields and 2) all MHQ2 fields", call.=FALSE)
-}
-
-```
-
-# Install dependencies
-
-Import package_install function
-
-```{r Define package_install}
-
-package_install <- function(packages) {
-  for (x in packages) {
-    install.packages(x, dependencies = TRUE)
-  }
-}
-
-```
-
-```{r Install dependencies - remove hashes to install}
-
-# packages <- c("data.table","tidyverse","dplyr", "Hmisc", "stringi")
-# package_install(packages)
-
-```
-
 # Load dependencies
-
-```{r Load dependencies}
 
 packages <- c("data.table", "tidyverse", "dplyr",  "Hmisc", "stringi")
 lapply(X = packages, FUN = require, character.only = TRUE)
 
-```
-
 # Read in the data - THIS ASSUMES THE ALGORITHM SCRIPT HAS BEEN RUN!
 
-```{r Read in data}
+## TODO
+#Full_Data <- readRDS("../Full_Data_MHQ2.rds")
 
-Full_Data <- fread(args[1], data.table = FALSE)
-MHQ2 <- fread(args[2], data.table = FALSE)
-
-```
+#MHQ2 <- readRDS("../
 
 # Merge Full data with MHQ2 data
 
