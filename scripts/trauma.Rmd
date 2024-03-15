@@ -280,8 +280,8 @@ selected_columns <- trauma_data %>%
 
 # Add the selected columns back to the MHQ2 dataframe
 ```{r}
-MHQ2_trauma <- cbind(dat,
-              selected_columns)
+dat <- cbind(dat,
+  selected_columns)
 ```
 
 # Perform garbage collection

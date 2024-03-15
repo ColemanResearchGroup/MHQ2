@@ -1,33 +1,4 @@
----
-title: "Social Situations"
-author: Zhaoying YU
-output: html_document
-date: "2024-01-16"
----
-
-## Set-up
-
-```{r, purl=FALSE}
-library("dplyr")
-library("tidyverse")
-```
-
-## Import data
-```{r, purl=FALSE}
-dat <-
-readRDS("/Users/lilian/Desktop/dat_Anonymous.rds")
-```
-
-## Algorithms
-# Social Isolation
-
-If Household (SS1, 29162)= Only me (0). Score +1 
-If See in person (SS2, 29163) = Never (0) or Once every few months (1). Score +1 
-Attend weekly (SS4, 29167) = None of the above (0). Score +1 
-EVALUATE Score > 1 = positive
- >>> I think this logic might be a bit complicated for the code, and since the criteria is if two out of the three is met, social isolation is 'positive'. So I wrote the code this way:
- 
-```{r}
+## -----------------------------------------------------------------------------
 dat <- dat %>%
   mutate(social_isolation = case_when(
     (is.na(`29162-0.0`) | `29162-0.0` < 0) |
@@ -40,14 +11,9 @@ dat <- dat %>%
   )
 )
 
-```
 
-# Virtually connected
 
-Positive if: Video calls (SS2a, 29164) = About once a week (3), 2-4 times a week (4) or Daily or almost daily (5) 
-OR Virtual weekly (SS4a, 29168) NOT= None of the above (0)
-
-```{r}
+## -----------------------------------------------------------------------------
 dat <- dat %>%
   mutate(virtually_connected = case_when(
     (is.na(`29164-0.0`) | `29164-0.0` < 0) |
@@ -58,25 +24,9 @@ dat <- dat %>%
   )
 )
 
-```
 
 
-# Short scale UCLA loneliness
-
-Sum scores on individual items after converting to 1-3 (Hardly ever (1) to Often (3)): 
-Companionship (SS7, 29172) , Left out (SS8, 29173) , Isolated (SS9, 29174)
-
-There are two further questions included for compatibility / comparison with previous UKB surveys: SS3 “How often are you able to confide…” and SS6 “In tune with the people around you”. Those are not included in this score
-
-Original coding:
-0	Hardly ever
-1	Some of the time
-2	Often
--1	Do not know
--3	Prefer not to answer
-
-
-```{r}
+## -----------------------------------------------------------------------------
 ##Re-code scores to 1-3
 #Companionship, 29172
 dat <- dat %>%
@@ -122,29 +72,9 @@ dat$UCLA_loneliness_sum <- rowSums(
 
 dat <- dat[,!grepl("_recoded_social$",colnames(dat))]
 
-```
 
 
-# Brief Resilience Scale
-
-SUM
-Bounce back (BRS1, 29175), recover (BRS3, 29177) and little trouble (BRS5, 29179), score:
-1. Strongly disagree
-2. Disagree
-3. Neutral
-4. Agree
-5. Strongly agree
-
-Hard time (BRS2, 29176), hard to snap back (BRS4, 29178), and setbacks (BRS6, 29180) score:
-5. Strongly disagree
-4. Disagree
-3. Neutral
-2. Agree
-1. Strongly agree
-
-DIVIDE BY 6
-
-```{r}
+## -----------------------------------------------------------------------------
 ##Re-code scores
 #Bounce back, BRS1, 29175
 dat <- dat %>%
@@ -231,4 +161,4 @@ dat <- dat %>%
 
 dat <- dat[,!grepl("_recoded_social$",colnames(dat))]
 
-```
+

@@ -16,11 +16,11 @@ lapply(X = packages, FUN = require, character.only = TRUE)
 #parse command line arguments
 clParser <- OptionParser()
 clParser <- add_option(clParser, c("-i", "--input-data-file-path"), type="character", default=NA,
-                       help="File path to a file to read as the data to process.")
+                       help="File path to a file to read as the data to process.\n")
 clParser <- add_option(clParser, c("-o", "--output-data-file-path"), type="character", default=NA,
-                       help="File path to a file to write as the processed data.")
+                       help="File path to a file to write as the processed data.\n")
 clParser <- add_option(clParser, c("-v", "--variables"), type="character", default=NA,
-                       help="A comma separated string with variable names to export from the processed data.")
+                       help="A comma separated string with variable names to export from the processed data.\n")
 
 clOptions<-parse_args(clParser)
 argInputDataFilePath<-clOptions$`input-data-file-path`
@@ -35,13 +35,13 @@ argVariables<-clOptions$variables
 
 runAllScriptsOverarching <- function(
     dat=NULL,
-    variablesToExtract=NA,
+    variablesToExtract=producedVariables,
     inputDataFilePath=NA,
     outputDataFilePath=NA,
     writeOutput=F
     ){
   
-  cat("\nRunning the MHQ2 overarching coding script.")
+  cat("\nRunning the MHQ2 overarching coding script.\n")
   
   
   #dedicated argument defaults - we cannot set these in the noraml way because of the hard coded defaults from the run script
@@ -70,9 +70,11 @@ runAllScriptsOverarching <- function(
   meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED","Binge_eating_disorder")
   meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BN","Bulimia_nervosa")
   meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PURGINGD","Purging_disorder")
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SUBSTANCES","Alcohol_Cannabis_code")
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SOCIAL","Social_Situations_JRIC_TEMP_2024_03_15")
   
   producedVariables <- c(
-    "ID",                                     
+    "eid",                                     
     "SelfReportedDiagnosis",                  
     "SelfReportedDiagnosisMHQ2016Compatible",
     "SelfReportedAnxietyDisorder",            
@@ -104,7 +106,10 @@ runAllScriptsOverarching <- function(
     "Not.Worth.Living",                       
     "Self.Harm.Ever",                         
     "Self.Harm.Ever.12m",                     
-    "Suicide.Attempt",                        
+    "Suicide.Attempt",
+    "TraumaChildhood",
+    "TraumaAdulthood",
+    "Trauma12Months",
     "Total.Manifestations",                   
     "Hypomania.Ever",                         
     "Mania.Ever",                             
@@ -145,7 +150,17 @@ runAllScriptsOverarching <- function(
     "BE_fasted",                              
     "BE_other_weight_control",                
     "Bulimia_nervosa",                        
-    "Purging_disorder"      
+    "Purging_disorder",
+    "Sum_AUDIT",
+    "alcohol_hazardous_use",
+    "alcohol_harmful_use",
+    "alcohol_nonuse",
+    "cannabis_use",
+    "daily_cannabis_use",
+    "social_isolation",
+    "virtually_connected",
+    "UCLA_loneliness_sum",
+    "BRS"
   )
   
   toReturn$producedVariables<-producedVariables
@@ -154,7 +169,7 @@ runAllScriptsOverarching <- function(
     #assess misspecified variables in variablesToExtract
     misspecifiedVariables <- variablesToExtract[!(variablesToExtract %in% producedVariables)]
     if(length(misspecifiedVariables)>0){
-      warning("There are specified variables that are not produced by this script. The script will terminate and return further information. A list of misspecified variables is in the return object misspecifiedVariables. Note that the script uses case sensitive matching for specified variables.")
+      warning("There are specified variables that are not produced by this script. The script will terminate and return further information. A list of misspecified variables is in the return object misspecifiedVariables. Note that the script uses case sensitive matching for specified variables.\n")
       toReturn$misspecifiedVariables<-misspecifiedVariables
       return(toReturn)
     }
@@ -221,8 +236,35 @@ runAllScriptsOverarching <- function(
     "29144-0.0", #Purging disorder
     "29145-0.0",
     "29146-0.0",
-    "29205-0.0" #Has answered ED section of MHQ2
-    
+    "29205-0.0", #Has answered ED section of MHQ2
+    "29091-0.0",
+    "29092-0.0",
+    "29093-0.0",
+    "29094-0.0",
+    "29095-0.0",
+    "29096-0.0",
+    "29097-0.0",
+    "29098-0.0",
+    "29099-0.0",
+    "29100-0.0",
+    "20117-0.0",
+    "2664-0.0", #Reason for stopping drinking
+    "29104-0.0",
+    "29107-0.0",
+    "29162-0.0",
+    "29163-0.0",
+    "29167-0.0",
+    "29164-0.0",
+    "29168-0.0",
+    "29172-0.0",
+    "29173-0.0",
+    "29174-0.0",
+    "29175-0.0",
+    "29177-0.0",
+    "29179-0.0",
+    "29176-0.0",
+    "29178-0.0",
+    "29180-0.0"
   )
   
   requiredVariables<-unlist(requiredVariables)
@@ -240,7 +282,7 @@ runAllScriptsOverarching <- function(
         dat <- fread(file = inputDataFilePath, na.strings =c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
       }
     } else {
-      stop("No input file specified")
+      stop("No input file specified\n")
     }
   }
   
@@ -248,12 +290,12 @@ runAllScriptsOverarching <- function(
   missingVariables <- requiredVariables[!(requiredVariables %in% colnames(dat))]
   
   if(length(missingVariables)>0){
-    warning("There are required variables missing. The script will terminate and return further information. A list of missing variables is in the returned sub-object missingVariables.")
+    warning("There are required variables missing. The script will terminate and return further information. A list of missing variables is in the returned sub-object missingVariables.\n")
     toReturn$missingVariables<-missingVariables
     return(toReturn)
   }
 
-  dat$ID<-1:nrow(dat) #this is a temporary ID variable to be able to link copies of derived datasets with the original
+  dat$ID<-dat$eid #this is a temporary ID variable to be able to link copies of derived datasets with the original
   
   # Process
   # Execute all scripts from the source. These must be configured to be compatible with this process.
@@ -284,7 +326,7 @@ runAllScriptsOverarching <- function(
     data.table::fwrite(x = toReturn$processedDat,file = outputDataFilePath, append = F,quote = F,sep = "\t",col.names = T)
   }
   
-  cat("\nThe data has been processsed and the resulting dataframe is in the returned sub-object processedDat.")
+  cat("\nThe data has been processsed and the resulting dataframe is in the returned sub-object processedDat.\n")
   
   return(toReturn)
   
@@ -293,7 +335,7 @@ runAllScriptsOverarching <- function(
 
 #execute function if we run from the command line
 if(interactive()==FALSE){
-  cat("\nWelcome to the MHQ2 overarching coding script.")
+  cat("\nWelcome to the MHQ2 overarching coding script.\n")
   if(!is.na(argInputDataFilePath)){
     #we need to at least specify an input file to run the script
     
