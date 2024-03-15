@@ -6,13 +6,13 @@ date: "2023-10-16"
 ---
 ## Set-up
 
-```{r}
+```{r, purl=FALSE}}
 library("dplyr")
 library("tidyverse")
 ```
 
 ## Import data
-```{r}
+```{r, purl=FALSE}}
 MHQ2 <-
 readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
 ```
