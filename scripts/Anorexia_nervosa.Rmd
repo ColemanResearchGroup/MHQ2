@@ -396,8 +396,8 @@ dat <- dat %>%
                         ) &
   # During the period of time when you were at your lowest weight, did you use any of the following as a way to control your weight or shape?
                       (
-                        LW_made_yourself_vomit == 0 | # No
-                        LW_used_laxatives == 0 | # No
+                        LW_made_yourself_vomit == 0 & # No
+                        LW_used_laxatives == 0 & # No
                         LW_used_diuretics == 0 # No
                         )
 
