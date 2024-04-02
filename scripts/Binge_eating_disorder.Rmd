@@ -69,7 +69,7 @@ During the time(s) when you were regularly overeating/binge eating, have you don
 NB: Question was asked when Field 29132 
 ("Ever had recurrent episodes of excessive overeating or binge eating") was Yes.
 
-# Rapid eating
+## 1 Eaten much more rapidly than normal 
 expecting 6,312
 ```{r BE rapid_eating}
 # Create numeric variables
@@ -97,7 +97,7 @@ dat %>%
 ```
 
 
-
+## 2 Eaten until feeling uncomfortably full
 ```{r BE feeling_uncomf_full}
 dat <- dat %>%
   mutate(
@@ -122,7 +122,7 @@ dat %>%
   count(BE_feeling_uncomf_full_numeric)
 ```
 
-
+## 3 Eaten large amounts of food when not physically hungry
 ```{r BE large_amounts_not_hungry}
 dat <- dat %>%
   mutate(
@@ -147,7 +147,7 @@ dat %>%
   count(BE_large_amounts_not_hungry_numeric)
 ```
 
-
+## 4 Eaten alone because of feeling embarrassed by overeating
 ```{r BE eaten_alone_embarrassed}
 dat <- dat %>%
   mutate(
@@ -172,7 +172,7 @@ dat %>%
   count(BE_eaten_alone_embarrassed_numeric)
 ```
 
-
+## 5 Felt disgusted, depressed or very guilty afterward
 ```{r BE disgusted_depressed_after}
 dat <- dat %>%
   mutate(
@@ -222,7 +222,7 @@ dat %>%
   count(BE_no_characteristics_numeric)
 ```
 
-
+## -3 Prefer not to answer
 ```{r sumscore BE behaviours}
 dat <- dat %>%
   mutate(
@@ -296,14 +296,20 @@ dat <- dat %>%
         # "What was the longest amount of time when you were overeating/binge eating at least once a week?" = "At least 3 months"
            `29133-0.0` == 0 &
           
-        # "During these episodes of excessive overeating/binge eating, have you:" (Participant needs at least 3 of 5 binge-eating-related behaviours, sumscore calculated above)
+        # "During these episodes of excessive overeating/binge eating, have you:" (Participant needs at least 3 of 5 binge-eating-related characteristics, sum score calculated above)
           BE_characteristics_sumscore >= 3 &
           
         # "Do/did you feel distressed about your episodes of excessive overeating/binge eating?" = "Yes"
           `29137-0.0` == 1 &
           
         # "During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?" = "None of the above"
-          `29140-0.0` == 0 &
+          (`29140-0.0` == 0 |
+          `29140-0.1` == 0 |
+          `29140-0.2` == 0 | 
+          `29140-0.3` == 0 |
+          `29140-0.4` == 0 |
+          `29140-0.5` == 0 |
+          `29140-0.6` == 0) &
 
         # DSM5 criteria: "Does not occur exclusively during the course of anorexia nervosa" (calculated above)
           BE_not_during_AN == 1 ~ 1,
@@ -317,24 +323,23 @@ dat <- dat %>%
   )
 ```
 
-
+# Check 1
 ```{r}
 dat %>%
   select(
-    `29132-0.0`,
-    `29135-0.0`,
-    `29133-0.0`,
-    BE_characteristics_sumscore,
-    `29137-0.0`,
-    `29140-0.0`,
+    `29132-0.0`, # binge eating
+    `29135-0.0`, # frequency loss of control
+    `29133-0.0`, # duration of binge eating
+    BE_characteristics_sumscore, 
+    `29137-0.0`, # distress
+    `29140-0.0`, # compensatory behaviours during binge eating
     BE_not_during_AN,
     Binge_eating_disorder
   )
 ```
 
-
+# Check 2
 ```{r}
-# Check
 dat %>%
   count(Binge_eating_disorder)
 ```
