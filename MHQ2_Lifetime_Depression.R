@@ -1,56 +1,4 @@
----
-title: 'CIDI-SF Lifetime MDD MHQ2 UK Biobank'
-author: "Danyang Li"
-date: "09/10/2023"
-output: html_document
----
-Lifetime depression algorithm of MHQ2 UK Biobank 
-
-Configuration of global options 
-```{r Setup, include=FALSE, purl=FALSE}
-knitr::opts_chunk$set(
-  echo = TRUE,
-  comment = '',
-  prompt = FALSE,
-  cache = FALSE
-  )
-```
-
-```{r Clean global environment, purl=FALSE}
-rm(list = ls())
-```
-
-```{r Load packages, purl=FALSE}
-library(data.table)
-library(tidyverse)
-```
-
-```{r Read data, purl=FALSE}
-setwd('/scratch/prj/ukbiobank/UKB_MHQ2_Anonymised')
-# dat <- fread('ukb675453_MHQ2_Anonymised.csv', data.table=F)
-dat <- readRDS('data/MHQ2_Anonymous.rds')
-```
-
-# 1. Depression ever case
-Algorithm: 
-Persistent sadness (29011) = Yes (1) OR Loss of interest (29012) = Yes (1)
-AND
-How much of day (29014) = Most of day (1) or All day long (0)  
-AND
-Did you feel this way (29015) = Almost every day (1) or Every day (0)
-AND
-Impairment (29031) = Somewhat (1) or A lot (0)
-AND
-Total number of symptoms endorsed (core and others) >= 5
-Persistent sadness (core) 29011; 
-Loss of interest (core) 29012; 
-Tired or low energy 29018 (Yes (1)); 
-Gain or loss of weight 29021 (gained weight (0) or lost weight (1) or gain and loss (2)); 
-Sleep change 29022 (Yes (1)); 
-Trouble concentrating 29026 (Yes (1)); 
-Feeling worthless 29027 (Yes (1)); 
-Thinking about death 29029 (Yes (1))
-```{r Depression ever case}
+## ----Depression ever case-----------------------------------------------------
 
 cidid_symptoms <- c('29011-0.0', '29012-0.0', '29018-0.0', '29022-0.0', '29026-0.0', '29027-0.0', '29029-0.0')
 dat <- 
@@ -119,23 +67,9 @@ dat <-
 
 rm(cidid_symptoms)
 
-```
 
-# 2. Depression ever control
-NOT mental health diagnosis (MHC1) (29000) = Depression (1)
-AND NOT Persistent Sadness (29011) = Yes
-AND NOT Loss of interest (29012) = Yes
-AND NOT PHQ full score >= 5 (see below)
-•	Little interest or pleasure (29002) = More than half of the days (2) or Nearly every day (3)
-•	Feeling down (29003) = More than half of the days (2) or Nearly every day (3)
-•	Trouble sleeping (29004) = More than half of the days (2) or Nearly every day (3)
-•	Feeling tired (29005) = More than half of the days (2) or Nearly every day (3)
-•	Poor appetite(29006)  = More than half of the days (2) or Nearly every day (3)
-•	Feeling guilt (29007) = More than half of the days (2) or Nearly every day (3)
-•	Trouble concentrating (29008) = More than half of the days (2) or Nearly every day (3)
-•	Moving slowly (29009) = More than half of the days (2) or Nearly every day (3)
-•	Thoughts death (29010) = Several days (1) More than half of the days (2) or Nearly every day (3)
-```{r Depression ever control}
+
+## ----Depression ever control--------------------------------------------------
 
 phq_symptoms <- c('29002-0.0', '29003-0.0', '29004-0.0', '29005-0.0', '29006-0.0', '29007-0.0', '29008-0.0', '29009-0.0', '29010-0.0')
 dat$tmp_29000 <- apply(dat[, grepl('29000-0', colnames(dat))], 1, function(x) {"1" %in% x}) 
@@ -170,26 +104,9 @@ dat <-
 
 rm(phq_symptoms)
 
-```
 
-# 3. Depression and subthreshold depressive symptoms ever
-Persistent Sadness (29011) = Yes (1)
-OR
-D3 Loss of interest (29012) = Yes (1)
-OR
-mental health diagnosis (MHC1) (29000) = Depression (1)
-OR
-PHQ full score >= 5 (see below)
-•	Little interest or pleasure (29002) = More than half of the days (2) or Nearly every day (3)
-•	Feeling down (29003) = More than half of the days (2) or Nearly every day (3)
-•	Trouble sleeping (29004) = More than half of the days (2) or Nearly every day (3)
-•	Feeling tired (29005) = More than half of the days (2) or Nearly every day (3)
-•	Poor appetite(29006)  = More than half of the days (2) or Nearly every day (3)
-•	Feeling guilt (29007) = More than half of the days (2) or Nearly every day (3)
-•	Trouble concentrating (29008) = More than half of the days (2) or Nearly every day (3)
-•	Moving slowly (29009) = More than half of the days (2) or Nearly every day (3)
-•	Thoughts death (29010) = Several days (1) More than half of the days (2) or Nearly every day (3)
-```{r subthreshold depressive symptoms ever}
+
+## ----subthreshold depressive symptoms ever------------------------------------
 dat$tmp_29000 <- apply(dat[, grepl('29000-0', colnames(dat))], 1, function(x) {"1" %in% x}) 
 dat <- 
     dat %>% 
@@ -214,11 +131,5 @@ dat <-
         )
     ) %>%
     select(-phq.symptom.score, -tmp_29000, -subthreshold)
-
-```
-
-+++JZ: Polar depresion and everything after point 3 moved to other script as these are dependent on mania
-
-
 
 

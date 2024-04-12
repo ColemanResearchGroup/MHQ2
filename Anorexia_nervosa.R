@@ -1,31 +1,4 @@
----
-title: "MHQ2 Anorexia nervosa DSM-5 algoritm"
-author: "Zhaoying Yu, Helena Davies, Christopher Huebel, Johan Z"
-output: html_document
-date: "2023-10-07"
----
-
-```{r, purl=FALSE}
-library("tidyverse")
-```
-
-
-# Recode multiple choice question
-29130 Methods of controlling body shape or weight when at this low weight
-1	Made yourself vomit
-2	Used laxatives (pills or liquids)
-3	Used diuretics (water pills)
-4	Used weight loss pills
-5	Exercised excessively or felt distressed if unable to exercise
-6	Fasted or not eaten for eight waking hours or more
-7	Other methods to lose weight/stay at low weight
-0	None of above
--3	Prefer not to answer
-
-Question: 29130: "During your period(s) of low weight, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?
-
-1	Made yourself vomit
-```{r made yourself vomit}
+## ----made yourself vomit------------------------------------------------------
 dat <- dat %>%
   mutate(
     LW_made_yourself_vomit =
@@ -49,10 +22,9 @@ dat <- dat %>%
 # Check (expecting 1.021)
 dat %>%
   count(LW_made_yourself_vomit)
-```
 
-2	Used laxatives (pills or liquids)
-```{r used laxatives}
+
+## ----used laxatives-----------------------------------------------------------
 dat <- dat %>%
   mutate(
     LW_used_laxatives =
@@ -76,10 +48,9 @@ dat <- dat %>%
 # Check (expecting 1.050)
 dat %>%
   count(LW_used_laxatives)
-```
 
-3	Used diuretics (water pills)
-```{r used diuretics}
+
+## ----used diuretics-----------------------------------------------------------
 dat <- dat %>%
   mutate(
     LW_used_diuretics =
@@ -103,10 +74,9 @@ dat <- dat %>%
 # Check (expecting 247)
 dat %>%
   count(LW_used_diuretics)
-```
 
-4	Used weight loss pills
-```{r used weight loss pills}
+
+## ----used weight loss pills---------------------------------------------------
 dat <- dat %>%
   mutate(
     LW_used_weight_loss_pills =
@@ -130,10 +100,9 @@ dat <- dat %>%
 # Check (expecting 288)
 dat %>%
   count(LW_used_weight_loss_pills)
-```
 
-5	Exercised excessively or felt distressed if unable to exercise
-```{r excessive exercise}
+
+## ----excessive exercise-------------------------------------------------------
 dat <- dat %>%
   mutate(
     LW_excessive_exercise =
@@ -157,10 +126,9 @@ dat <- dat %>%
 # Check (expecting 1,917)
 dat %>%
   count(LW_excessive_exercise)
-```
 
-6	Fasted or not eaten for eight waking hours or more
-```{r fasted}
+
+## ----fasted-------------------------------------------------------------------
 dat <- dat %>%
   mutate(
     LW_fasted =
@@ -184,10 +152,9 @@ dat <- dat %>%
 # Check (expecting 2,403)
 dat %>%
   count(LW_fasted)
-```
 
-7	Other methods to lose weight/stay at low weight
-```{r other weight control}
+
+## ----other weight control-----------------------------------------------------
 dat <- dat %>%
   mutate(
     LW_other_weight_control =
@@ -211,15 +178,9 @@ dat <- dat %>%
 # Check (expecting 823)
 dat %>%
   count(LW_other_weight_control)
-```
 
-# BMI at low weight
 
-29125 Lowest weight during period when underweight [metric] / Height [cm]/100)^2
-
-50-0.0 = Adult height at sign up to UK Biobank. We use this as approximation for the height at low weight
-
-```{r}
+## -----------------------------------------------------------------------------
 dat <- dat %>%
   mutate(
     BMI_at_low_weight =
@@ -229,21 +190,17 @@ dat <- dat %>%
           `29125-0.0` %in% c(0, -1, -3) ~ NA_real_,
         TRUE ~ `29125-0.0` / (`50-0.0`/100)^2)
         )
-```
 
 
-```{r}
+## -----------------------------------------------------------------------------
 dat %>% 
   select(
     BMI_at_low_weight
   ) %>% 
   summary()
-```
 
 
-# Anorexia nervosa
-
-```{r}
+## -----------------------------------------------------------------------------
 dat <- dat %>%
   mutate(Anorexia_nervosa = 
            case_when(
@@ -284,18 +241,14 @@ dat <- dat %>%
            TRUE ~ NA_real_
          )
   )
-```
 
 
-```{r}
+## -----------------------------------------------------------------------------
 dat %>%
   count(Anorexia_nervosa)
-```
 
 
-# Anorexia nervosa - binge-eating/purging subtype
-
-```{r}
+## -----------------------------------------------------------------------------
 dat <- dat %>%
   mutate(Anorexia_nervosa_binge_eating_purging =
 # Criterion A
@@ -350,17 +303,14 @@ dat <- dat %>%
            TRUE ~ NA_real_
          )
   )
-```
 
 
-```{r}
+## -----------------------------------------------------------------------------
 dat %>%
   count(Anorexia_nervosa_binge_eating_purging)
-```
 
-# Anorexia nervosa - restricting subtype
 
-```{r}
+## -----------------------------------------------------------------------------
 dat <- dat %>%
   mutate(Anorexia_nervosa_restricting =
 # Criterion A
@@ -396,8 +346,8 @@ dat <- dat %>%
                         ) &
   # During the period of time when you were at your lowest weight, did you use any of the following as a way to control your weight or shape?
                       (
-                        LW_made_yourself_vomit == 0 & # No
-                        LW_used_laxatives == 0 & # No
+                        LW_made_yourself_vomit == 0 | # No
+                        LW_used_laxatives == 0 | # No
                         LW_used_diuretics == 0 # No
                         )
 
@@ -410,64 +360,4 @@ dat <- dat %>%
            TRUE ~ NA_real_
          )
   )
-```
-
-
-
-```{r, purl=FALSE}
-dat %>%
-  count(Anorexia_nervosa_restricting)
-```
-
-# Check overlap between ANR and ANBP
-
-```{r, purl=FALSE}
-dat %>%
-  group_by(Anorexia_nervosa_restricting, Anorexia_nervosa_binge_eating_purging) %>%
-  tally()
-```
-
-
-
-```{r, purl=FALSE}
-dat %>%
-  select(
-    Anorexia_nervosa,
-    SelfReportedAnorexiaNervosa,
-    Anorexia_nervosa_binge_eating_purging,
-    Anorexia_nervosa_restricting,
-  ) %>%
-  filter(
-    Anorexia_nervosa == 1
-  )
-```
-
-
-```{r, purl=FALSE}
-dat %>%
-  filter(
-    Anorexia_nervosa == 1
-  ) %>%
-  select(
-    # Crit A
-    BMI_at_low_weight,
-    # Crit B
-    `29123-0.0`, # fear
-    LW_made_yourself_vomit,
-    LW_used_laxatives,
-    LW_used_diuretics,
-    LW_used_weight_loss_pills,
-    LW_excessive_exercise,
-    LW_fasted,
-    LW_other_weight_control,
-    # Crit C
-    `29122-0.0`, # feel fat
-    `29124-0.0`, # body dysmorphia
-    `29128-0.0`, # neg consequences
-    `29129-0.0`, # self-esteem
-    # Binge eating
-    `29132-0.0`, # No
-    `29134-0.0`, # BE only at low weight
-  ) 
-```
 

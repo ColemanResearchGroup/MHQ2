@@ -1,22 +1,4 @@
----
-title: "BE not during AN"
-author: "Helena Davies"
-date: "2024-01-25"
-output: html_document
----
-
-
-```{r, purl=FALSE}
-library("tidyverse")
-```
-
-# Binge eating not during AN criteria
-
-because we want to identify people who only binged during anorexia nervosa.
-
-From the DSM5: "Does not occur exclusively during the course of anorexia nervosa"
-
-```{r not during AN criteria}
+## ----not during AN criteria---------------------------------------------------
 dat <- dat %>%
   mutate(BE_not_during_AN =
            case_when(
@@ -54,24 +36,4 @@ dat <- dat %>%
         TRUE ~ NA_real_
                      )
          )
-```
 
-
-```{r, purl=FALSE}
-dat %>%
-  select(
-    `29134-0.0`,
-    Anorexia_nervosa,
-    SelfReportedAnorexiaNervosa,
-    BE_not_during_AN
-  ) %>%
-  filter(
-    !is.na(`29134-0.0`)
-  )
-```
-
-
-```{r, purl=FALSE}
-dat %>%
-  count(BE_not_during_AN)
-```

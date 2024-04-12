@@ -12,7 +12,7 @@ These differ in several places from the equivalent items from the 2016 mental he
 
 Configure global options for all chunks
 
-```{r Setup, include=FALSE}
+```{r Setup, include=FALSE, purl=FALSE}
 
 knitr::opts_chunk$set(
   echo = TRUE,
@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 Clear global environment prior to initiation
 
-```{r Clear global environment}
+```{r Clear global environment, purl=FALSE}
 
 remove(list = ls())
 
@@ -34,7 +34,7 @@ remove(list = ls())
 
 Import package_install function
 
-```{r Define package_install}
+```{r Define package_install, purl=FALSE}
 
 package_install <- function(packages) {
   for (x in packages) {
@@ -53,7 +53,7 @@ package_install <- function(packages) {
 
 # Load dependencies – NOTE THAT THESE SHOULD BE MERGED TO A SINGLE DEPENDENCIES LIST IN THE FINAL SCRIPT.
 
-```{r Load dependencies}
+```{r Load dependencies, purl=FALSE}
 
 packages <- c("data.table", "tidyverse", "dplyr")
 lapply(X = packages, FUN = require, character.only = TRUE)
@@ -62,9 +62,9 @@ lapply(X = packages, FUN = require, character.only = TRUE)
 
 # Read in the data – SINGLE RUN IN THE FINAL SCRIPT
 
-```{r Read in data}
+```{r Read in data, purl=FALSE}
 
-MHQ2 <- fread(args[1], data.table = FALSE)
+dat <- fread(args[1], data.table = FALSE)
 
 ```
 
@@ -100,8 +100,8 @@ Not included are panic attacks (14)
 
 ```{r Any self-reported diagnosis}
 
-MHQ2$SelfReportedDiagnosis <- grep_reports(
-  data = MHQ2[, grep("^29000-", colnames(MHQ2))],
+dat$SelfReportedDiagnosis <- grep_reports(
+  data = dat[, grep("^29000-", colnames(dat))],
   codes = c(1:13, 15:20)
 )
 
@@ -118,8 +118,8 @@ Not included are PTSD (16), Other EDs (20)
 
 ```{r Any self-reported diagnosis, MHQ2016 compatible}
 
-MHQ2$SelfReportedDiagnosisMHQ2016Compatible <- grep_reports(
-  data = MHQ2[, grep("^29000-", colnames(MHQ2))],
+dat$SelfReportedDiagnosisMHQ2016Compatible <- grep_reports(
+  data = dat[, grep("^29000-", colnames(dat))],
   codes = c(1:15, 17, 19)
 )
 
@@ -132,8 +132,8 @@ Not included are generic anxiety (9), panic attacks (14), OCD (8), and PTSD (16)
 
 ```{r Any anxiety diagnosis}
 
-MHQ2$SelfReportedAnxietyDisorder <- grep_reports(
-  data = MHQ2[, grep("^29000-", colnames(MHQ2))],
+dat$SelfReportedAnxietyDisorder <- grep_reports(
+  data = dat[, grep("^29000-", colnames(dat))],
   codes = c(10:13, 15)
 )
 
@@ -145,8 +145,8 @@ Eating disorder diagnoses coded in coding 1954 are AN (17), BN (18), BED (19), O
 
 ```{r Any eating disorder diagnosis}
 
-MHQ2$SelfReportedEatingDisorder <- grep_reports(
-  data = MHQ2[, grep("^29000-", colnames(MHQ2))],
+dat$SelfReportedEatingDisorder <- grep_reports(
+  data = dat[, grep("^29000-", colnames(dat))],
   codes = c(17:20)
 )
 
@@ -154,7 +154,7 @@ MHQ2$SelfReportedEatingDisorder <- grep_reports(
 
 # Any algorithmic diagnosis
 
-```{r Any algorithmic diagnosis}
+```{r Any algorithmic diagnosis, purl=FALSE}
 
 ~~TODO: This needs to be done as part of the overarching script as it relies on otuput from multiple modules~~
 

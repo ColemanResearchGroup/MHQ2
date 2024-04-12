@@ -1,77 +1,4 @@
----
-title: "UKB MHQ2 Binge-eating disorder (BED) DSM-5 algorithm"
-author: "Helena Davies, Christopher Huebel, Johan Zvrskovec"
-date: "2023-10-08"
-output: html_document
----
-
-```{r, purl=FALSE}
-library("data.table")
-library("tidyverse")
-```
-
-*DSM-5 criteria*
-1) Binge eating episodes at least once a week for three months. 
-PLUS 
-2) Either never weighed much less than other people expected OR Never had BMI indicating underweight OR 
-Had periods when underweight, but binge eating never occurred when underweight 
-PLUS 
-3) Episodes feature loss of control at least once a week for at least three months 
-PLUS 
-4) Three or more of: 
-Eat quickly 
-Eat till uncomfortable 
-Eat lots when not hungry 
-Alone due to embarrassment 
-Distress after eating 
-PLUS 
-5) Felt distressed about episodes of overeating 
-PLUS 
-6) Not associated with the recurrent use of inappropriate compensatory behaviour 
-
-
-*Written algorithm*
-Have you had recurrent episodes of excessive overeating or binge eating (EP6a) = 02 Yes, at least once a week 
-AND 
-What was the longest amount of time where you were overeating/binge eating at least once a week? (EP6b) = 03 At least three months 
-
-+++CH: needs updating 
-AND 
-NOT Case {Extended anorexia phenotype} 
-OR 
-BMI at low weight} > 18.55 kg/m2 
-OR 
-If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight? (EP6c) = 00 No, only at time(s) when I was NOT at low weight 
- 
-AND 
-During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (e.g. not being able to stop eating or feeling compelled to eat)? (EP7) = 03 At least once a week for at least three months 
- 
-AND 
-During these episodes of excessive overeating/binge eating, have you: 
-(EP8) = At least 3 of: 
-01 rapidly 
-02 uncomfortably 
-03 hungry 
-04 embarassed 
-05 disgusted 
- 
-AND 
-Do/did you feel distressed about your episodes of excessive overeating/binge eating (EP9) =01 Yes 
- 
-AND 
-During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (EP10) = 00 None of the above
-
-
-# Sumscore of binge eating characteristics
-
-(need at least 3 of 5 to qualify for a DSM-5 binge-eating disorder diagnosis)
-
-NB: Question was asked when Field 29132 
-("Ever had recurrent episodes of excessive overeating or binge eating") was Yes.
-
-## 1 Eaten much more rapidly than normal 
-expecting 6,312
-```{r BE rapid_eating}
+## ----BE rapid_eating----------------------------------------------------------
 # Create numeric variables
 dat <- dat %>%
   mutate(
@@ -94,11 +21,9 @@ dat <- dat %>%
 # Check
 dat %>%
   count(BE_rapid_eating_numeric)
-```
 
 
-## 2 Eaten until feeling uncomfortably full
-```{r BE feeling_uncomf_full}
+## ----BE feeling_uncomf_full---------------------------------------------------
 dat <- dat %>%
   mutate(
     BE_feeling_uncomf_full_numeric =
@@ -120,10 +45,9 @@ dat <- dat %>%
 # Check (expecting 10,920)
 dat %>%
   count(BE_feeling_uncomf_full_numeric)
-```
 
-## 3 Eaten large amounts of food when not physically hungry
-```{r BE large_amounts_not_hungry}
+
+## ----BE large_amounts_not_hungry----------------------------------------------
 dat <- dat %>%
   mutate(
     BE_large_amounts_not_hungry_numeric =
@@ -145,10 +69,9 @@ dat <- dat %>%
 # Check (expecting 9,963)
 dat %>%
   count(BE_large_amounts_not_hungry_numeric)
-```
 
-## 4 Eaten alone because of feeling embarrassed by overeating
-```{r BE eaten_alone_embarrassed}
+
+## ----BE eaten_alone_embarrassed-----------------------------------------------
 dat <- dat %>%
   mutate(
     BE_eaten_alone_embarrassed_numeric =
@@ -170,10 +93,9 @@ dat <- dat %>%
 # Check (expecting 5,798)
 dat %>%
   count(BE_eaten_alone_embarrassed_numeric)
-```
 
-## 5 Felt disgusted, depressed or very guilty afterward
-```{r BE disgusted_depressed_after}
+
+## ----BE disgusted_depressed_after---------------------------------------------
 dat <- dat %>%
   mutate(
     BE_disgusted_depressed_after_numeric =
@@ -195,10 +117,9 @@ dat <- dat %>%
 # Check (expecting 8,341)
 dat %>%
   count(BE_disgusted_depressed_after_numeric)
-```
 
 
-```{r sumscore BE behaviours}
+## ----sumscore BE behaviours---------------------------------------------------
 dat <- dat %>%
   mutate(
     BE_no_characteristics_numeric =
@@ -220,10 +141,9 @@ dat <- dat %>%
 # Check (expecting 2,429)
 dat %>%
   count(BE_no_characteristics_numeric)
-```
 
-## -3 Prefer not to answer
-```{r sumscore BE behaviours 2}
+
+## ----sumscore BE behaviours 2-------------------------------------------------
 dat <- dat %>%
   mutate(
     BE_characteristics_PTNA_numeric =
@@ -245,10 +165,9 @@ dat <- dat %>%
 # Check (expecting 97)
 dat %>%
   count(BE_characteristics_PTNA_numeric)
-```
 
-# Create sum score
-```{r sumscore BE_characteristics_items}
+
+## ----sumscore BE_characteristics_items----------------------------------------
 BE_characteristics_items <- dat %>%
   select(
     BE_rapid_eating_numeric,
@@ -260,10 +179,9 @@ BE_characteristics_items <- dat %>%
 
 BE_characteristics_items %>%
   names()
-```
 
 
-```{r BE characteristics}
+## ----BE characteristics-------------------------------------------------------
 dat <- dat %>%
   mutate(
     BE_characteristics_sumscore =
@@ -277,12 +195,9 @@ dat <- dat %>%
 dat %>%
   select(BE_characteristics_sumscore) %>%
   count(BE_characteristics_sumscore)
-```
-NB: This sumscore should only be used in the BED DSM5 algorithm, i.e., to indicate if participants have a score of 3 or above. A score of 0 is not informative because it includes people who did not answer the question or were not shown the question because of their answer to Field 29132.
 
 
-# Binge-eating disorder DSM-5 algorithm
-```{r BED DSM5 algorithm}
+## ----BED DSM5 algorithm-------------------------------------------------------
 dat <- dat %>%
   mutate(Binge_eating_disorder =
            case_when(
@@ -321,26 +236,4 @@ dat <- dat %>%
         TRUE ~ NA_real_
            )
   )
-```
-
-# Check 1
-```{r, purl=FALSE}
-dat %>%
-  select(
-    `29132-0.0`, # binge eating
-    `29135-0.0`, # frequency loss of control
-    `29133-0.0`, # duration of binge eating
-    BE_characteristics_sumscore, 
-    `29137-0.0`, # distress
-    `29140-0.0`, # compensatory behaviours during binge eating
-    BE_not_during_AN,
-    Binge_eating_disorder
-  )
-```
-
-# Check 2
-```{r, purl=FALSE}
-dat %>%
-  count(Binge_eating_disorder)
-```
 

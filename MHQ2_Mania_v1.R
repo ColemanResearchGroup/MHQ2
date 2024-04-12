@@ -1,14 +1,4 @@
-# Hypomania/Mania ever
-High/Hyper=yes OR Irritable=Yes
-AND
-Four features from:
-  High/hyper=Yes, Active, Talkative, Less sleep, Creative/ideas, Restless, Confident, Thoughts racing, Easily distracted
-AND
-Duration=A week or more
-
-# Define manifestations
-
-```{r}
+## -----------------------------------------------------------------------------
 dat$Total.Manifestations<-0
 
 dat$Total.Manifestations<-with(dat, ifelse(!is.na(`29051-0.0`) & `29051-0.0` > 0, Total.Manifestations + 1, Total.Manifestations))
@@ -23,9 +13,9 @@ dat$Total.Manifestations<-with(dat, ifelse(!is.na(`29051-0.7`) & `29051-0.7` > 0
 dat$Total.Manifestations<-with(dat, ifelse(is.na(`29051-0.0`) | `29051-0.0` < 0, NA, Total.Manifestations))
 
 
-```
 
-```{r}
+
+## -----------------------------------------------------------------------------
 dat$Hypomania.Ever <- with(dat, 
   case_when(
     (is.na(`29049-0.0`) | `29049-0.0` < 0) &
@@ -40,19 +30,9 @@ dat$Hypomania.Ever <- with(dat,
     .default = 0
   )
 )
-```
 
-# Mania ever
-High/Hyper=yes OR Irritable=Yes
-AND
-Four features from:
-  High/hyper=Yes, Active, Talkative, Less sleep, Creative/ideas, Restless, Confident, Thoughts racing, Easily distracted
-AND
-Duration=A week or more
-AND
-Needed treatment=Yes OR Caused problems=Yes
 
-```{r}
+## -----------------------------------------------------------------------------
 
 dat$Mania.Ever <- with(dat,
   case_when(
@@ -73,11 +53,9 @@ dat$Mania.Ever <- with(dat,
   )
 )
 
-```
 
-# Bipolar affective disorder type 1 (BD1) definition
-Case(depression ever) AND symptoms (Mania ever)
-```{r}
+
+## -----------------------------------------------------------------------------
 
 dat$BD1 <- with(dat,
                  ifelse(
@@ -86,15 +64,13 @@ dat$BD1 <- with(dat,
                    1,
                    0
                  ))
-```
 
-# Wide bipolar spectrum
-Case (depression ever) AND Symptoms (hypomania/mania ever)
-```{r}
+
+## -----------------------------------------------------------------------------
 dat$Wider.Bipolar <- with(dat,
                            ifelse(
                            (!is.na(depression.ever.case) & depression.ever.case == 1 ) &
                              (!is.na(Hypomania.Ever) & Hypomania.Ever == 1),
                            1, 0
                            ))
-```
+

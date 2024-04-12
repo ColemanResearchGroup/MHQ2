@@ -1,19 +1,13 @@
-# Life Not Worth Living
-Ever thought life was not worth living (29108) (HB1). Yes, once (01) OR Yes, more than once (02) (Symptoms)
-
-```{r}
+## -----------------------------------------------------------------------------
 dat$Not.Worth.Living <- with(dat,
   case_when(
     is.na(`29108-0.0`) | `29108-0.0` < 0 ~ NA,
     TRUE ~ `29108-0.0`
   )
 )
-```
 
-# Harm To Self Ever
-Deliberately harmed yourself (29111) (HB3) Yes , once (01) OR Yes, more than once (02) (Case)
 
-```{r}
+## -----------------------------------------------------------------------------
 dat$Self.Harm.Ever <- with(dat,
   case_when(
     is.na(`29111-0.0`) | `29111-0.0` < 0 ~ NA_real_,
@@ -21,12 +15,9 @@ dat$Self.Harm.Ever <- with(dat,
     .default = 0
   )
 )
-```
 
-# Harm To Self Ever, 12m
-Deliberately harmed yourself (29111) (HB3) = Yes, once (01) OR Yes, more than once (02) AND In the last 12 months (29114) (HB4) = Yes (01)
 
-```{r}
+## -----------------------------------------------------------------------------
 dat$Self.Harm.Ever.12m <- with(dat,
   case_when(
     is.na(`29111-0.0`) | `29111-0.0` < 0 | is.na(`29114-0.0`) | `29114-0.0` < 0 ~ NA,
@@ -36,12 +27,9 @@ dat$Self.Harm.Ever.12m <- with(dat,
   )
 )
 
-```
 
-# Suicide Attempt
-Harmed self with intent (29116) (HB6) = Yes, once (01) OR Yes, more than once (02)
 
-```{r}
+## -----------------------------------------------------------------------------
 dat$Suicide.Attempt <- with(dat,
   case_when(
     is.na(`29111-0.0`) | `29111-0.0` < 0 | is.na(`29116-0.0`) | is.na(`29116-0.0`) < 0 ~ NA,
@@ -51,5 +39,4 @@ dat$Suicide.Attempt <- with(dat,
   )
 )
 
-```
 

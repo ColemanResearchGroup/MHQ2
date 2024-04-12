@@ -1,31 +1,4 @@
----
-title: "MHQ2 Bulimia nervosa DSM-5 algorithm"
-author: "Zhaoying YU, Helena Davies, Christopher Huebel, Johan Zvrskovec"
-output: html_document
-date: "2023-11-07"
-editor_options: 
-  markdown: 
-    wrap: 72
----
-
-```{r, purl=FALSE}
-library("tidyverse")
-```
-
-# Recode multiple choice questions
-29140 Methods of controlling body shape or weight when overeating/binge eating
-1	Made yourself vomit
-2	Used laxatives (pills or liquids)
-3	Used diuretics (water pills)
-4	Used weight loss pills
-5	Exercised excessively or felt distressed if unable to exercise
-6	Fasted or not eaten for eight waking hours or more
-7	Other methods to lose weight/stay at low weight
-0	None of above
--3	Prefer not to answer
-
-1	Made yourself vomit
-```{r made yourself vomit}
+## ----made yourself vomit------------------------------------------------------
 dat <- dat %>%
   mutate(
     BE_made_yourself_vomit =
@@ -49,10 +22,9 @@ dat <- dat %>%
 # Check (expecting 581)
 dat %>%
   count(BE_made_yourself_vomit)
-```
 
-2	Used laxatives (pills or liquids)
-```{r used laxatives}
+
+## ----used laxatives-----------------------------------------------------------
 dat <- dat %>%
   mutate(
     BE_used_laxatives =
@@ -76,10 +48,9 @@ dat <- dat %>%
 # Check (expecting 500)
 dat %>%
   count(BE_used_laxatives)
-```
 
-3	Used diuretics (water pills)
-```{r used diuretics}
+
+## ----used diuretics-----------------------------------------------------------
 dat <- dat %>%
   mutate(
     BE_used_diuretics =
@@ -103,10 +74,9 @@ dat <- dat %>%
 # Check (expecting 145)
 dat %>%
   count(BE_used_diuretics)
-```
 
-4	Used weight loss pills
-```{r used weight loss pills}
+
+## ----used weight loss pills---------------------------------------------------
 dat <- dat %>%
   mutate(
     BE_used_weight_loss_pills =
@@ -130,10 +100,9 @@ dat <- dat %>%
 # Check (expecting 434)
 dat %>%
   count(BE_used_weight_loss_pills)
-```
 
-5	Exercised excessively or felt distressed if unable to exercise
-```{r excessive exercise}
+
+## ----excessive exercise-------------------------------------------------------
 dat <- dat %>%
   mutate(
     BE_excessive_exercise =
@@ -157,10 +126,9 @@ dat <- dat %>%
 # Check (expecting 441)
 dat %>%
   count(BE_excessive_exercise)
-```
 
-6	Fasted or not eaten for eight waking hours or more
-```{r fasten}
+
+## ----fasten-------------------------------------------------------------------
 dat <- dat %>%
   mutate(
     BE_fasted =
@@ -184,10 +152,9 @@ dat <- dat %>%
 # Check (expecting 798)
 dat %>%
   count(BE_fasted)
-```
 
-7	Other methods to lose weight/stay at low weight
-```{r other weight control}
+
+## ----other weight control-----------------------------------------------------
 dat <- dat %>%
   mutate(
     BE_other_weight_control =
@@ -211,11 +178,9 @@ dat <- dat %>%
 # Check (expecting 622)
 dat %>%
   count(BE_other_weight_control)
-```
 
-# Bulimia nervosa
 
-```{r}
+## -----------------------------------------------------------------------------
 dat <- dat %>%
   mutate(Bulimia_nervosa = 
 # Criterion A
@@ -257,34 +222,4 @@ dat <- dat %>%
         TRUE ~ NA_real_
            )
          )
-```
-
-
-```{r, purl=FALSE}
-dat %>%
-  select(
-    Bulimia_nervosa,
-    `29132-0.0`, # binge eating
-    `29135-0.0`, # frequency of loss of control
-    BE_made_yourself_vomit,
-    BE_used_laxatives,
-    BE_used_diuretics,
-    BE_used_weight_loss_pills,
-    BE_excessive_exercise,
-    BE_fasted,
-    `29141-0.0`, # compensatory behaviours frequency
-    `29133-0.0`, # duration binge eating
-    `29143-0.0`, # self-esteem when binge eating
-    BE_not_during_AN
-    ) %>%
-  filter(
-    !is.na(`29132-0.0`)
-  )
-```
-
-# Check
-```{r, purl=FALSE}
-dat %>%
-  count(Bulimia_nervosa)
-```
 

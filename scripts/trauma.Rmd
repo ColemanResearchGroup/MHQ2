@@ -6,7 +6,7 @@ output: html_document
 ---
 
 # Set up
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, purl=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
   comment = '',
@@ -16,28 +16,28 @@ knitr::opts_chunk$set(
 ```
 
 Install packages
-```{r Install packages}
+```{r Install packages, purl=FALSE}
 #install.packages("tidyverse")
 ```
 
 Load packages from library 
-```{r Load packages from library}
+```{r Load packages from library, purl=FALSE}
 library(tidyverse)
 ```
 
 clear global environment
-```{r Clear global environment}
+```{r Clear global environment, purl=FALSE}
 rm(list=ls())
 ```
 
-```{r Get system date}
+```{r Get system date, purl=FALSE}
 date <- Sys.Date()
 date
 ```
 
 Read in data
-```{r read in data file}
-MHQ2 <- readRDS(file = "/file/path/MHQ2_Anonymous.rds")
+```{r read in data file, purl=FALSE}
+dat <- readRDS(file = "/file/path/MHQ2_Anonymous.rds")
 ```
  
 # Make trauma field data frame (for easier inspecting)
@@ -51,14 +51,14 @@ trauma_field_numbers <- as.character(29076:29090)
 
 # select trauma field numbers into dataframe
 ```{r}
-trauma_data <- MHQ2 %>% 
+trauma_data <- dat %>% 
   select(matches(paste(trauma_field_numbers, 
                        collapse = "|")))
 
 # Inspect data
-glimpse(trauma_data)
-
-summary(trauma_data)
+# glimpse(trauma_data)
+# 
+# summary(trauma_data)
 ```
 
 
@@ -75,7 +75,7 @@ trauma_data <- trauma_data %>%
 ```
 
 # Inspect data of modified columns
-```{r}
+```{r, purl=FALSE}
 modified_columns <- trauma_data %>%
   select(ends_with("_mod"))
 
@@ -280,17 +280,17 @@ selected_columns <- trauma_data %>%
 
 # Add the selected columns back to the MHQ2 dataframe
 ```{r}
-MHQ2_trauma <- cbind(MHQ2,
-              selected_columns)
+dat <- cbind(dat,
+  selected_columns)
 ```
 
 # Perform garbage collection
-```{r}
+```{r, purl=FALSE}
 gc()
 ```
 
 # Save the data
-```{r save the data}
+```{r save the data, purl=FALSE}
 MHQ2_trauma %>% 
   saveRDS(
     file = "/file/path/trauma_algorithms.rds")
