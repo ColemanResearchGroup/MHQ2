@@ -1,0 +1,183 @@
+Anxiety.Rmd:12:13: style: [quotes_linter] Only use double-quotes.
+  comment = '',
+            ^~
+Anxiety.Rmd:15:2: style: [indentation_linter] Indentation should be 0 spaces but is 2 spaces.
+  )
+~^
+Anxiety.Rmd:20:2: style: [commented_code_linter] Commented code should be removed.
+#install.packages("tidyverse")
+ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Anxiety.Rmd:30:8: style: [infix_spaces_linter] Put spaces around all infix operators.
+rm(list=ls())
+       ^
+Anxiety.Rmd:42:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ <- readRDS(file = "/Users/abiterkuile/OneDrive/UCL/Postdoc/ukb/mhq2/anon_data/MHQ2_Anonymous.rds")
+^~~
+Anxiety.Rmd:42:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 102 characters.
+MHQ <- readRDS(file = "/Users/abiterkuile/OneDrive/UCL/Postdoc/ukb/mhq2/anon_data/MHQ2_Anonymous.rds")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+Anxiety.Rmd:43:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+               
+^~~~~~~~~~~~~~~
+Anxiety.Rmd:57:24: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+anx_pad_data <- MHQ %>% 
+                       ^
+Anxiety.Rmd:58:46: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  select(matches(paste(anx_pad_field_numbers, 
+                                             ^
+Anxiety.Rmd:105:4: style: [indentation_linter] Hanging indent should be 9 spaces but is 4 spaces.
+    Gad7Score = rowSums(select(., 
+   ^~~~~~
+Anxiety.Rmd:105:34: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+    Gad7Score = rowSums(select(., 
+                                 ^
+Anxiety.Rmd:124:36: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+    Gad7NaCount = rowSums(select(., 
+                                   ^
+Anxiety.Rmd:125:6: style: [indentation_linter] Indentation should be 28 spaces but is 6 spaces.
+      "29058-0.0_mod",
+     ^~~~~~~~~~~~~~~~~~
+Anxiety.Rmd:139:6: style: [indentation_linter] Hanging indent should be 9 spaces but is 6 spaces.
+      "29059-0.0_mod",
+     ^~~~
+Anxiety.Rmd:144:27: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+      "29064-0.0_mod") %>% 
+                          ^
+Anxiety.Rmd:160:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 83 characters.
+# Create a new column named 'GadCurrent' in the data frame and calculate its value.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+Anxiety.Rmd:164:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 105 characters.
+      is.na(Gad7Score) ~ NA_real_, # If 'Gad7Score' is missing (NA) Assign NA to the 'GadCurrent' column.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+Anxiety.Rmd:165:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 142 characters.
+      Gad7Score > 9 ~ 1, # If 'Gad7Score' is greater than 9 (i.e. >=10 for moderate current Gad) Assign 1 to the 'GadCurrent' column (as case)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Anxiety.Rmd:166:8: style: [indentation_linter] Indentation should be 6 spaces but is 8 spaces.
+        Gad7Score < 10 & Gad7Score + Gad7NaCount*3 < 10 ~ 0, # if score less than 10, and adding score with NA count *3 (in case they score on the missed NA items [max 3 each] taking them above threshold of 10) - Assign 0 
+      ~^
+Anxiety.Rmd:166:49: style: [infix_spaces_linter] Put spaces around all infix operators.
+        Gad7Score < 10 & Gad7Score + Gad7NaCount*3 < 10 ~ 0, # if score less than 10, and adding score with NA count *3 (in case they score on the missed NA items [max 3 each] taking them above threshold of 10) - Assign 0 
+                                                ^
+Anxiety.Rmd:166:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 222 characters.
+        Gad7Score < 10 & Gad7Score + Gad7NaCount*3 < 10 ~ 0, # if score less than 10, and adding score with NA count *3 (in case they score on the missed NA items [max 3 each] taking them above threshold of 10) - Assign 0 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Anxiety.Rmd:166:222: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+        Gad7Score < 10 & Gad7Score + Gad7NaCount*3 < 10 ~ 0, # if score less than 10, and adding score with NA count *3 (in case they score on the missed NA items [max 3 each] taking them above threshold of 10) - Assign 0 
+                                                                                                                                                                                                                             ^
+Anxiety.Rmd:168:8: style: [indentation_linter] Indentation should be 4 spaces but is 8 spaces.
+        )
+    ~~~^
+Anxiety.Rmd:170:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+    
+^~~~
+Anxiety.Rmd:207:32: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  select(contains("29065")) %>% 
+                               ^
+Anxiety.Rmd:214:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 158 characters.
+  select(matches("^29065-0\\.\\d+_mod$")) %>% # matches regular expression (column names that start with "29065-0.", followed by a digit, and end with "_mod")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Anxiety.Rmd:221:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 158 characters.
+  select(matches("^29065-0\\.\\d+_mod$")) %>% # matches regular expression (column names that start with "29065-0.", followed by a digit, and end with "_mod")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Anxiety.Rmd:231:30: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  mutate(PanicSymptomsCount = 
+                             ^
+Anxiety.Rmd:232:11: style: [indentation_linter] Indentation should be 6 spaces but is 11 spaces.
+           case_when(
+      ~~~~^
+Anxiety.Rmd:233:13: style: [indentation_linter] Hanging indent should be 21 spaces but is 13 spaces.
+             `29065-0.0_mod` == 0 ~ 0,
+            ^~~~~~~~~
+Anxiety.Rmd:249:17: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+anx_pad_data %>% 
+                ^
+Anxiety.Rmd:256:36: style: [indentation_linter] Hanging indent should be 38 spaces but is 36 spaces.
+                                    PanicSymptomsCount < 4 ~ 0,
+                                   ^~~
+Anxiety.Rmd:257:37: style: [indentation_linter] Hanging indent should be 38 spaces but is 37 spaces.
+                                     PanicSymptomsCount > 3 ~ 1))
+                                    ^~
+Anxiety.Rmd:259:17: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+anx_pad_data %>% 
+                ^
+Anxiety.Rmd:289:33: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+anx_pad_data <- anx_pad_data %>% 
+                                ^
+Anxiety.Rmd:290:25: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  mutate(PanicDisorder = 
+                        ^
+Anxiety.Rmd:291:11: style: [indentation_linter] Indentation should be 6 spaces but is 11 spaces.
+           case_when(PanicAttacksEver == 1 # Symptoms {panic attack ever}
+      ~~~~^
+Anxiety.Rmd:292:21: style: [indentation_linter] Indentation should be 8 spaces but is 21 spaces.
+                     & (`29067-0.0_mod` == 1 # Feel anxious more panic attacks = Yes
+        ~~~~~~~~~~~~^
+Anxiety.Rmd:292:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+                     & (`29067-0.0_mod` == 1 # Feel anxious more panic attacks = Yes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+Anxiety.Rmd:293:21: style: [indentation_linter] Hanging indent should be 24 spaces but is 21 spaces.
+                     | `29068-0.0_mod` == 1 # OR Feel worried bad things happening because of panic attacks = Yes
+                    ^~~~
+Anxiety.Rmd:293:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 113 characters.
+                     | `29068-0.0_mod` == 1 # OR Feel worried bad things happening because of panic attacks = Yes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Anxiety.Rmd:294:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 107 characters.
+                     | `29069-0.0_mod` == 1) # OR Avoid situations in which panic attacks might occur = Yes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
+Anxiety.Rmd:295:24: style: [indentation_linter] Indentation should be 8 spaces but is 24 spaces.
+                        & `29070-0.0_mod` > 0 # how long worry periods: codes 1-5 (greater than less than 1 month)
+        ~~~~~~~~~~~~~~~^
+Anxiety.Rmd:295:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 114 characters.
+                        & `29070-0.0_mod` > 0 # how long worry periods: codes 1-5 (greater than less than 1 month)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Anxiety.Rmd:296:21: style: [indentation_linter] Indentation should be 8 spaces but is 21 spaces.
+                     & (`29074-0.0_mod` == 0  # AND not due to other reasons 'no never'
+        ~~~~~~~~~~~~^
+Anxiety.Rmd:296:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 87 characters.
+                     & (`29074-0.0_mod` == 0  # AND not due to other reasons 'no never'
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+Anxiety.Rmd:297:21: style: [indentation_linter] Hanging indent should be 24 spaces but is 21 spaces.
+                     | `29074-0.0_mod` == 1) # OR due to other reasons 'yes some of them'
+                    ^~~~
+Anxiety.Rmd:297:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 89 characters.
+                     | `29074-0.0_mod` == 1) # OR due to other reasons 'yes some of them'
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+Anxiety.Rmd:298:21: style: [indentation_linter] Indentation should be 8 spaces but is 21 spaces.
+                     & (`29075-0.0_mod`== 0 # occur in specific situation 'no'
+        ~~~~~~~~~~~~^
+Anxiety.Rmd:298:40: style: [infix_spaces_linter] Put spaces around all infix operators.
+                     & (`29075-0.0_mod`== 0 # occur in specific situation 'no'
+                                       ^~
+Anxiety.Rmd:299:21: style: [indentation_linter] Hanging indent should be 24 spaces but is 21 spaces.
+                     | `29075-0.0_mod`== 1) # OR occur in specific situation 'Yes, some of them'
+                    ^~~~
+Anxiety.Rmd:299:39: style: [infix_spaces_linter] Put spaces around all infix operators.
+                     | `29075-0.0_mod`== 1) # OR occur in specific situation 'Yes, some of them'
+                                      ^~
+Anxiety.Rmd:299:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 96 characters.
+                     | `29075-0.0_mod`== 1) # OR occur in specific situation 'Yes, some of them'
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+Anxiety.Rmd:300:21: style: [indentation_linter] Indentation should be 8 spaces but is 21 spaces.
+                     ~ 1, # code as 1 if meet all criteria
+        ~~~~~~~~~~~~^
+Anxiety.Rmd:301:53: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+                     TRUE ~ 0 # other wise code as 0 
+                                                    ^
+Anxiety.Rmd:302:23: style: [indentation_linter] Indentation should be 6 spaces but is 23 spaces.
+                       )
+      ~~~~~~~~~~~~~~~~^
+Anxiety.Rmd:305:17: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+anx_pad_data %>% 
+                ^
+Anxiety.Rmd:310:17: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+anx_pad_data %>% 
+                ^
+Anxiety.Rmd:315:28: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+         PanicDisorder) %>% 
+                           ^
+Anxiety.Rmd:317:4: style: [indentation_linter] Hanging indent should be 10 spaces but is 4 spaces.
+    file = "/file/path/anxiety_algorithms.rds")
+   ^~~~~~~
+Anxiety.Rmd:318:1: style: [trailing_blank_lines_linter] Trailing blank lines are superfluous.
+
+^

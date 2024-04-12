@@ -1,0 +1,21 @@
+self-harm_mhq2_jgm.Rmd:5:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Not.Worth.Living <- with(MHQ2, case_when(
+^~~~
+self-harm_mhq2_jgm.Rmd:15:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Self.Harm.Ever <- with(MHQ2,
+^~~~
+self-harm_mhq2_jgm.Rmd:28:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Self.Harm.Ever.12m <- with(MHQ2,
+^~~~
+self-harm_mhq2_jgm.Rmd:30:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 85 characters.
+    is.na(`29111-0.0`) | `29111-0.0` < 0 | is.na(`29114-0.0`) | `29114-0.0` < 0 ~ NA,
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+self-harm_mhq2_jgm.Rmd:43:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Suicide.Attempt <- with(MHQ2,
+^~~~
+self-harm_mhq2_jgm.Rmd:45:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 92 characters.
+    is.na(`29111-0.0`) | `29111-0.0` < 0 | is.na(`29116-0.0`) | is.na(`29116-0.0`) < 0 ~ NA,
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+self-harm_mhq2_jgm.Rmd:51:1: style: [trailing_blank_lines_linter] Trailing blank lines are superfluous.
+
+^

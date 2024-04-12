@@ -1,0 +1,216 @@
+trauma.Rmd:12:13: style: [quotes_linter] Only use double-quotes.
+  comment = '',
+            ^~
+trauma.Rmd:15:2: style: [indentation_linter] Indentation should be 0 spaces but is 2 spaces.
+  )
+~^
+trauma.Rmd:20:2: style: [commented_code_linter] Commented code should be removed.
+#install.packages("tidyverse")
+ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:30:8: style: [infix_spaces_linter] Put spaces around all infix operators.
+rm(list=ls())
+       ^
+trauma.Rmd:40:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2 <- readRDS(file = "/file/path/MHQ2_Anonymous.rds")
+^~~~
+trauma.Rmd:54:24: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+trauma_data <- MHQ2 %>% 
+                       ^
+trauma.Rmd:55:45: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  select(matches(paste(trauma_field_numbers, 
+                                            ^
+trauma.Rmd:119:7: style: [indentation_linter] Hanging indent should be 32 spaces but is 7 spaces.
+       (is.na(`29076-0.0_mod`)
+      ^~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:120:9: style: [indentation_linter] Hanging indent should be 8 spaces but is 9 spaces.
+         & is.na(`29077-0.0_mod`)
+        ^
+trauma.Rmd:124:6: style: [indentation_linter] Hanging indent should be 32 spaces but is 6 spaces.
+      (`29076-0.0_mod` < 3) # Felt loved = Never true (0) Rarely true (1) or Sometimes true (2) 
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:124:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 96 characters.
+      (`29076-0.0_mod` < 3) # Felt loved = Never true (0) Rarely true (1) or Sometimes true (2) 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+trauma.Rmd:124:96: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+      (`29076-0.0_mod` < 3) # Felt loved = Never true (0) Rarely true (1) or Sometimes true (2) 
+                                                                                               ^
+trauma.Rmd:125:5: style: [indentation_linter] Hanging indent should be 32 spaces but is 5 spaces.
+     | (`29077-0.0_mod` > 0) #Physically abused by family = Rarely true (01), Sometimes true (02), Often true (03) OR Very often true (04)
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:125:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 138 characters.
+     | (`29077-0.0_mod` > 0) #Physically abused by family = Rarely true (01), Sometimes true (02), Often true (03) OR Very often true (04)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:126:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 133 characters.
+     | (`29078-0.0_mod` > 0) # Felt hated by family = Rarely true (01), Sometimes true (02), Often true (03) OR Very often true (04) 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:126:133: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+     | (`29078-0.0_mod` > 0) # Felt hated by family = Rarely true (01), Sometimes true (02), Often true (03) OR Very often true (04) 
+                                                                                                                                    ^
+trauma.Rmd:127:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 130 characters.
+     | (`29079-0.0_mod` > 0) # Sexually molested = Rarely true (01), Sometimes true (02), Often true (03) OR Very often true (04) 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:127:130: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+     | (`29079-0.0_mod` > 0) # Sexually molested = Rarely true (01), Sometimes true (02), Often true (03) OR Very often true (04) 
+                                                                                                                                 ^
+trauma.Rmd:128:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 151 characters.
+     | (`29080-0.0_mod` < 4) # Someone to take to doctor when needed as a child = Often true (03), Sometimes true (02) OR Rarely true (01) OR Never (0)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:129:4: style: [indentation_linter] Hanging indent should be 32 spaces but is 4 spaces.
+    ~ 1,
+   ^~~~~~
+trauma.Rmd:130:13: style: [spaces_inside_linter] Do not place spaces before parentheses.
+    TRUE ~ 0   )
+            ^~~
+trauma.Rmd:131:4: style: [indentation_linter] Indentation should be 2 spaces but is 4 spaces.
+    )
+  ~^
+trauma.Rmd:132:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+trauma.Rmd:134:36: style: [infix_spaces_linter] Put spaces around all infix operators.
+  with(table(TraumaChildhood, useNA="a"))
+                                   ^
+trauma.Rmd:171:6: style: [indentation_linter] Hanging indent should be 32 spaces but is 6 spaces.
+      (is.na(`29081-0.0_mod`)
+     ^~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:172:8: style: [indentation_linter] Hanging indent should be 7 spaces but is 8 spaces.
+        & is.na(`29082-0.0_mod`)
+       ^
+trauma.Rmd:176:6: style: [indentation_linter] Hanging indent should be 32 spaces but is 6 spaces.
+      (`29081-0.0_mod` > 0) # Stopped seeing friends (29081) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01)  
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:176:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 143 characters.
+      (`29081-0.0_mod` > 0) # Stopped seeing friends (29081) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01)  
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:176:142: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+      (`29081-0.0_mod` > 0) # Stopped seeing friends (29081) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01)  
+                                                                                                                                             ^~
+trauma.Rmd:177:5: style: [indentation_linter] Hanging indent should be 32 spaces but is 5 spaces.
+     | (`29082-0.0_mod` > 0) # Belittled (29082) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01)  
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:177:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 131 characters.
+     | (`29082-0.0_mod` > 0) # Belittled (29082) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01)  
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:177:130: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+     | (`29082-0.0_mod` > 0) # Belittled (29082) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01)  
+                                                                                                                                 ^~
+trauma.Rmd:178:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 126 characters.
+     | (`29083-0.0_mod` > 0) # Hurt (29083) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01)  
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:178:125: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+     | (`29083-0.0_mod` > 0) # Hurt (29083) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01)  
+                                                                                                                            ^~
+trauma.Rmd:179:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 144 characters.
+     | (`29084-0.0_mod` > 0) # Touched without consent (29084) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01) 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:179:144: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+     | (`29084-0.0_mod` > 0) # Touched without consent (29084) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01) 
+                                                                                                                                               ^
+trauma.Rmd:180:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 139 characters.
+     | (`29085-0.0_mod` > 0) # Sex without consent (29085) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:181:4: style: [indentation_linter] Hanging indent should be 32 spaces but is 4 spaces.
+    ~ 1,
+   ^~~~~~
+trauma.Rmd:182:13: style: [spaces_inside_linter] Do not place spaces before parentheses.
+    TRUE ~ 0   )
+            ^~~
+trauma.Rmd:183:4: style: [indentation_linter] Indentation should be 2 spaces but is 4 spaces.
+    )
+  ~^
+trauma.Rmd:184:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+trauma.Rmd:185:16: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+trauma_data %>% 
+               ^
+trauma.Rmd:186:36: style: [infix_spaces_linter] Put spaces around all infix operators.
+  with(table(TraumaAdulthood, useNA="a"))
+                                   ^
+trauma.Rmd:244:6: style: [indentation_linter] Hanging indent should be 31 spaces but is 6 spaces.
+      (is.na(`29081-0.0_mod`)
+     ^~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:255:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 102 characters.
+      (`29081-0.0_mod` == 2) # Stopped seeing friends (29081) = Yes, within the last 12 months (02)   
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:255:100: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+      (`29081-0.0_mod` == 2) # Stopped seeing friends (29081) = Yes, within the last 12 months (02)   
+                                                                                                   ^~~
+trauma.Rmd:256:5: style: [indentation_linter] Hanging indent should be 31 spaces but is 5 spaces.
+     | (`29082-0.0_mod` == 2) # Belittled (29082) = Yes, within the last 12 months (02) 
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:256:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 88 characters.
+     | (`29082-0.0_mod` == 2) # Belittled (29082) = Yes, within the last 12 months (02) 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+trauma.Rmd:256:88: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+     | (`29082-0.0_mod` == 2) # Belittled (29082) = Yes, within the last 12 months (02) 
+                                                                                       ^
+trauma.Rmd:257:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+     | (`29083-0.0_mod` == 2) # Hurt (29083) = Yes, within the last 12 months (02)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+trauma.Rmd:258:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 102 characters.
+     | (`29084-0.0_mod` == 2) # Touched without consent (29084) = Yes, within the last 12 months (02) 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+trauma.Rmd:258:102: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+     | (`29084-0.0_mod` == 2) # Touched without consent (29084) = Yes, within the last 12 months (02) 
+                                                                                                     ^
+trauma.Rmd:259:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 98 characters.
+     | (`29085-0.0_mod` == 2) # Sex without consent (29085) = Yes, within the last 12 months (02) 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+trauma.Rmd:259:98: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+     | (`29085-0.0_mod` == 2) # Sex without consent (29085) = Yes, within the last 12 months (02) 
+                                                                                                 ^
+trauma.Rmd:260:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 85 characters.
+     | (`29086-0.0_mod` == 2) # Assault (29086) = Yes, within the last 12 months (02)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+trauma.Rmd:261:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 95 characters.
+     | (`29087-0.0_mod` == 2) # Injury or illness (29087) = Yes, within the last 12 months (02)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+trauma.Rmd:262:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 86 characters.
+     | (`29088-0.0_mod` == 2) # Divorce (29088) = Yes, within the last 12 months (02) 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+trauma.Rmd:262:86: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+     | (`29088-0.0_mod` == 2) # Divorce (29088) = Yes, within the last 12 months (02) 
+                                                                                     ^
+trauma.Rmd:263:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 90 characters.
+     | (`29089-0.0_mod` == 2) # Death spouse (29089) = Yes, within the last 12 months (02)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+trauma.Rmd:264:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 92 characters.
+     | (`29090-0.0_mod` == 2) # Death suicide (29090) = Yes, within the last 12 months (02) 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+trauma.Rmd:264:92: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+     | (`29090-0.0_mod` == 2) # Death suicide (29090) = Yes, within the last 12 months (02) 
+                                                                                           ^
+trauma.Rmd:265:4: style: [indentation_linter] Hanging indent should be 31 spaces but is 4 spaces.
+    ~ 1,
+   ^~~~~~
+trauma.Rmd:266:13: style: [spaces_inside_linter] Do not place spaces before parentheses.
+    TRUE ~ 0   )
+            ^~~
+trauma.Rmd:267:4: style: [indentation_linter] Indentation should be 2 spaces but is 4 spaces.
+    )
+  ~^
+trauma.Rmd:268:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+trauma.Rmd:269:16: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+trauma_data %>% 
+               ^
+trauma.Rmd:270:35: style: [infix_spaces_linter] Put spaces around all infix operators.
+  with(table(Trauma12Months, useNA="a"))
+                                  ^
+trauma.Rmd:275:36: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+selected_columns <- trauma_data %>% 
+                                   ^
+trauma.Rmd:283:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2_trauma <- cbind(MHQ2,
+^~~~~~~~~~~
+trauma.Rmd:284:14: style: [indentation_linter] Hanging indent should be 21 spaces but is 14 spaces.
+              selected_columns)
+             ^~~~~~~~
+trauma.Rmd:294:16: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+MHQ2_trauma %>% 
+               ^
+trauma.Rmd:296:4: style: [indentation_linter] Hanging indent should be 10 spaces but is 4 spaces.
+    file = "/file/path/trauma_algorithms.rds")
+   ^~~~~~~

@@ -1,0 +1,132 @@
+MHQ2_Mania_v1.Rmd:12:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Total.Manifestations<-0
+^~~~
+MHQ2_Mania_v1.Rmd:12:26: style: [infix_spaces_linter] Put spaces around all infix operators.
+MHQ2$Total.Manifestations<-0
+                         ^~
+MHQ2_Mania_v1.Rmd:14:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.0`) & `29051-0.0` > 0, Total.Manifestations + 1, Total.Manifestations))
+^~~~
+MHQ2_Mania_v1.Rmd:14:26: style: [infix_spaces_linter] Put spaces around all infix operators.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.0`) & `29051-0.0` > 0, Total.Manifestations + 1, Total.Manifestations))
+                         ^~
+MHQ2_Mania_v1.Rmd:14:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 132 characters.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.0`) & `29051-0.0` > 0, Total.Manifestations + 1, Total.Manifestations))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MHQ2_Mania_v1.Rmd:15:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.1`) & `29051-0.1` > 0, Total.Manifestations + 1, Total.Manifestations))
+^~~~
+MHQ2_Mania_v1.Rmd:15:26: style: [infix_spaces_linter] Put spaces around all infix operators.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.1`) & `29051-0.1` > 0, Total.Manifestations + 1, Total.Manifestations))
+                         ^~
+MHQ2_Mania_v1.Rmd:15:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 132 characters.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.1`) & `29051-0.1` > 0, Total.Manifestations + 1, Total.Manifestations))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MHQ2_Mania_v1.Rmd:16:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.2`) & `29051-0.2` > 0, Total.Manifestations + 1, Total.Manifestations))
+^~~~
+MHQ2_Mania_v1.Rmd:16:26: style: [infix_spaces_linter] Put spaces around all infix operators.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.2`) & `29051-0.2` > 0, Total.Manifestations + 1, Total.Manifestations))
+                         ^~
+MHQ2_Mania_v1.Rmd:16:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 132 characters.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.2`) & `29051-0.2` > 0, Total.Manifestations + 1, Total.Manifestations))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MHQ2_Mania_v1.Rmd:17:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.3`) & `29051-0.3` > 0, Total.Manifestations + 1, Total.Manifestations))
+^~~~
+MHQ2_Mania_v1.Rmd:17:26: style: [infix_spaces_linter] Put spaces around all infix operators.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.3`) & `29051-0.3` > 0, Total.Manifestations + 1, Total.Manifestations))
+                         ^~
+MHQ2_Mania_v1.Rmd:17:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 132 characters.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.3`) & `29051-0.3` > 0, Total.Manifestations + 1, Total.Manifestations))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MHQ2_Mania_v1.Rmd:18:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.4`) & `29051-0.4` > 0, Total.Manifestations + 1, Total.Manifestations))
+^~~~
+MHQ2_Mania_v1.Rmd:18:26: style: [infix_spaces_linter] Put spaces around all infix operators.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.4`) & `29051-0.4` > 0, Total.Manifestations + 1, Total.Manifestations))
+                         ^~
+MHQ2_Mania_v1.Rmd:18:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 132 characters.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.4`) & `29051-0.4` > 0, Total.Manifestations + 1, Total.Manifestations))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MHQ2_Mania_v1.Rmd:19:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.5`) & `29051-0.5` > 0, Total.Manifestations + 1, Total.Manifestations))
+^~~~
+MHQ2_Mania_v1.Rmd:19:26: style: [infix_spaces_linter] Put spaces around all infix operators.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.5`) & `29051-0.5` > 0, Total.Manifestations + 1, Total.Manifestations))
+                         ^~
+MHQ2_Mania_v1.Rmd:19:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 132 characters.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.5`) & `29051-0.5` > 0, Total.Manifestations + 1, Total.Manifestations))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MHQ2_Mania_v1.Rmd:20:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.6`) & `29051-0.6` > 0, Total.Manifestations + 1, Total.Manifestations))
+^~~~
+MHQ2_Mania_v1.Rmd:20:26: style: [infix_spaces_linter] Put spaces around all infix operators.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.6`) & `29051-0.6` > 0, Total.Manifestations + 1, Total.Manifestations))
+                         ^~
+MHQ2_Mania_v1.Rmd:20:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 132 characters.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.6`) & `29051-0.6` > 0, Total.Manifestations + 1, Total.Manifestations))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MHQ2_Mania_v1.Rmd:21:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.7`) & `29051-0.7` > 0, Total.Manifestations + 1, Total.Manifestations))
+^~~~
+MHQ2_Mania_v1.Rmd:21:26: style: [infix_spaces_linter] Put spaces around all infix operators.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.7`) & `29051-0.7` > 0, Total.Manifestations + 1, Total.Manifestations))
+                         ^~
+MHQ2_Mania_v1.Rmd:21:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 132 characters.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(!is.na(`29051-0.7`) & `29051-0.7` > 0, Total.Manifestations + 1, Total.Manifestations))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MHQ2_Mania_v1.Rmd:23:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(is.na(`29051-0.0`) | `29051-0.0` < 0, NA, Total.Manifestations))
+^~~~
+MHQ2_Mania_v1.Rmd:23:26: style: [infix_spaces_linter] Put spaces around all infix operators.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(is.na(`29051-0.0`) | `29051-0.0` < 0, NA, Total.Manifestations))
+                         ^~
+MHQ2_Mania_v1.Rmd:23:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 109 characters.
+MHQ2$Total.Manifestations<-with(MHQ2, ifelse(is.na(`29051-0.0`) | `29051-0.0` < 0, NA, Total.Manifestations))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MHQ2_Mania_v1.Rmd:29:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Hypomania.Ever <- with(MHQ2, 
+^~~~
+MHQ2_Mania_v1.Rmd:29:34: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+MHQ2$Hypomania.Ever <- with(MHQ2, 
+                                 ^
+MHQ2_Mania_v1.Rmd:36:6: style: [indentation_linter] Indentation should be 7 spaces but is 6 spaces.
+      (!is.na(`29050-0.0`) & `29050-0.0` == 1)) &
+     ^~
+MHQ2_Mania_v1.Rmd:38:6: style: [indentation_linter] Indentation should be 9 spaces but is 6 spaces.
+      Total.Manifestations >= 4) &
+     ^~~~
+MHQ2_Mania_v1.Rmd:57:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Mania.Ever <- with(MHQ2,
+^~~~
+MHQ2_Mania_v1.Rmd:66:6: style: [indentation_linter] Indentation should be 7 spaces but is 6 spaces.
+      (!is.na(`29050-0.0`) & `29050-0.0` == 1)) &
+     ^~
+MHQ2_Mania_v1.Rmd:68:6: style: [indentation_linter] Indentation should be 9 spaces but is 6 spaces.
+      Total.Manifestations >= 4) &
+     ^~~~
+MHQ2_Mania_v1.Rmd:70:6: style: [indentation_linter] Indentation should be 9 spaces but is 6 spaces.
+      ((!is.na(`29056-0.0`) & `29056-0.0` == 1) |
+     ^~~~
+MHQ2_Mania_v1.Rmd:82:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$BD1 <- with(MHQ2,
+^~~~
+MHQ2_Mania_v1.Rmd:84:61: style: [infix_spaces_linter] Put spaces around all infix operators.
+                   (!is.na(Depressed.Ever) & Depressed.Ever ==1) & #Depressed.Ever defined elsewhere
+                                                            ^~
+MHQ2_Mania_v1.Rmd:84:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 100 characters.
+                   (!is.na(Depressed.Ever) & Depressed.Ever ==1) & #Depressed.Ever defined elsewhere
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+MHQ2_Mania_v1.Rmd:94:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+MHQ2$Wider.Bipolar <- with(MHQ2,
+^~~~
+MHQ2_Mania_v1.Rmd:96:27: style: [indentation_linter] Indentation should be 29 spaces but is 27 spaces.
+                           (!is.na(Depressed.Ever) & Depressed.Ever == 1 ) &
+                          ^~~
+MHQ2_Mania_v1.Rmd:96:73: style: [spaces_inside_linter] Do not place spaces before parentheses.
+                           (!is.na(Depressed.Ever) & Depressed.Ever == 1 ) &
+                                                                        ^
+MHQ2_Mania_v1.Rmd:100:1: style: [trailing_blank_lines_linter] Missing terminal newline.
+NA
+^

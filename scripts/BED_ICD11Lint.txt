@@ -1,0 +1,165 @@
+BED_ICD11.Rmd:15:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 91 characters.
+dat <- readRDS("/Users/helenadavies/werk/UKB_MHQ2_algorithms/anon_data/MHQ2_Anonymous.rds")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+BED_ICD11.Rmd:57:11: style: [indentation_linter] Indentation should be 6 spaces but is 11 spaces.
+           case_when(
+      ~~~~^
+BED_ICD11.Rmd:58:16: style: [commented_code_linter] Commented code should be removed.
+             # "If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight?"
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:58:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 172 characters.
+             # "If you reported a time or times of low weight above, do/did you experience episodes of excessive overeating/binge eating during your time(s) of low weight?"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:59:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+             
+^~~~~~~~~~~~~
+BED_ICD11.Rmd:60:13: style: [indentation_linter] Indentation should be 8 spaces but is 13 spaces.
+             # "Only at time(s) when I was not at low weight"
+        ~~~~^
+BED_ICD11.Rmd:60:16: style: [commented_code_linter] Commented code should be removed.
+             # "Only at time(s) when I was not at low weight"
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:61:12: style: [indentation_linter] Indentation should be 8 spaces but is 12 spaces.
+            (
+        ~~~^
+BED_ICD11.Rmd:62:13: style: [indentation_linter] Indentation should be 10 spaces but is 13 spaces.
+             `29134-0.0` == 2 |
+          ~~^
+BED_ICD11.Rmd:63:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+               
+^~~~~~~~~~~~~~~
+BED_ICD11.Rmd:64:71: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+            # "Both at times of low weight and when not at low weight"   
+                                                                      ^~~
+BED_ICD11.Rmd:65:13: style: [indentation_linter] Indentation should be 12 spaces but is 13 spaces.
+             `29134-0.0` == 1 |
+            ^
+BED_ICD11.Rmd:66:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+              
+^~~~~~~~~~~~~~
+BED_ICD11.Rmd:68:13: style: [indentation_linter] Indentation should be 12 spaces but is 13 spaces.
+             `29134-0.0` == -4
+            ^
+BED_ICD11.Rmd:69:12: style: [indentation_linter] Indentation should be 8 spaces but is 12 spaces.
+            ) |
+        ~~~^
+BED_ICD11.Rmd:70:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+              
+^~~~~~~~~~~~~~
+BED_ICD11.Rmd:71:12: style: [indentation_linter] Indentation should be 10 spaces but is 12 spaces.
+            # "Only at time(s) of low weight"
+          ~^
+BED_ICD11.Rmd:71:15: style: [commented_code_linter] Commented code should be removed.
+            # "Only at time(s) of low weight"
+              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:72:13: style: [indentation_linter] Indentation should be 10 spaces but is 13 spaces.
+             (
+          ~~^
+BED_ICD11.Rmd:74:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+                
+^~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:75:12: style: [indentation_linter] Indentation should be 14 spaces but is 12 spaces.
+            # No lifetime anorexia nervosa
+           ^~~
+BED_ICD11.Rmd:77:36: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+              self_reported_AN == 0 
+                                   ^
+BED_ICD11.Rmd:79:12: style: [indentation_linter] Indentation should be 10 spaces but is 12 spaces.
+            ) ~ 1
+          ~^
+BED_ICD11.Rmd:80:11: style: [indentation_linter] Indentation should be 6 spaces but is 11 spaces.
+           )
+      ~~~~^
+BED_ICD11.Rmd:106:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+              
+^~~~~~~~~~~~~~
+BED_ICD11.Rmd:111:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+                
+^~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:121:11: style: [indentation_linter] Indentation should be 6 spaces but is 11 spaces.
+           case_when(
+      ~~~~^
+BED_ICD11.Rmd:122:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+             
+^~~~~~~~~~~~~
+BED_ICD11.Rmd:123:11: style: [commented_code_linter] Commented code should be removed.
+        # "Have you had recurrent episodes of excessive overeating or binge eating (i.e. eating significantly more than what most people eat in a similar period of time, for example, two hours)?" = "Yes, at least once a week" 
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:123:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 226 characters.
+        # "Have you had recurrent episodes of excessive overeating or binge eating (i.e. eating significantly more than what most people eat in a similar period of time, for example, two hours)?" = "Yes, at least once a week" 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:123:226: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+        # "Have you had recurrent episodes of excessive overeating or binge eating (i.e. eating significantly more than what most people eat in a similar period of time, for example, two hours)?" = "Yes, at least once a week" 
+                                                                                                                                                                                                                                 ^
+BED_ICD11.Rmd:124:12: style: [indentation_linter] Indentation should be 8 spaces but is 12 spaces.
+            `29132-0.0` == 2 &
+        ~~~^
+BED_ICD11.Rmd:125:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+              
+^~~~~~~~~~~~~~
+BED_ICD11.Rmd:126:8: style: [indentation_linter] Indentation should be 10 spaces but is 8 spaces.
+        # "During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (e.g. not being able to stop eating or feeling compelled to eat)?" = "At least once a week for at least 3 months"  
+       ^~~
+BED_ICD11.Rmd:126:11: style: [commented_code_linter] Commented code should be removed.
+        # "During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (e.g. not being able to stop eating or feeling compelled to eat)?" = "At least once a week for at least 3 months"  
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:126:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 256 characters.
+        # "During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (e.g. not being able to stop eating or feeling compelled to eat)?" = "At least once a week for at least 3 months"  
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:126:255: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+        # "During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (e.g. not being able to stop eating or feeling compelled to eat)?" = "At least once a week for at least 3 months"  
+                                                                                                                                                                                                                                                              ^~
+BED_ICD11.Rmd:127:11: style: [indentation_linter] Indentation should be 10 spaces but is 11 spaces.
+           `29135-0.0` == 0 &
+          ^
+BED_ICD11.Rmd:128:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+              
+^~~~~~~~~~~~~~
+BED_ICD11.Rmd:129:8: style: [indentation_linter] Indentation should be 10 spaces but is 8 spaces.
+        # "What was the longest amount of time when you were overeating/binge eating at least once a week?" = "At least 3 months"
+       ^~~
+BED_ICD11.Rmd:129:11: style: [commented_code_linter] Commented code should be removed.
+        # "What was the longest amount of time when you were overeating/binge eating at least once a week?" = "At least 3 months"
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:129:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 129 characters.
+        # "What was the longest amount of time when you were overeating/binge eating at least once a week?" = "At least 3 months"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:130:11: style: [indentation_linter] Indentation should be 10 spaces but is 11 spaces.
+           `29133-0.0` == 0 &
+          ^
+BED_ICD11.Rmd:131:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+          
+^~~~~~~~~~
+BED_ICD11.Rmd:132:8: style: [indentation_linter] Indentation should be 10 spaces but is 8 spaces.
+        # "Do/did you feel distressed about your episodes of excessive overeating/binge eating?" = "Yes"
+       ^~~
+BED_ICD11.Rmd:132:11: style: [commented_code_linter] Commented code should be removed.
+        # "Do/did you feel distressed about your episodes of excessive overeating/binge eating?" = "Yes"
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:132:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 104 characters.
+        # "Do/did you feel distressed about your episodes of excessive overeating/binge eating?" = "Yes"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:134:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+          
+^~~~~~~~~~
+BED_ICD11.Rmd:135:8: style: [indentation_linter] Indentation should be 10 spaces but is 8 spaces.
+        # "During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?" = "None of the above"
+       ^~~
+BED_ICD11.Rmd:135:11: style: [commented_code_linter] Commented code should be removed.
+        # "During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?" = "None of the above"
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:135:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 208 characters.
+        # "During the time(s) when you were regularly overeating/binge eating, have you done any of the following as a way to control your body shape or weight? (Select all that apply)?" = "None of the above"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:137:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+        
+^~~~~~~~
+BED_ICD11.Rmd:138:7: style: [indentation_linter] Indentation should be 10 spaces but is 7 spaces.
+       # ICD11 criteria: "The individual may be of normal weight or even low weight (though not sufficiently to meet the diagnostic requirements for Anorexia Nervosa)" (calculated above)
+      ^~~~
+BED_ICD11.Rmd:138:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 186 characters.
+       # ICD11 criteria: "The individual may be of normal weight or even low weight (though not sufficiently to meet the diagnostic requirements for Anorexia Nervosa)" (calculated above)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BED_ICD11.Rmd:140:11: style: [indentation_linter] Indentation should be 6 spaces but is 11 spaces.
+           )
+      ~~~~^

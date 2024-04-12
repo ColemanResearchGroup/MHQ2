@@ -1,0 +1,81 @@
+Extended_BE.Rmd:23:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 91 characters.
+dat <- readRDS("/Users/helenadavies/werk/UKB_MHQ2_algorithms/anon_data/MHQ2_Anonymous.rds")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+Extended_BE.Rmd:46:11: style: [indentation_linter] Indentation should be 6 spaces but is 11 spaces.
+           case_when(
+      ~~~~^
+Extended_BE.Rmd:47:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+             
+^~~~~~~~~~~~~
+Extended_BE.Rmd:48:9: style: [indentation_linter] Indentation should be 8 spaces but is 9 spaces.
+         # "Have you had recurrent episodes of excessive overeating or binge eating (i.e. eating significantly more than what most people eat in a similar period of time, for example, two hours)?" = "Yes, at least once a week" 
+        ^
+Extended_BE.Rmd:48:12: style: [commented_code_linter] Commented code should be removed.
+         # "Have you had recurrent episodes of excessive overeating or binge eating (i.e. eating significantly more than what most people eat in a similar period of time, for example, two hours)?" = "Yes, at least once a week" 
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Extended_BE.Rmd:48:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 227 characters.
+         # "Have you had recurrent episodes of excessive overeating or binge eating (i.e. eating significantly more than what most people eat in a similar period of time, for example, two hours)?" = "Yes, at least once a week" 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Extended_BE.Rmd:48:227: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+         # "Have you had recurrent episodes of excessive overeating or binge eating (i.e. eating significantly more than what most people eat in a similar period of time, for example, two hours)?" = "Yes, at least once a week" 
+                                                                                                                                                                                                                                  ^
+Extended_BE.Rmd:49:12: style: [indentation_linter] Indentation should be 8 spaces but is 12 spaces.
+            `29132-0.0` == 2  ~ 1
+        ~~~^
+Extended_BE.Rmd:51:12: style: [indentation_linter] Indentation should be 6 spaces but is 12 spaces.
+            )
+      ~~~~~^
+Extended_BE.Rmd:59:11: style: [indentation_linter] Indentation should be 6 spaces but is 11 spaces.
+           case_when(
+      ~~~~^
+Extended_BE.Rmd:60:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+             
+^~~~~~~~~~~~~
+Extended_BE.Rmd:61:11: style: [indentation_linter] Indentation should be 8 spaces but is 11 spaces.
+           # "Have you had recurrent episodes of excessive overeating or binge eating (i.e. eating significantly more than what most people eat in a similar period of time, for example, two hours)?" = "Yes, at least once a week" 
+        ~~^
+Extended_BE.Rmd:61:14: style: [commented_code_linter] Commented code should be removed.
+           # "Have you had recurrent episodes of excessive overeating or binge eating (i.e. eating significantly more than what most people eat in a similar period of time, for example, two hours)?" = "Yes, at least once a week" 
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Extended_BE.Rmd:61:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 229 characters.
+           # "Have you had recurrent episodes of excessive overeating or binge eating (i.e. eating significantly more than what most people eat in a similar period of time, for example, two hours)?" = "Yes, at least once a week" 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Extended_BE.Rmd:61:229: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+           # "Have you had recurrent episodes of excessive overeating or binge eating (i.e. eating significantly more than what most people eat in a similar period of time, for example, two hours)?" = "Yes, at least once a week" 
+                                                                                                                                                                                                                                    ^
+Extended_BE.Rmd:62:12: style: [indentation_linter] Indentation should be 8 spaces but is 12 spaces.
+            `29132-0.0` == 2  &
+        ~~~^
+Extended_BE.Rmd:64:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+              
+^~~~~~~~~~~~~~
+Extended_BE.Rmd:65:13: style: [indentation_linter] Indentation should be 10 spaces but is 13 spaces.
+             # "During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (e.g. not being able to stop eating or feeling compelled to eat)?"
+          ~~^
+Extended_BE.Rmd:65:16: style: [commented_code_linter] Commented code should be removed.
+             # "During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (e.g. not being able to stop eating or feeling compelled to eat)?"
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Extended_BE.Rmd:65:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 212 characters.
+             # "During your episodes of excessive overeating/binge eating, how often have you felt like you did not have control over your eating (e.g. not being able to stop eating or feeling compelled to eat)?"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Extended_BE.Rmd:66:11: style: [indentation_linter] Indentation should be 10 spaces but is 11 spaces.
+           (
+          ^
+Extended_BE.Rmd:69:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+               
+^~~~~~~~~~~~~~~
+Extended_BE.Rmd:70:15: style: [indentation_linter] Indentation should be 14 spaces but is 15 spaces.
+               # "At least once a week for between 1 and 3 months"
+              ^
+Extended_BE.Rmd:72:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+               
+^~~~~~~~~~~~~~~
+Extended_BE.Rmd:73:15: style: [indentation_linter] Indentation should be 14 spaces but is 15 spaces.
+               # "Occasionally"
+              ^
+Extended_BE.Rmd:74:32: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+               `29135-0.0` == 2 
+                               ^
+Extended_BE.Rmd:76:11: style: [indentation_linter] Indentation should be 6 spaces but is 11 spaces.
+           )
+      ~~~~^
