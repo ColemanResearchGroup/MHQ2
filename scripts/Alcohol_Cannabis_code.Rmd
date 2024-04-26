@@ -14,7 +14,7 @@ library("tidyverse")
 ## Import data
 ```{r, purl=FALSE}
 dat <-
-readRDS("/Users/lilian/Desktop/dat_Anonymous.rds")
+  readRDS("/Users/lilian/Desktop/dat_Anonymous.rds")
 ```
 
 ## Alcohol algorithms
@@ -25,14 +25,18 @@ scored 0-4, no adjustment needed
 
 ```{r}
 dat <- dat %>%
-  mutate(`29091-0.0` = recode(as.character(`29091-0.0`),
-    "0" = 0,
-    "1" = 1,
-    "2" = 2,
-    "3" = 3,
-    "4" = 4,
-    "-3" = NA_real_,
-    .default = NA_real_))
+  mutate(
+    `29091-0.0` = recode(
+      as.character(`29091-0.0`),
+      "0" = 0,
+      "1" = 1,
+      "2" = 2,
+      "3" = 3,
+      "4" = 4,
+      "-3" = NA_real_,
+      .default = NA_real_
+    )
+  )
 ```
 
 
@@ -41,14 +45,18 @@ scored 1-5, needs adjusting
 
 ```{r}
 dat <- dat %>%
-  mutate(`29092-0.0` = recode(as.character(`29092-0.0`),
-    "1" = 0,
-    "2" = 1,
-    "3" = 2,
-    "4" = 3,
-    "5" = 4,
-    "-3" = NA_real_,
-    .default = NA_real_))
+  mutate(
+    `29092-0.0` = recode(
+      as.character(`29092-0.0`),
+      "1" = 0,
+      "2" = 1,
+      "3" = 2,
+      "4" = 3,
+      "5" = 4,
+      "-3" = NA_real_,
+      .default = NA_real_
+    )
+  )
 ```
 
 Six or more drinks (AUDIT 1b) > f.29093-0.0
@@ -57,14 +65,18 @@ scored 1-5, needs adjusting
 
 ```{r}
 dat <- dat %>%
-  mutate(`29093-0.0` = recode(as.character(`29093-0.0`),
-    "0" = 0,
-    "2" = 1,
-    "3" = 2,
-    "4" = 3,
-    "5" = 4,
-    "-3" = NA_real_,
-    .default = NA_real_))
+  mutate(
+    `29093-0.0` = recode(
+      as.character(`29093-0.0`),
+      "0" = 0,
+      "2" = 1,
+      "3" = 2,
+      "4" = 3,
+      "5" = 4,
+      "-3" = NA_real_,
+      .default = NA_real_
+    )
+  )
 ```
 
 Unable to stop (AUDIT 2) > f.29094-0.0
@@ -73,14 +85,18 @@ scored 1-5, needs adjusting
 
 ```{r}
 dat <- dat %>%
-  mutate(`29094-0.0` = recode(as.character(`29094-0.0`),
-    "0" = 0,
-    "2" = 1,
-    "3" = 2,
-    "4" = 3,
-    "5" = 4,
-    "-3" = NA_real_,
-    .default = NA_real_))
+  mutate(
+    `29094-0.0` = recode(
+      as.character(`29094-0.0`),
+      "0" = 0,
+      "2" = 1,
+      "3" = 2,
+      "4" = 3,
+      "5" = 4,
+      "-3" = NA_real_,
+      .default = NA_real_
+    )
+  )
 ```
 
 
@@ -90,14 +106,18 @@ scored 1-5, needs adjusting
 
 ```{r}
 dat <- dat %>%
-  mutate(`29095-0.0` = recode(as.character(`29095-0.0`),
-    "0" = 0,
-    "2" = 1,
-    "3" = 2,
-    "4" = 3,
-    "5" = 4,
-    "-3" = NA_real_,
-    .default = NA_real_))
+  mutate(
+    `29095-0.0` = recode(
+      as.character(`29095-0.0`),
+      "0" = 0,
+      "2" = 1,
+      "3" = 2,
+      "4" = 3,
+      "5" = 4,
+      "-3" = NA_real_,
+      .default = NA_real_
+    )
+  )
 ```
 
 Needed to drink first thing (AUDIT 4) > f.29096-0.0
@@ -106,14 +126,18 @@ scored 1-5, needs adjusting
 
 ```{r}
 dat <- dat %>%
-  mutate(`29096-0.0` = recode(as.character(`29096-0.0`),
-    "0" = 0,
-    "2" = 1,
-    "3" = 2,
-    "4" = 3,
-    "5" = 4,
-    "-3" = NA_real_,
-    .default = NA_real_))
+  mutate(
+    `29096-0.0` = recode(
+      as.character(`29096-0.0`),
+      "0" = 0,
+      "2" = 1,
+      "3" = 2,
+      "4" = 3,
+      "5" = 4,
+      "-3" = NA_real_,
+      .default = NA_real_
+    )
+  )
 ```
 
 Guilt due to drinking (AUDIT 5) f.29097-0.0
@@ -122,14 +146,18 @@ scored 1-5, needs adjusting
 
 ```{r}
 dat <- dat %>%
- mutate(`29097-0.0` = recode(as.character(`29097-0.0`),
-    "0" = 0,
-    "2" = 1,
-    "3" = 2,
-    "4" = 3,
-    "5" = 4,
-    "-3" = NA_real_,
-    .default = NA_real_))
+  mutate(
+    `29097-0.0` = recode(
+      as.character(`29097-0.0`),
+      "0" = 0,
+      "2" = 1,
+      "3" = 2,
+      "4" = 3,
+      "5" = 4,
+      "-3" = NA_real_,
+      .default = NA_real_
+    )
+  )
 ```
 
 Unable to remember due to drink (AUDIT 6) f.29098-0.0
@@ -138,14 +166,18 @@ scored 1-5, needs adjusting
 
 ```{r}
 dat <- dat %>%
-mutate(`29098-0.0` = recode(as.character(`29098-0.0`),
-    "0" = 0,
-    "2" = 1,
-    "3" = 2,
-    "4" = 3,
-    "5" = 4,
-    "-3" = NA_real_,
-    .default = NA_real_))
+  mutate(
+    `29098-0.0` = recode(
+      as.character(`29098-0.0`),
+      "0" = 0,
+      "2" = 1,
+      "3" = 2,
+      "4" = 3,
+      "5" = 4,
+      "-3" = NA_real_,
+      .default = NA_real_
+    )
+  )
 ```
 
 Injury due to drinking ever (AUDIT 7) f.29099-0.0
@@ -153,12 +185,16 @@ scored 0,1,2, needs adjusting to 0,2,4
 
 ```{r}
 dat <- dat %>%
-  mutate(`29099-0.0` = recode(as.character(`29099-0.0`),
-    "0" = 0,
-    "1" = 2,
-    "2" = 4,
-    "-3" = NA_real_,
-    .default = NA_real_))
+  mutate(
+    `29099-0.0` = recode(
+      as.character(`29099-0.0`),
+      "0" = 0,
+      "1" = 2,
+      "2" = 4,
+      "-3" = NA_real_,
+      .default = NA_real_
+    )
+  )
 ```
 
 Advice to cut down ever (AUDIT 8) f.29100-0.0
@@ -166,27 +202,76 @@ scored 0,1,2, needs adjusting to 0,2,4
 
 ```{r}
 dat <- dat %>%
-  mutate(`29100-0.0` = recode(as.character(`29100-0.0`),
-    "0" = 0,
-    "1" = 2,
-    "2" = 4,
-    "-3" = NA_real_,
-    .default = NA_real_))
+  mutate(
+    `29100-0.0` = recode(
+      as.character(`29100-0.0`),
+      "0" = 0,
+      "1" = 2,
+      "2" = 4,
+      "-3" = NA_real_,
+      .default = NA_real_
+    )
+  )
 ```
 
 # Sum of AUDIT score
 
 ```{r}
-dat[c("29091-0.0", "29092-0.0", "29093-0.0", "29094-0.0", "29095-0.0", "29096-0.0", "29097-0.0", "29098-0.0", "29099-0.0", "29100-0.0")] <- lapply(dat[c("29091-0.0", "29092-0.0", "29093-0.0", "29094-0.0", "29095-0.0", "29096-0.0", "29097-0.0", "29098-0.0", "29099-0.0", "29100-0.0")], as.numeric)
+dat[c(
+  "29091-0.0",
+  "29092-0.0",
+  "29093-0.0",
+  "29094-0.0",
+  "29095-0.0",
+  "29096-0.0",
+  "29097-0.0",
+  "29098-0.0",
+  "29099-0.0",
+  "29100-0.0"
+)] <- lapply(
+  dat[c(
+    "29091-0.0",
+    "29092-0.0",
+    "29093-0.0",
+    "29094-0.0",
+    "29095-0.0",
+    "29096-0.0",
+    "29097-0.0",
+    "29098-0.0",
+    "29099-0.0",
+    "29100-0.0"
+  )],
+  as.numeric
+)
 
 #Rewrites Sum_AUDIT to NA if all AUDIT scores are missing/NA
-dat$Sum_AUDIT <- apply(dat[,c("29091-0.0", "29092-0.0", "29093-0.0", "29094-0.0", "29095-0.0", "29096-0.0", "29097-0.0", "29098-0.0", "29099-0.0", "29100-0.0")], 1, function(row) {
-    if (all(is.na(row))) {
-        NA
+dat$Sum_AUDIT <- apply(
+  dat[, c(
+    "2OR 9091-0.0",
+    "29092-0.0",
+    "29093-0.0",
+    "29094-0.0",
+    "29095-0.0",
+    "29096-0.0",
+    "29097-0.0",
+    "29098-0.0",
+    "29099-0.0",
+    "29100-0.0"
+  )],
+  1,
+  function(row) {
+    if (all(
+      is.na(row)
+    )
+    ) {
+      NA
     } else {
-        sum(row, na.rm = TRUE)
+      sum(row,
+        na.rm = TRUE
+      )
     }
-})
+  }
+)
 ```
 
 # Hazardous / harmful alcohol use (12 month) 
@@ -197,19 +282,23 @@ Harmful alcohol use: Score {AUDIT full scale} >= 16 (when items scored 0-4)
 ```{r}
 #Hazardous use
 dat <- dat %>%
-  mutate(alcohol_hazardous_use = case_when(
-    is.na(Sum_AUDIT) ~ NA_real_,
-    Sum_AUDIT >= 8 ~ 1,
-  TRUE ~ 0
-  ))
+  mutate(
+    alcohol_hazardous_use = case_when(
+      is.na(Sum_AUDIT) ~ NA_real_,
+      Sum_AUDIT >= 8 ~ 1,
+      TRUE ~ 0
+    )
+  )
 
 #Harmful use
 dat <- dat %>%
-  mutate(alcohol_harmful_use = case_when(
-    is.na(Sum_AUDIT) ~ NA_real_,
-    Sum_AUDIT >= 16 ~ 1,
-  TRUE ~ 0
-  ))
+  mutate(
+    alcohol_harmful_use = case_when(
+      is.na(Sum_AUDIT) ~ NA_real_,
+      Sum_AUDIT >= 16 ~ 1,
+      TRUE ~ 0
+    )
+  )
 ```
 
 # Non-case for hazardous / harmful alcohol use
@@ -228,19 +317,19 @@ NOT reason for reducing amount of alcohol drunk 2664 = “ill health”, “doct
 
 ```{r}
 dat <- dat %>%
-  mutate(alcohol_nonuse = 
-           case_when(
-    Sum_AUDIT < 8 &
-    `20117-0.0` == 0 &
-    `2664-0.0` %in% c(4,5)
-   ~ 1,
-  Sum_AUDIT >= 8 |
-  `20117-0.0` %in% c(1,2) |
-  `2664-0.0` %in% c(1,2,3)
-  ~ 0,
-  TRUE ~ NA_real_
+  mutate(
+    alcohol_nonuse = case_when(
+      Sum_AUDIT < 8 &
+        `20117-0.0` == 0 &
+        `2664-0.0` %in% c(4, 5)
+      ~ 1,
+      Sum_AUDIT >= 8 |
+        `20117-0.0` %in% c(1, 2) |
+        `2664-0.0` %in% c(1, 2, 3)
+      ~ 0,
+      TRUE ~ NA_real_
+    )
   )
-)
 ```
 
 
@@ -251,12 +340,13 @@ Used cannabis (CU1) = Yes, 1-2 times (01) OR Yes, 3-10 times (02) OR Yes, 11-100
 
 ```{r}
 dat <- dat %>%
-mutate(cannabis_use = 
-         case_when(
-    `29104-0.0` %in% c(1,2,3,4) ~ 1,
-    `29104-0.0` == 0 ~ 0,
-    TRUE ~ NA_integer_
-))
+  mutate(
+    cannabis_use = case_when(
+      `29104-0.0` %in% c(1, 2, 3, 4) ~ 1,
+      `29104-0.0` == 0 ~ 0,
+      TRUE ~ NA_integer_
+    )
+  )
 ```
 
 # Daily cannabis use ever 
@@ -267,10 +357,11 @@ How often = Every day (04)
 
 ```{r}
 dat <- dat %>%
-mutate(daily_cannabis_use = 
-         case_when(
-    `29107-0.0` == 3 ~ 1,
-    `29107-0.0` >=0 & `29107-0.0` < 3 ~ 0,
-    TRUE ~ NA_integer_
-))
+  mutate(
+    daily_cannabis_use = case_when(
+      `29107-0.0` == 3 ~ 1,
+      `29107-0.0` >= 0 & `29107-0.0` < 3 ~ 0,
+      TRUE ~ NA_integer_
+    )
+  )
 ```

@@ -12,7 +12,6 @@ library("tidyverse")
 # Import data
 
 ```{r, purl=FALSE}
-#dat <- readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
 dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Height_Alcohol_Field_Anonymous.rds")
 ```
 
@@ -23,13 +22,22 @@ dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Height_Alcohol_Field
 
 grep_reports <- function(data, codes) {
   return(
-    apply(X = data,
+    apply(
+      X = data,
       MARGIN = 1,
       FUN = function(selected_row) {
-        if(all(is.na(selected_row))) {
+        if (
+          all(
+            is.na(selected_row)
+          )
+        ) {
           return(NA_real_)
         } else {
-          return(sign(sum(codes %in% selected_row)))
+          return(
+            sign(
+              sum(codes %in% selected_row)
+            )
+          )
         }
       }
     )
@@ -46,7 +54,10 @@ Eating disorder diagnoses coded in coding 1954 are AN (17), BN (18), BED (19), O
 ```{r Any eating disorder diagnosis}
 
 dat$SelfReportedEatingDisorder <- grep_reports(
-  data = dat[, grep("^29000-", colnames(dat))],
+  data = dat[, grep(
+    "^29000-",
+    colnames(dat)
+  )],
   codes = c(17:20)
 )
 
@@ -55,7 +66,10 @@ dat$SelfReportedEatingDisorder <- grep_reports(
 
 ```{r Anorexia nervosa}
 dat$SelfReportedAnorexiaNervosa <- grep_reports(
-  data = dat[, grep("^29000-", colnames(dat))],
+  data = dat[, grep(
+    "^29000-",
+    colnames(dat)
+  )],
   codes = 17
 )
 ```
@@ -68,7 +82,10 @@ dat %>%
 
 ```{r Bulimia nervosa}
 dat$SelfReportedBulimiaNervosa <- grep_reports(
-  data = dat[, grep("^29000-", colnames(dat))],
+  data = dat[, grep(
+    "^29000-",
+    colnames(dat)
+  )],
   codes = 18
 )
 ```
@@ -82,7 +99,10 @@ dat %>%
 
 ```{r Binge eating disorder}
 dat$SelfReportedBingeEatingDisorder <- grep_reports(
-  data = dat[, grep("^29000-", colnames(dat))],
+  data = dat[, grep(
+    "^29000-",
+    colnames(dat)
+  )],
   codes = 19
 )
 ```

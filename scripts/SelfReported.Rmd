@@ -64,7 +64,10 @@ lapply(X = packages, FUN = require, character.only = TRUE)
 
 ```{r Read in data, purl=FALSE}
 
-dat <- fread(args[1], data.table = FALSE)
+dat <- fread(
+  args[1],
+  data.table = FALSE
+)
 
 ```
 
@@ -74,10 +77,11 @@ dat <- fread(args[1], data.table = FALSE)
 
 grep_reports <- function(data, codes) {
   return(
-    apply(X = data,
+    apply(
+      X = data,
       MARGIN = 1,
       FUN = function(selected_row) {
-        if(all(is.na(selected_row))) {
+        if (all(is.na(selected_row))) {
           return(NA_real_)
         } else {
           return(sign(sum(codes %in% selected_row)))
@@ -101,7 +105,10 @@ Not included are panic attacks (14)
 ```{r Any self-reported diagnosis}
 
 dat$SelfReportedDiagnosis <- grep_reports(
-  data = dat[, grep("^29000-", colnames(dat))],
+  data = dat[, grep(
+    "^29000-",
+    colnames(dat)
+  )],
   codes = c(1:13, 15:20)
 )
 
@@ -119,7 +126,10 @@ Not included are PTSD (16), Other EDs (20)
 ```{r Any self-reported diagnosis, MHQ2016 compatible}
 
 dat$SelfReportedDiagnosisMHQ2016Compatible <- grep_reports(
-  data = dat[, grep("^29000-", colnames(dat))],
+  data = dat[, grep(
+    "^29000-",
+    colnames(dat)
+  )],
   codes = c(1:15, 17, 19)
 )
 
@@ -133,7 +143,10 @@ Not included are generic anxiety (9), panic attacks (14), OCD (8), and PTSD (16)
 ```{r Any anxiety diagnosis}
 
 dat$SelfReportedAnxietyDisorder <- grep_reports(
-  data = dat[, grep("^29000-", colnames(dat))],
+  data = dat[, grep(
+    "^29000-",
+    colnames(dat)
+  )],
   codes = c(10:13, 15)
 )
 
@@ -146,16 +159,13 @@ Eating disorder diagnoses coded in coding 1954 are AN (17), BN (18), BED (19), O
 ```{r Any eating disorder diagnosis}
 
 dat$SelfReportedEatingDisorder <- grep_reports(
-  data = dat[, grep("^29000-", colnames(dat))],
+  data = dat[, grep(
+    "^29000-",
+    colnames(dat)
+  )],
   codes = c(17:20)
 )
 
 ```
 
-# Any algorithmic diagnosis
-
-```{r Any algorithmic diagnosis, purl=FALSE}
-
-~~TODO: This needs to be done as part of the overarching script as it relies on otuput from multiple modules~~
-
-```
+# Any algorithmic diagnosis – TO BE RUN IN OVERARCHING SCRIPT

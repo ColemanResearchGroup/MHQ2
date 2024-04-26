@@ -9,25 +9,27 @@ output: html_document
 ```{r setup, include=FALSE, purl=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
-  comment = '',
+  comment = "",
   prompt = FALSE,
   cache = FALSE
-  )
+)
 ```
 
-Install packages
+Install packages - Replaced by code in main
+
 ```{r Install packages, purl=FALSE}
 #install.packages("tidyverse")
 ```
 
-Load packages from library 
+Load packages from library - Replaced by code in main
+
 ```{r Load packages from library, purl=FALSE}
 library(summarytools)
 library(tidyverse)
 ```
 
 ```{r Clear global environment, purl=FALSE}
-rm(list=ls())
+rm(list = ls())
 ```
 
 ```{r Get system date, purl=FALSE}
@@ -35,13 +37,7 @@ date <- Sys.Date()
 date
 ```
 
-## Read in data
-/Users/abiterkuile/OneDrive/UCL/Postdoc/ukb/mhq2/anon_data/MHQ2_Anonymous.rds
-```{r read in pheno_covar file, purl=FALSE}
-
-dat <- readRDS(file = "/Users/abiterkuile/OneDrive/UCL/Postdoc/ukb/mhq2/anon_data/MHQ2_Anonymous.rds")
-               
-```
+## Read in data -- Replaced by code in main
 
 # Make anxiety & panic field data frame (for easier inspecting)
 Anxiety & panic field names MHQ: 29058-29075
@@ -54,17 +50,25 @@ anx_pad_field_numbers <- as.character(29058:29075)
 
 # select anxiety & panic field numbers into dataframe
 ```{r}
-anx_pad_data <- dat %>% 
+anx_pad_data <- dat %>%
   select(ID,
-         matches(paste(anx_pad_field_numbers, 
-                       collapse = "|")))
+    matches(
+      paste(
+        anx_pad_field_numbers,
+        collapse = "|"
+      )
+    )
+  )
 
 # Inspect data
-# glimpse(anx_pad_data)
-# summary(anx_pad_data)
+glimpse(anx_pad_data)
+summary(anx_pad_data)
 ```
+
 # Convert data to numeric and recode -3 (prefer not to answer) to NA
+
 To avoid overwriting raw data, save changes in new columns with suffix "_mod" (modified)
+
 ```{r}
 anx_pad_data <- anx_pad_data %>%
   mutate(across(everything(), ~ ., .names = "{.col}_mod")) %>%
@@ -99,50 +103,62 @@ https://biobank.ndph.ox.ac.uk/ukb/coding.cgi?id=168
 -3	Prefer not to answer 
 
 # Sum GAD-7 scores
+
 Check response minimum is 0 and max is 21
+
 ```{r}
 anx_pad_data <- anx_pad_data %>%
   mutate(
-    Gad7Score = rowSums(select(., 
-                               "29058-0.0_mod",
-                               "29059-0.0_mod",
-                               "29060-0.0_mod",
-                               "29061-0.0_mod",
-                               "29062-0.0_mod",
-                               "29063-0.0_mod",
-                               "29064-0.0_mod"),
-                        na.rm = TRUE))
+    Gad7Score = rowSums(
+      select(.,
+        "29058-0.0_mod",
+        "29059-0.0_mod",
+        "29060-0.0_mod",
+        "29061-0.0_mod",
+        "29062-0.0_mod",
+        "29063-0.0_mod",
+        "29064-0.0_mod"
+      ),
+      na.rm = TRUE
+    )
+  )
 
 summary(anx_pad_data$Gad7Score)
 
 anx_pad_data %>%
   count(Gad7Score)
 ```
+
 Create column that counts the number of NAs for GAD7 score
+
 ```{r}
 anx_pad_data <- anx_pad_data %>%
   mutate(
-    Gad7NaCount = rowSums(select(., 
-      "29058-0.0_mod",
-      "29059-0.0_mod",
-      "29060-0.0_mod",
-      "29061-0.0_mod",
-      "29062-0.0_mod",
-      "29063-0.0_mod",
-      "29064-0.0_mod"
-    ) %>% is.na())
+    Gad7NaCount = rowSums(
+      select(.,
+        "29058-0.0_mod",
+        "29059-0.0_mod",
+        "29060-0.0_mod",
+        "29061-0.0_mod",
+        "29062-0.0_mod",
+        "29063-0.0_mod",
+        "29064-0.0_mod"
+      ) %>%
+        is.na()
+    )
   )
 
 # check NA count
 anx_pad_data %>%
   select(Gad7NaCount,
-         "29058-0.0_mod",
-      "29059-0.0_mod",
-      "29060-0.0_mod",
-      "29061-0.0_mod",
-      "29062-0.0_mod",
-      "29063-0.0_mod",
-      "29064-0.0_mod") %>% 
+    "29058-0.0_mod",
+    "29059-0.0_mod",
+    "29060-0.0_mod",
+    "29061-0.0_mod",
+    "29062-0.0_mod",
+    "29063-0.0_mod",
+    "29064-0.0_mod"
+  ) %>%
   head()
 
 #check freq
@@ -157,18 +173,28 @@ Note: This is not consistent with MHQ1 {current anxiety}, where CIDI-SF(L) GAD m
 GAD7 full score >= 10. (10 is moderate anxiety). Ref: Kroenke K, Spitzer RL, Williams JB, Löwe B. The patient health questionnaire somatic, anxiety, and depressive symptom scales: a systematic review. Gen Hosp Psychiatry. 2010;32(4):345-59
 
 +++ ATK: note that there is no control algorithm criteria in the MHQ2 algorithm guidance. Confirm with team whether or not the below handling of controls should be added. We have added the following criteria (not specified in MHQ2 algorithm doc): 0 is assigned if they score less than 10, and in case they could score on the missed NA items [max 3 each] taking them above a threshold of 10, this is handled by including a threshold where their score + NA count x3 does not take them above 10
+
 ```{r}
-# Create a new column named 'GadCurrent' in the data frame and calculate its value.
+# Create a new column named 'GadCurrent' in the data frame
+# Calculate 'GadCurrent' value.
 anx_pad_data <- anx_pad_data %>%
   mutate(
     GadCurrent = case_when(
-      is.na(Gad7Score) ~ NA_real_, # If 'Gad7Score' is missing (NA) Assign NA to the 'GadCurrent' column.
-      Gad7Score > 9 ~ 1, # If 'Gad7Score' is greater than 9 (i.e. >=10 for moderate current Gad) Assign 1 to the 'GadCurrent' column (as case)
-        Gad7Score < 10 & Gad7Score + Gad7NaCount*3 < 10 ~ 0, # if score less than 10, and adding score with NA count *3 (in case they score on the missed NA items [max 3 each] taking them above threshold of 10) - Assign 0 
-        TRUE ~ NA_real_ # NA if no conditions are met
-        )
-      )
-    
+      # If 'Gad7Score' is missing (NA) Assign NA to the 'GadCurrent' column.
+      is.na(Gad7Score) ~ NA_real_,
+      # If 'Gad7Score' is greater than 9 (i.e. >=10 for moderate current Gad)
+      # Assign 1 to the 'GadCurrent' column (as case)
+      Gad7Score > 9 ~ 1,
+      # If score less than 10, and adding score with NA count *3
+      # (in case they score on the missed NA items [max 3 each]
+      # taking them above threshold of 10)
+      # Assign 0
+      Gad7Score < 10 & Gad7Score + Gad7NaCount * 3 < 10 ~ 0,
+      # NA if no conditions are met
+      TRUE ~ NA_real_
+    )
+  )
+
 anx_pad_data %>%
   count(GadCurrent)
 ```
@@ -203,64 +229,83 @@ https://biobank.ndph.ox.ac.uk/ukb/coding.cgi?id=1910
 If participants endorse fewer than 4 panic symptoms, then they are given a 0 for diagnosis 
 check colnames for field number 29065
 29065-0.0 - 29065-0.12
+
 ```{r Check colnames}
 anx_pad_data %>%
-  select(contains("29065")) %>% 
+  select(contains("29065")) %>%
   head()
 # field name ranges: 29065-0.0 - 29065-0.12
 ```
+
 Check summary and coding
+
 ```{r}
 anx_pad_data %>%
-  select(matches("^29065-0\\.\\d+_mod$")) %>% # matches regular expression (column names that start with "29065-0.", followed by a digit, and end with "_mod")
+  # matches regular expression
+  # (column names that start with "29065-0.",
+  # followed by a digit, and end with "_mod")
+  select(matches("^29065-0\\.\\d+_mod$")) %>%
   summary()
 ```
 
 Check frequency of panic attack symptom responses
+
 ```{r}
 anx_pad_data %>%
-  select(matches("^29065-0\\.\\d+_mod$")) %>% # matches regular expression (column names that start with "29065-0.", followed by a digit, and end with "_mod")
+  # matches regular expression
+  # (column names that start with "29065-0.",
+  # followed by a digit, and end with "_mod")
+  select(matches("^29065-0\\.\\d+_mod$")) %>%
   count()
 ```
-Calculate panic attacks symptoms score          
+
+Calculate panic attacks symptoms score
+
 ```{r}
 #Create score for panic attack symptoms
 anx_pad_data <- anx_pad_data %>%
   mutate(PanicSymptomsCount = 0)
 
 anx_pad_data <- anx_pad_data %>%
-  mutate(PanicSymptomsCount = 
-           case_when(
-             `29065-0.0_mod` == 0 ~ 0,
-             `29065-0.12_mod` > 0 ~ 13,
-             `29065-0.11_mod` > 0 ~ 12,
-             `29065-0.10_mod` > 0 ~ 11,
-             `29065-0.9_mod` > 0 ~ 10,
-             `29065-0.8_mod` > 0 ~ 9,
-             `29065-0.7_mod` > 0 ~ 8,
-             `29065-0.6_mod` > 0 ~ 7,
-             `29065-0.5_mod` > 0 ~ 6,
-             `29065-0.4_mod` > 0 ~ 5,
-             `29065-0.3_mod` > 0 ~ 4,
-             `29065-0.2_mod` > 0 ~ 3,
-             `29065-0.1_mod` > 0 ~ 2,
-             `29065-0.0_mod` > 0 ~ 1)
+  mutate(PanicSymptomsCount = case_when(
+    `29065-0.0_mod` == 0 ~ 0,
+    `29065-0.12_mod` > 0 ~ 13,
+    `29065-0.11_mod` > 0 ~ 12,
+    `29065-0.10_mod` > 0 ~ 11,
+    `29065-0.9_mod` > 0 ~ 10,
+    `29065-0.8_mod` > 0 ~ 9,
+    `29065-0.7_mod` > 0 ~ 8,
+    `29065-0.6_mod` > 0 ~ 7,
+    `29065-0.5_mod` > 0 ~ 6,
+    `29065-0.4_mod` > 0 ~ 5,
+    `29065-0.3_mod` > 0 ~ 4,
+    `29065-0.2_mod` > 0 ~ 3,
+    `29065-0.1_mod` > 0 ~ 2,
+    `29065-0.0_mod` > 0 ~ 1
+  )
   )
 
-anx_pad_data %>% 
+anx_pad_data %>%
   count(PanicSymptomsCount)
 ```
-Create panic attacks ever case 
+
+Create panic attacks ever case
+
 ```{r}
 anx_pad_data <- anx_pad_data %>%
-  mutate(PanicAttacksEver = case_when(is.na(PanicSymptomsCount) ~ NA,
-                                    PanicSymptomsCount < 4 ~ 0,
-                                     PanicSymptomsCount > 3 ~ 1))
+  mutate(PanicAttacksEver = case_when(
+    is.na(PanicSymptomsCount) ~ NA,
+    PanicSymptomsCount < 4 ~ 0,
+    PanicSymptomsCount > 3 ~ 1
+  )
+  )
 
-anx_pad_data %>% 
+anx_pad_data %>%
   count(PanicAttacksEver)
 ```
+
 ## Panic disorder
+
 Symptoms {panic attack ever} 
 AND 
 Feel anxious more panic attacks (SFP3a) = Yes 
@@ -286,50 +331,83 @@ Coding for 29070-0.0 (how long Continue to worry about panic attacks or their co
 -3	Prefer not to answer
 
 +++ ATK: Note to check with team on if we want to add more stringent control criteria (which is not specified in the MHQ2 algorithm guidance). i.e. dealing with those who are NA for some panic disorder diagnostic criteria, they should be kept as NA and not 0, or at the very least make everyone NA who did not respond to the MHQ2
+
 ```{r}
-anx_pad_data <- anx_pad_data %>% 
-  mutate(PanicDisorder = 
-           case_when(PanicAttacksEver == 1 # Symptoms {panic attack ever}
-                     & (`29067-0.0_mod` == 1 # Feel anxious more panic attacks = Yes
-                     | `29068-0.0_mod` == 1 # OR Feel worried bad things happening because of panic attacks = Yes
-                     | `29069-0.0_mod` == 1) # OR Avoid situations in which panic attacks might occur = Yes
-                        & `29070-0.0_mod` > 0 # how long worry periods: codes 1-5 (greater than less than 1 month)
-                     & (`29074-0.0_mod` == 0  # AND not due to other reasons 'no never'
-                     | `29074-0.0_mod` == 1) # OR due to other reasons 'yes some of them'
-                     & (`29075-0.0_mod`== 0 # occur in specific situation 'no'
-                     | `29075-0.0_mod`== 1) # OR occur in specific situation 'Yes, some of them'
-                     ~ 1, # code as 1 if meet all criteria
-                     TRUE ~ 0 # other wise code as 0 
-                       )
+anx_pad_data <- anx_pad_data %>%
+  mutate(PanicDisorder = case_when(
+    # Symptoms {panic attack ever}
+    PanicAttacksEver == 1 &
+      (
+        # Feel anxious more panic attacks = Yes
+        `29067-0.0_mod` == 1 |
+          # OR Feel worried bad things happening because of panic attacks = Yes
+          `29068-0.0_mod` == 1 |
+          # OR Avoid situations in which panic attacks might occur = Yes
+          `29069-0.0_mod` == 1
+      ) &
+      # how long worry periods: codes 1-5 (greater than less than 1 month)
+      `29070-0.0_mod` > 0 &
+      (
+        # AND not due to other reasons 'no never'
+        `29074-0.0_mod` == 0 |
+          # OR due to other reasons 'yes some of them'
+          `29074-0.0_mod` == 1
+      ) &
+      (
+        # occur in specific situation 'no'
+        `29075-0.0_mod` == 0 |
+          # OR occur in specific situation 'Yes, some of them'
+          `29075-0.0_mod` == 1
+      )
+    ~ 1, # code as 1 if meet all criteria
+    TRUE ~ 0 # other wise code as 0
+  )
   )
 
-anx_pad_data %>% 
+anx_pad_data %>%
   count(PanicDisorder)
 ```
 
 # Update the original dataset
 ```{r Update the original dataset}
 
-setDT(dat,key = "ID")
-setDT(anx_pad_data,key = "ID")
+setDT(dat, key = "ID")
+setDT(anx_pad_data, key = "ID")
 
-dat[anx_pad_data, on=c('ID'),c('Gad7Score','GadCurrent','PanicSymptomsCount','PanicAttacksEver','PanicDisorder') :=list(i.Gad7Score,i.GadCurrent,i.PanicSymptomsCount,i.PanicAttacksEver,i.PanicDisorder)]
+dat[anx_pad_data,
+    on = c("ID"),
+    c(
+      "Gad7Score",
+      "GadCurrent",
+      "PanicSymptomsCount",
+      "PanicAttacksEver",
+      "PanicDisorder"
+    )
+    := list(
+      i.Gad7Score,
+      i.GadCurrent,
+      i.PanicSymptomsCount,
+      i.PanicAttacksEver,
+      i.PanicDisorder
+    )]
 
 
-dat<-as.data.frame(dat)
+dat <- as.data.frame(dat)
 
 ```
 
 
 # Save the data
 ```{r save data, purl=FALSE}
-anx_pad_data %>% 
-  select(Gad7Score,
-         GadCurrent,
-         PanicSymptomsCount,
-         PanicAttacksEver,
-         PanicDisorder) %>% 
+anx_pad_data %>%
+  select(
+    Gad7Score,
+    GadCurrent,
+    PanicSymptomsCount,
+    PanicAttacksEver,
+    PanicDisorder
+  ) %>%
   saveRDS(
-    file = "/file/path/anxiety_algorithms.rds")
-
+    file = "/file/path/anxiety_algorithms.rds"
+  )
 ```
