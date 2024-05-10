@@ -143,6 +143,26 @@ for (col in columns_PHQ9.Items) {
   )
 }
 
+if(diagnosticsFlag) dat %>%
+  group_by(
+    PHQ9.No.Info,
+    `29002-0.0`,
+    `29003-0.0`,
+    PHQ9.Screen,
+    PHQ9.Items
+  ) %>%
+  tally()
+
+# View(dat %>%
+#   group_by(
+#     PHQ9.No.Info,
+#     `29002-0.0`,
+#     `29003-0.0`,
+#     PHQ9.Screen,
+#     PHQ9.Items
+#   ) %>%
+#   tally())
+
 ```
 
 ### PHQ-9 driven depression
@@ -164,6 +184,22 @@ dat <- dat %>%
       TRUE ~ 0
     )
   )
+
+if(diagnosticsFlag) dat %>%
+  group_by(
+    PHQ9.Screen,
+    PHQ9.Items,
+    PHQ9.derived.depression
+  ) %>%
+  tally()
+
+# View(dat %>%
+#   group_by(
+#     PHQ9.Screen,
+#     PHQ9.Items,
+#     PHQ9.derived.depression
+#   ) %>%
+#   tally())
 
 ```
 
@@ -246,6 +282,14 @@ dat <- dat %>%
       TRUE ~ NA_real_
     )
   )
+
+if(diagnosticsFlag) dat %>%
+  group_by(
+    PHQ9.derived.depression,
+    depression.ever.case,
+    Depressed.Current
+  ) %>%
+  tally()
 
 ```
 
@@ -396,6 +440,25 @@ dat <- dat %>%
     )
   )
 
+if(diagnosticsFlag) dat %>%
+  group_by(
+    depression.ever.case,
+    Depressed.medication.helped
+  ) %>%
+  tally()
+
+# View(dat %>%
+#   group_by(
+#     `29040-0.0`,
+#     `29041-0.0`,
+#     `29042-0.0`,
+#     `29043-0.0`,
+#     `29044-0.0`,
+#     `29045-0.0`,
+#     `29046-0.0`
+#   ) %>%
+#   tally())
+
 ```
 
 ### Non-medication therapy helped
@@ -446,6 +509,13 @@ dat <- dat %>%
       TRUE ~ NA_real_
     )
   )
+
+if(diagnosticsFlag) dat %>%
+  group_by(
+    depression.ever.case,
+    Depressed.non_medication.therapy.helped
+  ) %>%
+  tally()
 
 ```
 

@@ -44,7 +44,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 581)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(BE_made_yourself_vomit)
 ```
 
@@ -68,7 +68,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 500)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(BE_used_laxatives)
 ```
 
@@ -92,7 +92,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 145)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(BE_used_diuretics)
 ```
 
@@ -116,7 +116,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 434)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(BE_used_weight_loss_pills)
 ```
 
@@ -140,7 +140,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 441)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(BE_excessive_exercise)
 ```
 
@@ -164,7 +164,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 798)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(BE_fasted)
 ```
 
@@ -188,7 +188,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 622)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(BE_other_weight_control)
 ```
 
@@ -259,7 +259,7 @@ dat <- dat %>%
 
 
 ```{r, purl=FALSE}
-dat %>%
+if(diagnosticsFlag) dat %>%
   select(
     Bulimia_nervosa,
     `29132-0.0`, # binge eating
@@ -282,6 +282,6 @@ dat %>%
 
 # Check
 ```{r, purl=FALSE}
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(Bulimia_nervosa)
 ```

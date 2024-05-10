@@ -66,6 +66,6 @@ dat %>%
 
 
 ```{r, purl=FALSE}
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(BE_not_during_AN)
 ```

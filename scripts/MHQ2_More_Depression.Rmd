@@ -57,7 +57,7 @@ dat <-
   mutate(
     depression.single = case_when(
       depression.ever.case == 1 &
-        `29033-0.0` == 1 &
+        (`29033-0.0` == 1 & !is.na(`29033-0.0`)) &
         BD1 == 0 ~ 1,
       depression.ever.case == 0 |
         (
@@ -69,6 +69,24 @@ dat <-
       .default = NA_real_
     )
   )
+
+if(diagnosticsFlag) dat %>%
+  group_by(
+    depression.ever.case,
+    `29033-0.0`,
+    BD1,
+    depression.single
+  ) %>%
+  tally()
+
+View(dat %>%
+  group_by(
+    depression.ever.case,
+    `29033-0.0`,
+    BD1,
+    depression.single
+  ) %>%
+  tally())
 
 ```
 
@@ -103,6 +121,24 @@ dat <-
     )
   )
 
+if(diagnosticsFlag) dat %>%
+  group_by(
+    depression.ever.case,
+    `29033-0.0`,
+    BD1,
+    depression.recurrent
+  ) %>%
+  tally()
+
+# View(dat %>%
+#   group_by(
+#     depression.ever.case,
+#     `29033-0.0`,
+#     BD1,
+#     depression.recurrent
+#   ) %>%
+#   tally())
+
 ```
 
 # 6. Single episode unipolar depression triggered by event 
@@ -124,6 +160,24 @@ dat <-
     )
   )
 
+if(diagnosticsFlag) dat %>%
+  group_by(
+    depression.ever.case,
+    `29033-0.0`,
+    BD1,
+    depression.single.event
+  ) %>%
+  tally()
+
+# View(dat %>%
+#   group_by(
+#     depression.ever.case,
+#     `29033-0.0`,
+#     BD1,
+#     depression.single.event
+#   ) %>%
+#   tally())
+
 ```
 
 # 7. Post-natal depression 
@@ -144,6 +198,24 @@ dat <-
       .default = NA_real_
     )
   )
+
+if(diagnosticsFlag) dat %>%
+  group_by(
+    depression.ever.case,
+    `29033-0.0`,
+    BD1,
+    depression.postnatal
+  ) %>%
+  tally()
+
+# View(dat %>%
+#   group_by(
+#     depression.ever.case,
+#     `29033-0.0`,
+#     BD1,
+#     depression.postnatal
+#   ) %>%
+#   tally())
 
 ```
 
@@ -262,6 +334,24 @@ dat <-
     -melan.symptom.score
   )
 
+if(diagnosticsFlag) dat %>%
+  group_by(
+    depression.ever.case,
+    `29012-0.0`,
+    `29016-0.0`,
+    depression.melancholic
+  ) %>%
+  tally()
+
+# View(dat %>%
+#   group_by(
+#     depression.ever.case,
+#     `29012-0.0`,
+#     `29016-0.0`,
+#     depression.melancholic
+#   ) %>%
+#   tally())
+
 ```
 
 # 9. Worst depressive episode likely atypical features (atypical depression)
@@ -370,6 +460,20 @@ dat <-
     -rejection,
     -atypical.symptom.score
   )
+
+if(diagnosticsFlag) dat %>%
+  group_by(
+    depression.ever.case,
+    depression.atypical
+  ) %>%
+  tally()
+
+# View(dat %>%
+#   group_by(
+#     depression.ever.case,
+#     depression.atypical
+#   ) %>%
+#   tally())
 
 ```
 

@@ -51,6 +51,9 @@ Feeling worthless 29027 (Yes (1));
 Thinking about death 29029 (Yes (1))
 ```{r Depression ever case}
 
+if(diagnosticsFlag) unique(dat$`29014-0.0`)
+if(diagnosticsFlag) unique(dat$`29021-0.0`)
+
 cidid_symptoms <- c(
   "29011-0.0",
   "29012-0.0",

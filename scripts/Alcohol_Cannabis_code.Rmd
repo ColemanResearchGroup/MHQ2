@@ -24,6 +24,7 @@ Frequency (AUDIT1) > f.29091-0.0
 scored 0-4, no adjustment needed 
 
 ```{r}
+if(diagnosticsFlag) unique(dat$`29091-0.0`)
 dat <- dat %>%
   mutate(
     `29091-0.0` = recode(
@@ -44,6 +45,7 @@ Typical drinks (AUDIT 1a) > f.29092-0.0
 scored 1-5, needs adjusting 
 
 ```{r}
+if(diagnosticsFlag) unique(dat$`29092-0.0`)
 dat <- dat %>%
   mutate(
     `29092-0.0` = recode(
@@ -64,6 +66,7 @@ scored 1-5, needs adjusting
 >scores are 0, 2, 3, 4, 5. Adjusted to be 0, 1, 2, 3, 4
 
 ```{r}
+if(diagnosticsFlag) unique(dat$`29093-0.0`)
 dat <- dat %>%
   mutate(
     `29093-0.0` = recode(
@@ -84,6 +87,7 @@ scored 1-5, needs adjusting
 >scores are 0, 2, 3, 4, 5. Adjusted to be 0, 1, 2, 3, 4
 
 ```{r}
+if(diagnosticsFlag) unique(dat$`29094-0.0`)
 dat <- dat %>%
   mutate(
     `29094-0.0` = recode(
@@ -105,6 +109,7 @@ scored 1-5, needs adjusting
 >scores are 0, 2, 3, 4, 5. Adjusted to be 0, 1, 2, 3, 4
 
 ```{r}
+if(diagnosticsFlag) unique(dat$`29095-0.0`)
 dat <- dat %>%
   mutate(
     `29095-0.0` = recode(
@@ -125,6 +130,7 @@ scored 1-5, needs adjusting
 >scores are 0, 2, 3, 4, 5. Adjusted to be 0, 1, 2, 3, 4
 
 ```{r}
+if(diagnosticsFlag) unique(dat$`29096-0.0`)
 dat <- dat %>%
   mutate(
     `29096-0.0` = recode(
@@ -145,6 +151,7 @@ scored 1-5, needs adjusting
 >scores are 0, 2, 3, 4, 5. Adjusted to be 0, 1, 2, 3, 4
 
 ```{r}
+if(diagnosticsFlag) unique(dat$`29097-0.0`)
 dat <- dat %>%
   mutate(
     `29097-0.0` = recode(
@@ -165,6 +172,7 @@ scored 1-5, needs adjusting
 >scores are 0, 2, 3, 4, 5. Adjusted to be 0, 1, 2, 3, 4
 
 ```{r}
+if(diagnosticsFlag) unique(dat$`29098-0.0`)
 dat <- dat %>%
   mutate(
     `29098-0.0` = recode(
@@ -184,6 +192,7 @@ Injury due to drinking ever (AUDIT 7) f.29099-0.0
 scored 0,1,2, needs adjusting to 0,2,4 
 
 ```{r}
+if(diagnosticsFlag) unique(dat$`29099-0.0`)
 dat <- dat %>%
   mutate(
     `29099-0.0` = recode(
@@ -201,6 +210,7 @@ Advice to cut down ever (AUDIT 8) f.29100-0.0
 scored 0,1,2, needs adjusting to 0,2,4
 
 ```{r}
+if(diagnosticsFlag) unique(dat$`29100-0.0`)
 dat <- dat %>%
   mutate(
     `29100-0.0` = recode(
@@ -247,7 +257,7 @@ dat[c(
 #Rewrites Sum_AUDIT to NA if all AUDIT scores are missing/NA
 dat$Sum_AUDIT <- apply(
   dat[, c(
-    "2OR 9091-0.0",
+    "29091-0.0",
     "29092-0.0",
     "29093-0.0",
     "29094-0.0",
@@ -315,6 +325,11 @@ AND
 NOT reason for reducing amount of alcohol drunk 2664 = “ill health”, “doctor’s advice”or “health precaution” [1,2or3]
 >!('2664-0.0' %in% c(1,2,3))
 
++++JZ: We do not have 20117-0.0 (20117: alcohol drinker status) in our test data.
+The algorithm requests “ever alcohol dependence”. Should this be coded using any addiction diagnoses or the addiction fields? https://biobank.ndph.ox.ac.uk/showcase/label.cgi?id=141
+Vast majority of UKB have 20117-0.0==1.
+
+
 ```{r}
 dat <- dat %>%
   mutate(
@@ -356,6 +371,7 @@ How often = Every day (04)
 >'29107-0.0' == 3
 
 ```{r}
+if(diagnosticsFlag) unique(dat$`29107-0.0`)
 dat <- dat %>%
   mutate(
     daily_cannabis_use = case_when(

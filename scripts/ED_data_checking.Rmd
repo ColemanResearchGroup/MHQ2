@@ -5,6 +5,8 @@ date: "2024-02-04"
 output: html_document
 ---
 
+This is a statistics script that is not intended to be part of the coding routine.
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```

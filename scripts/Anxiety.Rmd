@@ -61,8 +61,8 @@ anx_pad_data <- dat %>%
   )
 
 # Inspect data
-glimpse(anx_pad_data)
-summary(anx_pad_data)
+if(diagnosticsFlag) glimpse(anx_pad_data)
+if(diagnosticsFlag) summary(anx_pad_data)
 ```
 
 # Convert data to numeric and recode -3 (prefer not to answer) to NA
@@ -85,8 +85,8 @@ modified_columns <- anx_pad_data %>%
   select(ends_with("_mod"))
 
 # Inspect modified columns
-glimpse(modified_columns)
-summary(modified_columns)
+if(diagnosticsFlag)glimpse(modified_columns)
+if(diagnosticsFlag)summary(modified_columns)
 ```
 
 
@@ -123,9 +123,9 @@ anx_pad_data <- anx_pad_data %>%
     )
   )
 
-summary(anx_pad_data$Gad7Score)
+if(diagnosticsFlag) summary(anx_pad_data$Gad7Score)
 
-anx_pad_data %>%
+if(diagnosticsFlag) anx_pad_data %>%
   count(Gad7Score)
 ```
 
@@ -149,7 +149,7 @@ anx_pad_data <- anx_pad_data %>%
   )
 
 # check NA count
-anx_pad_data %>%
+if(diagnosticsFlag) anx_pad_data %>%
   select(Gad7NaCount,
     "29058-0.0_mod",
     "29059-0.0_mod",
@@ -162,7 +162,7 @@ anx_pad_data %>%
   head()
 
 #check freq
-anx_pad_data %>%
+if(diagnosticsFlag) anx_pad_data %>%
   count(Gad7NaCount)
 ```
 
@@ -195,7 +195,7 @@ anx_pad_data <- anx_pad_data %>%
     )
   )
 
-anx_pad_data %>%
+if(diagnosticsFlag) anx_pad_data %>%
   count(GadCurrent)
 ```
 
@@ -231,7 +231,7 @@ check colnames for field number 29065
 29065-0.0 - 29065-0.12
 
 ```{r Check colnames}
-anx_pad_data %>%
+if(diagnosticsFlag) anx_pad_data %>%
   select(contains("29065")) %>%
   head()
 # field name ranges: 29065-0.0 - 29065-0.12
@@ -240,7 +240,7 @@ anx_pad_data %>%
 Check summary and coding
 
 ```{r}
-anx_pad_data %>%
+if(diagnosticsFlag) anx_pad_data %>%
   # matches regular expression
   # (column names that start with "29065-0.",
   # followed by a digit, and end with "_mod")
@@ -251,7 +251,7 @@ anx_pad_data %>%
 Check frequency of panic attack symptom responses
 
 ```{r}
-anx_pad_data %>%
+if(diagnosticsFlag) anx_pad_data %>%
   # matches regular expression
   # (column names that start with "29065-0.",
   # followed by a digit, and end with "_mod")
@@ -285,7 +285,7 @@ anx_pad_data <- anx_pad_data %>%
   )
   )
 
-anx_pad_data %>%
+if(diagnosticsFlag) anx_pad_data %>%
   count(PanicSymptomsCount)
 ```
 
@@ -300,7 +300,7 @@ anx_pad_data <- anx_pad_data %>%
   )
   )
 
-anx_pad_data %>%
+if(diagnosticsFlag) anx_pad_data %>%
   count(PanicAttacksEver)
 ```
 
@@ -364,7 +364,7 @@ anx_pad_data <- anx_pad_data %>%
   )
   )
 
-anx_pad_data %>%
+if(diagnosticsFlag) anx_pad_data %>%
   count(PanicDisorder)
 ```
 

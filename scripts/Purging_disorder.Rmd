@@ -43,11 +43,20 @@ dat <- dat %>%
       TRUE ~ NA_real_
     )
   )
+
+if(diagnosticsFlag) dat %>%
+  group_by(
+    `29144-0.0`,
+    `29145-0.0`,
+    `29146-0.0`,
+    Purging_disorder
+  ) %>%
+  tally()
 ```
 
 
 ```{r}
-dat %>%
+if(diagnosticsFlag) dat %>%
   select(
     `29144-0.0`, # weight loss behaviours once per week
     `29145-0.0`, # weight loss behaviours duration
@@ -63,7 +72,7 @@ dat %>%
 
 Purging disorder
 ```{r}
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(Purging_disorder)
 ```
 

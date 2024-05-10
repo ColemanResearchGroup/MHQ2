@@ -44,7 +44,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 1.021)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(LW_made_yourself_vomit)
 ```
 
@@ -68,7 +68,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 1.050)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(LW_used_laxatives)
 ```
 
@@ -92,7 +92,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 247)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(LW_used_diuretics)
 ```
 
@@ -116,7 +116,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 288)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(LW_used_weight_loss_pills)
 ```
 
@@ -140,7 +140,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 1,917)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(LW_excessive_exercise)
 ```
 
@@ -164,7 +164,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 2,403)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(LW_fasted)
 ```
 
@@ -188,7 +188,7 @@ dat <- dat %>%
   )
 
 # Check (expecting 823)
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(LW_other_weight_control)
 ```
 
@@ -213,7 +213,7 @@ dat <- dat %>%
 
 
 ```{r}
-dat %>%
+if(diagnosticsFlag) dat %>%
   select(
     BMI_at_low_weight
   ) %>%
@@ -272,7 +272,7 @@ dat <- dat %>%
 
 
 ```{r}
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(Anorexia_nervosa)
 ```
 
@@ -353,7 +353,7 @@ dat <- dat %>%
 
 
 ```{r}
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(Anorexia_nervosa_binge_eating_purging)
 ```
 
@@ -425,14 +425,14 @@ dat <- dat %>%
 
 
 ```{r, purl=FALSE}
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(Anorexia_nervosa_restricting)
 ```
 
 # Check overlap between ANR and ANBP
 
 ```{r, purl=FALSE}
-dat %>%
+if(diagnosticsFlag) dat %>%
   group_by(
     Anorexia_nervosa_restricting,
     Anorexia_nervosa_binge_eating_purging
@@ -443,7 +443,7 @@ dat %>%
 
 
 ```{r, purl=FALSE}
-dat %>%
+if(diagnosticsFlag) dat %>%
   select(
     Anorexia_nervosa,
     SelfReportedAnorexiaNervosa,
@@ -457,7 +457,7 @@ dat %>%
 
 
 ```{r, purl=FALSE}
-dat %>%
+if(diagnosticsFlag) dat %>%
   filter(
     Anorexia_nervosa == 1
   ) %>%
