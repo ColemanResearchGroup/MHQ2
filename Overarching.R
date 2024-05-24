@@ -3,14 +3,13 @@
 # author: "Johan Zvrskovec"
 # date: '2023-12-20'
 #
-# This is the overarching script. It works as a wrapper around the coding scripts for individual parts of MHQ2, as of now. It may be easier in the end to just paste all code into one script, when most of the reviews are done.
+# This is the overarching script. It works as a wrapper around the coding scripts for individual parts of MHQ2, as of now.
 
 # Clear global environment prior to initiation
 remove(list = ls())
 
 # Load dependencies
-# Summarytools is not needed for the overarching script
-packages <- c("data.table", "tidyverse", "dplyr", "optparse") #"summarytools"
+packages <- c("data.table", "tidyverse", "dplyr", "optparse")
 lapply(X = packages, FUN = require, character.only = TRUE)
 
 #parse command line arguments
@@ -27,17 +26,6 @@ argInputDataFilePath<-clOptions$`input-data-file-path`
 argOutputDataFilePath<-clOptions$`output-data-file-path`
 argVariables<-clOptions$variables
 
-#for testing
-# dat <- readRDS('data/MHQ2_Height_Alcohol_Field_Anonymous.rds')
-# #if(!any(colnames(dat)=="eid")) dat$eid<-1:nrow(dat)
-# #dat$ID<-dat$eid
-# variablesToExtract=NULL
-# inputDataFilePath=NA
-# # inputDataFilePath <- 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
-# outputDataFilePath=NA
-# writeOutput=F
-# diagnosticsFlag=F
-
 runAllScriptsOverarching <- function(
     dat=NULL,
     variablesToExtract=NULL,
@@ -50,7 +38,7 @@ runAllScriptsOverarching <- function(
   cat("\nRunning the MHQ2 overarching coding script.\n")
   
   
-  #dedicated argument defaults - we cannot set these in the noraml way because of the hard coded defaults from the run script
+  #dedicated argument defaults - we cannot set these in the normal way because of the hard coded defaults from the run script
   if(is.na(outputDataFilePath)){
     outputDataFilePath<-"runAllScriptsOverarching.tsv"
   }
@@ -64,111 +52,108 @@ runAllScriptsOverarching <- function(
   meta.scripts<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
   meta.scripts.dependency<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
   
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED","SelfReported")
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED","Self_reported")
   meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED_ED","Self_reported_eating_disorder")
   meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("ANXIETY","Anxiety")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("LT_DEPRESSION","MHQ2_Lifetime_Depression")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PHQ9","MHQ2_PHQ9")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_HARM","self-harm_mhq2_jgm")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("TRAUMA","trauma")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MANIA","MHQ2_Mania_v1")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MORE_DEPRESSION","MHQ2_More_Depression")
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("LT_DEPRESSION","Lifetime_depression")
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PHQ9","PHQ9")
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_HARM","Self_harm")
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("TRAUMA","Trauma")
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MANIA","Mania")
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MORE_DEPRESSION","More_depression")
   meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("AN","Anorexia_nervosa")
   meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BE_ND_AN","BE_not_during_AN")
   meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED","Binge_eating_disorder")
   meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BN","Bulimia_nervosa")
   meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PURGINGD","Purging_disorder")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SUBSTANCES","Alcohol_Cannabis_code")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SOCIAL","Social_Situations_JRIC_TEMP_2024_03_15")
-  
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SUBSTANCES","Alcohol_cannabis")
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SOCIAL","Social_situations")
+
   producedVariables <- c(
-    "eid",                                     
-    "SelfReportedDiagnosis",                  
-    "SelfReportedDiagnosisMHQ2016Compatible",
-    "SelfReportedAnxietyDisorder",            
-    "SelfReportedEatingDisorder",            
-    "SelfReportedAnorexiaNervosa",          
-    "SelfReportedBulimiaNervosa",             
-    "SelfReportedBingeEatingDisorder",        
-    "Gad7Score",                              
-    "GadCurrent",                             
-    "PanicSymptomsCount",                     
-    "PanicAttacksEver",                       
-    "PanicDisorder",                          
-    "depression.ever.case",                   
-    "depression.ever.control",                
-    "depression.subthreshold",                
-    "PHQ9.No.Info",                           
-    "PHQ9.Screen",                            
-    "PHQ9.Items",                            
-    "PHQ9.derived.depression",                
-    "PHQ9.Severity",                          
-    "Depressed.Current",                      
-    "Current.subthreshold.Depression",        
-    "Current.more.severe.depression",         
-    "29038",                                  
-    "29039",                                
-    "Depressed.medication.helped",            
-    "29047",                                  
-    "Depressed.non_medication.therapy.helped",
-    "Not.Worth.Living",                       
-    "Self.Harm.Ever",                         
-    "Self.Harm.Ever.12m",                     
-    "Suicide.Attempt",
-    "TraumaChildhood",
-    "TraumaAdulthood",
-    "Trauma12Months",
-    "Total.Manifestations",                   
-    "Hypomania.Ever",                         
-    "Mania.Ever",                             
-    "BD1",                                    
-    "Wider.Bipolar",                          
-    "depression.single",                      
-    "depression.recurrent",                   
-    "depression.single.event",                
-    "depression.postnatal",                   
-    "depression.melancholic",                 
-    "depression.atypical",                    
-    "LW_made_yourself_vomit",                 
-    "LW_used_laxatives",                      
-    "LW_used_diuretics",                      
-    "LW_used_weight_loss_pills",              
-    "LW_excessive_exercise",                  
-    "LW_fasted",                              
-    "LW_other_weight_control",                
-    "BMI_at_low_weight",                     
-    "Anorexia_nervosa",                       
-    "Anorexia_nervosa_binge_eating_purging",  
-    "Anorexia_nervosa_restricting",           
-    "BE_not_during_AN",                       
-    "BE_rapid_eating_numeric",                
-    "BE_feeling_uncomf_full_numeric",         
-    "BE_large_amounts_not_hungry_numeric",    
-    "BE_eaten_alone_embarrassed_numeric",     
-    "BE_disgusted_depressed_after_numeric",   
-    "BE_no_characteristics_numeric",          
-    "BE_characteristics_PTNA_numeric",        
-    "BE_characteristics_sumscore",            
-    "Binge_eating_disorder",                  
-    "BE_made_yourself_vomit",                 
-    "BE_used_laxatives",                      
-    "BE_used_diuretics",                      
-    "BE_used_weight_loss_pills",              
-    "BE_excessive_exercise",                  
-    "BE_fasted",                              
-    "BE_other_weight_control",                
-    "Bulimia_nervosa",                        
-    "Purging_disorder",
-    "Sum_AUDIT",
-    "alcohol_hazardous_use",
-    "alcohol_harmful_use",
-    "alcohol_nonuse",
-    "cannabis_use",
-    "daily_cannabis_use",
-    "social_isolation",
-    "virtually_connected",
-    "UCLA_loneliness_sum",
-    "BRS"
+    "MHQ2.SelfReportedDiagnosis",                  
+    "MHQ2.SelfReportedDiagnosisMHQ2016Compatible",
+    "MHQ2.SelfReportedAnxietyDisorder",            
+    "MHQ2.SelfReportedEatingDisorder",            
+    "MHQ2.SelfReportedAnorexiaNervosa",          
+    "MHQ2.SelfReportedBulimiaNervosa",             
+    "MHQ2.SelfReportedBingeEatingDisorder",
+    "",
+    "MHQ2.Gad7Score",                              
+    "MHQ2.GadCurrent",                             
+    "MHQ2.PanicSymptomsCount",                     
+    "MHQ2.PanicAttacksEver",                       
+    "MHQ2.PanicDisorder",                          
+    "MHQ2.DepressionEverCase",                   
+    "MHQ2.DepressionEverControl",                
+    "MHQ2.DepressionSubthreshold",                
+    "MHQ2.PHQ9NoInfo",                           
+    "MHQ2.PHQ9Screen",                            
+    "MHQ2.PHQ9Items",                            
+    "MHQ2.PHQ9DerivedDepression",                
+    "MHQ2.PHQ9Severity",                          
+    "MHQ2.DepressedCurrent",                      
+    "MHQ2.CurrentSubthresholdDepression",        
+    "MHQ2.CurrentMoreSevereDepression",         
+    "MHQ2.DepressedMedicationHelped",            
+    "MHQ2.Depressed.non_medication.therapy.helped",
+    "MHQ2.Not.Worth.Living",                       
+    "MHQ2.Self.Harm.Ever",                         
+    "MHQ2.Self.Harm.Ever.12m",                     
+    "MHQ2.Suicide.Attempt",
+    "MHQ2.TraumaChildhood",
+    "MHQ2.TraumaAdulthood",
+    "MHQ2.Trauma12Months",
+    "MHQ2.Total.Manifestations",                   
+    "MHQ2.Hypomania.Ever",                         
+    "MHQ2.Mania.Ever",                             
+    "MHQ2.BD1",                                    
+    "MHQ2.Wider.Bipolar",                          
+    "MHQ2.depression.single",                      
+    "MHQ2.depression.recurrent",                   
+    "MHQ2.depression.single.event",                
+    "MHQ2.depression.postnatal",                   
+    "MHQ2.depression.melancholic",                 
+    "MHQ2.depression.atypical",                    
+    "MHQ2.LW_made_yourself_vomit",                 
+    "MHQ2.LW_used_laxatives",                      
+    "MHQ2.LW_used_diuretics",                      
+    "MHQ2.LW_used_weight_loss_pills",              
+    "MHQ2.LW_excessive_exercise",                  
+    "MHQ2.LW_fasted",                              
+    "MHQ2.LW_other_weight_control",                
+    "MHQ2.BMI_at_low_weight",                     
+    "MHQ2.Anorexia_nervosa",                       
+    "MHQ2.Anorexia_nervosa_binge_eating_purging",  
+    "MHQ2.Anorexia_nervosa_restricting",           
+    "MHQ2.BE_not_during_AN",                       
+    "MHQ2.BE_rapid_eating_numeric",                
+    "MHQ2.BE_feeling_uncomf_full_numeric",         
+    "MHQ2.BE_large_amounts_not_hungry_numeric",    
+    "MHQ2.BE_eaten_alone_embarrassed_numeric",     
+    "MHQ2.BE_disgusted_depressed_after_numeric",   
+    "MHQ2.BE_no_characteristics_numeric",          
+    "MHQ2.BE_characteristics_PTNA_numeric",        
+    "MHQ2.BE_characteristics_sumscore",            
+    "MHQ2.Binge_eating_disorder",                  
+    "MHQ2.BE_made_yourself_vomit",                 
+    "MHQ2.BE_used_laxatives",                      
+    "MHQ2.BE_used_diuretics",                      
+    "MHQ2.BE_used_weight_loss_pills",              
+    "MHQ2.BE_excessive_exercise",                  
+    "MHQ2.BE_fasted",                              
+    "MHQ2.BE_other_weight_control",                
+    "MHQ2.Bulimia_nervosa",                        
+    "MHQ2.Purging_disorder",
+    "MHQ2.Sum_AUDIT",
+    "MHQ2.alcohol_hazardous_use",
+    "MHQ2.alcohol_harmful_use",
+    "MHQ2.alcohol_nonuse",
+    "MHQ2.cannabis_use",
+    "MHQ2.daily_cannabis_use",
+    "MHQ2.social_isolation",
+    "MHQ2.virtually_connected",
+    "MHQ2.UCLA_loneliness_sum",
+    "MHQ2.BRS"
   )
   
   toReturn$producedVariables<-producedVariables
@@ -177,13 +162,17 @@ runAllScriptsOverarching <- function(
     #assess misspecified variables in variablesToExtract
     misspecifiedVariables <- variablesToExtract[!(variablesToExtract %in% producedVariables)]
     if(length(misspecifiedVariables)>0){
-      warning("There are specified variables that are not produced by this script. The script will terminate and return further information. A list of misspecified variables is in the return object misspecifiedVariables. Note that the script uses case sensitive matching for specified variables.\n")
+      warning("There are specified variables that are not produced by this script.")
+      warning("The script will terminate and return further information.")
+      warning("A list of misspecified variables is in the return object misspecifiedVariables.")
+      warning("Note that the script uses case sensitive matching for specified variables.\n")
       toReturn$misspecifiedVariables<-misspecifiedVariables
       return(toReturn)
     }
   }
   
   requiredVariables <- c(
+    "eid", #UK Biobank ID
     "50-0.0", #Adult height at sign up to UK Biobank
     paste0("29000-0.",0:19), #self reported diagnoses
     paste0("2900",2:9,"-0.0"), #Depression ever
@@ -272,7 +261,8 @@ runAllScriptsOverarching <- function(
     "29179-0.0",
     "29176-0.0",
     "29178-0.0",
-    "29180-0.0"
+    "29180-0.0",
+    "20117-0.0" #Alcohol dependence from baseline
   )
   
   requiredVariables<-unlist(requiredVariables)
