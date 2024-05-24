@@ -1,7 +1,7 @@
 ---
 title: "Tables for Davis et al (MHQ2)"
 author: "Jonathan RI Coleman"
-date: "2023-12-21"
+date: "2023-12-21 - 2024-??-??"
 output: html_document
 ---
 
@@ -59,7 +59,7 @@ package_install <- function(packages) {
 
 ```{r Install dependencies - remove hashes to install}
 
-# packages <- c("data.table","tidyverse","dplyr", "Hmisc", "stringi")
+# packages <- c("data.table","tidyverse","dplyr", "Hmisc", "stringi", "UpSetR")
 # package_install(packages)
 
 ```
@@ -68,7 +68,7 @@ package_install <- function(packages) {
 
 ```{r Load dependencies}
 
-packages <- c("data.table", "tidyverse", "dplyr",  "Hmisc", "stringi")
+packages <- c("data.table", "tidyverse", "dplyr",  "Hmisc", "stringi", "UpSetR")
 lapply(X = packages, FUN = require, character.only = TRUE)
 
 ```
@@ -77,14 +77,17 @@ lapply(X = packages, FUN = require, character.only = TRUE)
 
 ```{r Read in data}
 
-Full_Data <- fread(args[1], data.table = FALSE)
-MHQ2 <- fread(args[2], data.table = FALSE)
+Full_Data <- readRDS("../ukb82087_All_Fields_For_Tables_ukb675453_Preferred_Orig_Names.rds")
+MHQ2_Raw <- readRDS("../MHQ2_Height_Alcohol_Field_Updated.rds")
+MHQ2_Derived <- readRDS("../MHQ2_With_Derived.rds")
 
 ```
 
 # Merge Full data with MHQ2 data
 
 ```{r Merge data}
+
+MHQ2 <- full_join(MHQ2_Raw, MHQ2_Derived)
 
 MHQ2_Data_Fields_Without_EID <- names(MHQ2)[names(MHQ2) != 'eid']
 
@@ -96,53 +99,14 @@ Full_Data_MHQ2 <- full_join(Full_Data_No_MHQ2, MHQ2)
 
 ```
 
-# Table 1 - Sample sizes
+# Nix latest withdrawals
 
-```{r Table1}
+```{r Nix latest withdrawls}
 
-# Completed MHQ2: Marked as having completed all sections
-# 29197	When online Mental health questionnaire completed
-# 29198	When online Depression questionnaire completed
-# 29199	When online Mood changes questionnaire completed
-# 29200	When online Anxiety and panic questionnaire completed
-# 29201	When online Adverse life events questionnaire completed
-# 29202	When online Alcohol use questionnaire completed
-# 29203	When online Cannabis use questionnaire completed
-# 29204	When online Harm behaviours questionnaire completed
-# 29205	When online Eating patterns questionnaire completed
-# 29206	When online General health questionnaire completed
-# 29207	When online COVID-19 questionnaire completed
-# 29208	When online Social situation questionnaire completed
-# 29209	When online General well-being questionnaire completed
+Withdrawals <- fread("/datasets/ukbiobank/ukb82087/raw/withdraw82087_234_20240315.txt", head=F, data.table=F)
+names(Withdrawals) <- "eid"
 
-Full_Data_MHQ2$MHQ2_Completed <- with(Full_Data_MHQ2,
-  case_when(
-    is.na(`29197-0.0`) | `29197-0.0` < 0 |
-      is.na(`29198-0.0`) | `29198-0.0` < 0 |
-      is.na(`29199-0.0`) | `29199-0.0` < 0 |
-      is.na(`29200-0.0`) | `29200-0.0` < 0 |
-      is.na(`29201-0.0`) | `29201-0.0` < 0 |
-      is.na(`29202-0.0`) | `29202-0.0` < 0 |
-      is.na(`29203-0.0`) | `29203-0.0` < 0 |
-      is.na(`29204-0.0`) | `29204-0.0` < 0 |
-      is.na(`29205-0.0`) | `29205-0.0` < 0 |
-      is.na(`29206-0.0`) | `29206-0.0` < 0 |
-      is.na(`29207-0.0`) | `29207-0.0` < 0 |
-      is.na(`29208-0.0`) | `29208-0.0` < 0 |
-      is.na(`29209-0.0`) | `29209-0.0` < 0 ~ NA_real_,
-    .default = 1
-  )
-)
-
-sink("Table1.txt")
-
-writeLines("Stage Number")
-writeLines("UK.Population DEFINED.ELSEWHERE")
-writeLines("Invites DEFINED.ELSEWHERE")
-writeLines("Started DEFINED.ELSEWHERE")
-writeLines(paste0("Completed ", sum(Full_Data_MHQ2$MHQ2_Completed, na.rm=T)))
-
-sink()
+Full_Data_MHQ2 <- Full_Data_MHQ2[!(Full_Data_MHQ2$eid %in% Withdrawals$eid), ]
 
 ```
 
@@ -692,8 +656,8 @@ define_physical_activity <- function(data, cohort.identifier){
       ifelse(!is.na(data[,cohort.identifier]),
         case_when(
 	  is.na(`884-0.0`) | `884-0.0` < 0 ~ NA_real_,
-	  `884-0.0` > 2 ~ 1,
-	  .default = 0
+	  `884-0.0` > 2 ~ 0,
+	  .default = 1
 	),
         NA_real_
       )
@@ -721,6 +685,87 @@ Full_Data_MHQ2$MHQ2.Physical.Activity <- define_physical_activity(
   data = Full_Data_MHQ2,
   cohort.identifier = "MHQ2_Completed"
 )
+
+```
+
+
+# Table 1 - Sample sizes
+
+Two MHQ2 participants do not have baseline data, and should be excluded as completers
+
+```{r Table1}
+
+# Completed MHQ2: Marked as having completed all sections
+# 29197	When online Mental health questionnaire completed
+# 29198	When online Depression questionnaire completed
+# 29199	When online Mood changes questionnaire completed
+# 29200	When online Anxiety and panic questionnaire completed
+# 29201	When online Adverse life events questionnaire completed
+# 29202	When online Alcohol use questionnaire completed
+# 29203	When online Cannabis use questionnaire completed
+# 29204	When online Harm behaviours questionnaire completed
+# 29205	When online Eating patterns questionnaire completed
+# 29206	When online General health questionnaire completed
+# 29207	When online COVID-19 questionnaire completed
+# 29208	When online Social situation questionnaire completed
+# 29209	When online General well-being questionnaire completed
+
+Full_Data_MHQ2$MHQ2_Completed <- with(Full_Data_MHQ2,
+  case_when(
+    is.na(`29197-0.0`) | `29197-0.0` < 0 |
+      is.na(`29198-0.0`) | `29198-0.0` < 0 |
+      is.na(`29199-0.0`) | `29199-0.0` < 0 |
+      is.na(`29200-0.0`) | `29200-0.0` < 0 |
+      is.na(`29201-0.0`) | `29201-0.0` < 0 |
+      is.na(`29202-0.0`) | `29202-0.0` < 0 |
+      is.na(`29203-0.0`) | `29203-0.0` < 0 |
+      is.na(`29204-0.0`) | `29204-0.0` < 0 |
+      is.na(`29205-0.0`) | `29205-0.0` < 0 |
+      is.na(`29206-0.0`) | `29206-0.0` < 0 |
+      is.na(`29207-0.0`) | `29207-0.0` < 0 |
+      is.na(`29208-0.0`) | `29208-0.0` < 0 |
+      is.na(`29209-0.0`) | `29209-0.0` < 0 ~ NA_real_,
+    .default = 1
+  )
+)
+
+Full_Data_MHQ2$MHQ2_Completed <- ifelse(
+  is.na(
+    Full_Data_MHQ2$MHQ2.Age
+  ),
+  NA,
+  Full_Data_MHQ2$MHQ2_Completed
+)
+
+sink("Table1.txt")
+
+cat(
+  "Stage\tNumber\n"
+)
+
+cat(
+  "UK Population\tDEFINED ELSEWHERE\n"
+)
+
+cat(
+  "Invites\tDEFINED ELSEWHERE\n"
+)
+
+cat(
+  "Started\tDEFINED ELSEWHERE\n"
+)
+
+cat(
+  "Completed",
+  sum(
+    Full_Data_MHQ2$MHQ2_Completed,
+    na.rm=T
+  ),
+  "\n",
+  sep="\t"
+)
+
+sink()
 
 ```
 
@@ -753,90 +798,2020 @@ Difference MHQ2 > UKB
 sink("Table2.txt")
 
 ## Header
-cat("Measure\tSub-measure\tMHQ2\tMHQ1\tMHQ2-MHQ1\tUKB\tMHQ2-UKB\n")
+cat(
+  "Measure\tSub-measure\tMHQ2\tMHQ1\tMHQ2-MHQ1\tUKB\tMHQ2-UKB\n"
+)
 
 ## Age
-cat("Age\t45-54\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[1], paste(round(prop.table(table(Full_Data_MHQ2$MHQ2.Age.Bands))[1],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ1.Age.Bands)[1], paste(round(prop.table(table(Full_Data_MHQ2$MHQ1.Age.Bands))[1],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[1] - table(Full_Data_MHQ2$MHQ1.Age.Bands)[1], "\t")
-cat(table(Full_Data_MHQ2$UKB.Age.Bands)[1], paste(round(prop.table(table(Full_Data_MHQ2$UKB.Age.Bands))[1],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[1] - table(Full_Data_MHQ2$UKB.Age.Bands)[1], "\n")
+cat(
+  "Age\t45-54\t"
+)
 
-cat("Age\t55-64\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[2], paste(round(prop.table(table(Full_Data_MHQ2$MHQ2.Age.Bands))[2],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ1.Age.Bands)[2], paste(round(prop.table(table(Full_Data_MHQ2$MHQ1.Age.Bands))[2],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[2] - table(Full_Data_MHQ2$MHQ1.Age.Bands)[2], "\t")
-cat(table(Full_Data_MHQ2$UKB.Age.Bands)[2], paste(round(prop.table(table(Full_Data_MHQ2$UKB.Age.Bands))[2],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[2] - table(Full_Data_MHQ2$UKB.Age.Bands)[2], "\n")
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[1],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
 
-cat("Age\t65-74\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[3], paste(round(prop.table(table(Full_Data_MHQ2$MHQ2.Age.Bands))[3],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ1.Age.Bands)[3], paste(round(prop.table(table(Full_Data_MHQ2$MHQ1.Age.Bands))[3],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[3] - table(Full_Data_MHQ2$MHQ1.Age.Bands)[3], "\t")
-cat(table(Full_Data_MHQ2$UKB.Age.Bands)[3], paste(round(prop.table(table(Full_Data_MHQ2$UKB.Age.Bands))[3],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[3] - table(Full_Data_MHQ2$UKB.Age.Bands)[3], "\n")
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Age.Bands
+  )[1],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
 
-cat("Age\t75-84\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[4], paste(round(prop.table(table(Full_Data_MHQ2$MHQ2.Age.Bands))[4],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ1.Age.Bands)[4], paste(round(prop.table(table(Full_Data_MHQ2$MHQ1.Age.Bands))[4],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[4] - table(Full_Data_MHQ2$MHQ1.Age.Bands)[4], "\t")
-cat(table(Full_Data_MHQ2$UKB.Age.Bands)[4], paste(round(prop.table(table(Full_Data_MHQ2$UKB.Age.Bands))[4],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[4] - table(Full_Data_MHQ2$UKB.Age.Bands)[4], "\n")
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[1] -
+  table(
+    Full_Data_MHQ2$MHQ1.Age.Bands
+  )[1],
+  "\t"
+)
 
-cat("Age\t85+\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[5], paste(round(prop.table(table(Full_Data_MHQ2$MHQ2.Age.Bands))[5],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ1.Age.Bands)[5], paste(round(prop.table(table(Full_Data_MHQ2$MHQ1.Age.Bands))[5],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[5] - table(Full_Data_MHQ2$MHQ1.Age.Bands)[5], "\t")
-cat(table(Full_Data_MHQ2$UKB.Age.Bands)[5], paste(round(prop.table(table(Full_Data_MHQ2$UKB.Age.Bands))[5],2)*100, "%", sep=""),"\t")
-cat(table(Full_Data_MHQ2$MHQ2.Age.Bands)[5] - table(Full_Data_MHQ2$UKB.Age.Bands)[5], "\n")
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Age.Bands
+  )[1],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
 
-cat("Age\tMedian","\t")
-cat(MHQ2.Age.Median,"\t")
-cat(MHQ1.Age.Median,"\t")
-cat(MHQ2.Age.Median - MHQ1.Age.Median,"\t")
-cat(UKB.Age.Median,"\t")
-cat(MHQ2.Age.Median - UKB.Age.Median,"\t")
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[1]-
+  table(
+    Full_Data_MHQ2$UKB.Age.Bands
+  )[1],
+  "\n"
+)
 
-~TODO~
+cat(
+"Age\t55-64\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Age.Bands
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[2] -
+  table(
+    Full_Data_MHQ2$MHQ1.Age.Bands
+  )[2],
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Age.Bands
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[2] -
+  table(
+    Full_Data_MHQ2$UKB.Age.Bands
+  )[2],
+  "\n"
+)
+
+cat(
+  "Age\t65-74\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[3],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Age.Bands
+  )[3],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[3] -
+  table(
+    Full_Data_MHQ2$MHQ1.Age.Bands
+  )[3],
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Age.Bands
+  )[3],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[3] -
+  table(
+    Full_Data_MHQ2$UKB.Age.Bands
+  )[3],
+  "\n"
+)
+
+cat(
+  "Age\t75-84\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[4],
+  paste(
+    round(
+      prop.table(
+	table(
+  	  Full_Data_MHQ2$MHQ2.Age.Bands
+	)
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Age.Bands
+  )[4],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Age.Bands
+        )
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[4] -
+  table(
+    Full_Data_MHQ2$MHQ1.Age.Bands
+  )[4],
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Age.Bands
+  )[4],
+  paste(
+    round(
+      prop.table(
+	table(
+	  Full_Data_MHQ2$UKB.Age.Bands
+	)
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[4] - table(
+    Full_Data_MHQ2$UKB.Age.Bands
+  )[4],
+  "\n"
+)
+
+cat(
+  "Age\t85+\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[5],
+  paste(
+    round(
+      prop.table(
+	table(
+	  Full_Data_MHQ2$MHQ2.Age.Bands
+	)
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Age.Bands
+  )[5],
+  paste(
+    round(
+      prop.table(
+	table(
+	  Full_Data_MHQ2$MHQ1.Age.Bands
+	)
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[5] -
+  table(
+    Full_Data_MHQ2$MHQ1.Age.Bands
+  )[5],
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Age.Bands
+  )[5],
+  paste(
+    round(
+      prop.table(
+	table(
+	  Full_Data_MHQ2$UKB.Age.Bands
+	)
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Age.Bands
+  )[5] -
+  table(
+    Full_Data_MHQ2$UKB.Age.Bands
+  )[5],
+  "\n"
+)
+
+
+cat(
+  "Age\tMedian",
+  "\t"
+)
+
+cat(
+  MHQ2.Age.Median,
+  "\t"
+)
+
+
+cat(
+  MHQ1.Age.Median,
+  "\t"
+)
+
+cat(
+  MHQ2.Age.Median - MHQ1.Age.Median,
+  "\t"
+)
+
+
+cat(
+  UKB.Age.Median,
+  "\t"
+)
+
+cat(
+  MHQ2.Age.Median - UKB.Age.Median,
+  "\n"
+)
+
+
+## Sex
+
+cat(
+  "Sex\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Sex
+  ),
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Sex
+  ),
+  "\t"
+) #MHQ1
+
+cat(
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Sex
+  ),
+  "\t"
+) #UKB
+
+cat(
+  "\t"
+) #MHQ2-UKB
+
+cat(
+  "\n"
+)
+
+
+## Ethnicity
+
+cat(
+  "Ethnicity\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Ethnicity
+  ),
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Ethnicity
+  ),
+  "\t"
+) #MHQ1
+
+cat(
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Ethnicity
+  ),
+  "\t"
+) #UKB
+
+cat(
+  "\t"
+) #MHQ2-UKB
+
+cat(
+  "\n"
+)
+
+
+## TDI
+
+cat(
+  "TDI\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.TDI
+   ),
+   "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.TDI
+  ),
+  "\t"
+) #MHQ1
+
+cat(
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.TDI
+  ),
+  "\t"
+) #UKB
+
+cat(
+  "\t"
+) #MHQ2-UKB
+
+cat(
+  "\n"
+)
+
+
+## Highest.Qualification
+
+cat(
+  "Highest.Qualification\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Highest.Qualification
+  ),
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Highest.Qualification
+  ),
+  "\t"
+) #MHQ1
+
+cat(
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Highest.Qualification
+  ),
+  "\t"
+) #UKB
+
+cat(
+  "\t"
+) #MHQ2-UKB
+
+cat(
+  "\n"
+)
+
+
+## Housing
+
+cat(
+  "Housing\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Housing
+  ),
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Housing
+  ),
+  "\t"
+) #MHQ1
+
+cat(
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Housing
+  ),
+  "\t"
+) #UKB
+
+cat(
+  "\t"
+) #MHQ2-UKB
+
+cat(
+  "\n"
+)
+
+## Longstanding.Illness
+
+cat(
+  "Longstanding.Illness\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Longstanding.Illness
+  ),
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Longstanding.Illness
+  ),
+  "\t"
+) #MHQ1
+
+cat(
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Longstanding.Illness
+  ),
+  "\t"
+) #UKB
+
+cat(
+  "\t"
+) #MHQ2-UKB
+
+cat(
+  "\n"
+)
+
+
+## Neuroticism
+
+cat(
+  "Neuroticism\tNA",
+  "\t"
+)
+
+cat(
+  mean(
+    Full_Data_MHQ2$MHQ2.Neuroticism,
+    na.rm=T
+  ),
+  "\t",
+  sd(
+    Full_Data_MHQ2$MHQ2.Neuroticism,
+    na.rm=T
+  ),
+  "\t"
+) #MHQ2
+
+cat(
+  mean(
+    Full_Data_MHQ2$MHQ1.Neuroticism,
+    na.rm=T
+  ),
+  "\t",
+  sd(
+    Full_Data_MHQ2$MHQ1.Neuroticism,
+    na.rm=T
+  ),
+  "\t"
+) #MHQ1
+
+cat(
+  "\t"
+ ) #MHQ2 - MHQ1
+
+cat(
+  mean(
+    Full_Data_MHQ2$UKB.Neuroticism,
+    na.rm=T
+  ),
+  "\t",
+  sd(
+    Full_Data_MHQ2$UKB.Neuroticism,
+    na.rm=T
+  ),
+  "\t"
+) #UKB
+
+cat(
+  "\t"
+) #MHQ2-UKB
+
+cat(
+  "\n"
+)
+
+
+## Smoking
+
+cat(
+  "Smoking\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Smoking
+  ),
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Smoking
+  ),
+  "\t"
+) #MHQ1
+
+cat(
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Smoking
+  ),
+  "\t"
+) #UKB
+
+cat(
+  "\t"
+) #MHQ2-UKB
+
+cat(
+  "\n"
+)
+
+
+## Physical.Activity
+
+cat(
+  "Physical.Activity\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Physical.Activity
+  ),
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Physical.Activity
+  ),
+  "\t"
+) #MHQ1
+
+cat(
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Physical.Activity
+  ),
+  "\t"
+) #UKB
+
+cat(
+  "\t"
+) #MHQ2-UKB
+
+cat(
+  "\n"
+)
 
 sink()
 
 ```
 
+# Define additional fields for following tables (TEMP, should be defined in modules?)
+
+```{r Define Extra Fields}
+
+Full_Data_MHQ2$AnyFullThresholdEatingDisorder <- with(Full_Data_MHQ2,
+  ifelse(
+    (!is.na(Anorexia_nervosa) & Anorexia_nervosa == 1) |
+    (!is.na(Bulimia_nervosa) & Bulimia_nervosa == 1) |
+    (!is.na(Binge_eating_disorder) & Binge_eating_disorder == 1) |
+    (!is.na(Purging_disorder) & Purging_disorder == 1),
+    1,
+    NA
+  )
+)
+
+Full_Data_MHQ2$NoLifetimeCriteria <- with(Full_Data_MHQ2,
+  case_when(
+    is.na(MHQ2_Completed) | MHQ2_Completed != 1 ~ NA_real_,
+    (!is.na(depression.ever.case) & depression.ever.case == 1) |
+    (!is.na(BD1) & BD1 == 1) |
+    (!is.na(PanicDisorder) & PanicDisorder == 1) |
+    (!is.na(AnyFullThresholdEatingDisorder) & AnyFullThresholdEatingDisorder == 1) ~ 0,
+    .default = 1
+  )
+)
+
+```
 
 # Table 3 – Sample characteristics by lifetime disorder
 # Supplementary Table 3a – Sample characteristics by lifetime disorder (female sex)
 # Supplementary Table 3b – Sample characteristics by lifetime disorder (male sex)
 
-Rows:
+```{r Table 3}
 
-Age (10 y bands) + ?median
-Sex
-Ethnicity (% White)
-TDS (% most deprived (>=2))
-Highest qual (% degree)
-Housing tenure (% rent social or rent private)
-Risk factors from baseline only
-Neuroticism mean (sd)
-Longstanding illness etc (%) at baseline
-Current smoker at baseline
-Physical activity at least three times a week
-Childhood adverse experience
-Adult adverse experience
-Social isolation
-Loneliness from UCLA score
-Low resilience from Brief Resilience Score
-EQ-5D VAS score mean (sd) (higher is better health)
+Full_Data_MHQ2_T3 <- Full_Data_MHQ2[
+  !is.na(
+    Full_Data_MHQ2$MHQ2_Completed
+  ) &
+  Full_Data_MHQ2$MHQ2_Completed == 1,
+]
 
-Columns:
+Table_3 <- function(data){
 
-Overall
-No lifetime criteria
-Depression (MHQ2)
-Bipolar type I (MHQ2)
-Panic Disorder
-Any full threshold eating disorder
+  ## Header
+  cat("Measure\tSub-measure\tMHQ2\tNo Lifetime Criteria\tDepression\tBipolar I\tPanic Disoder\tAny eating disorder\n")
+
+  ## Age
+  cat(
+    "Age.Bands",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    table(
+      data$MHQ2.Age.Bands,
+      data$MHQ2_Completed
+    ),
+    "\t"
+  ) # MHQ2
+
+  cat(
+    table(
+      data$MHQ2.Age.Bands,
+      data$NoLifetimeCriteria
+    ),
+    "\t"
+  ) # No Criteria
+
+  cat(
+    table(
+      data$MHQ2.Age.Bands,
+      data$depression.ever.case
+    ),
+    "\t"
+  ) # Depression
+
+  cat(
+    table(
+      data$MHQ2.Age.Bands,
+      data$BD1
+    ),
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    table(
+      data$MHQ2.Age.Bands,
+      data$PanicDisorder
+    ),
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    table(
+      data$MHQ2.Age.Bands,
+      data$AnyFullThresholdEatingDisorder
+    ),
+    "\t"
+  ) # Eating disorders
+
+  cat(
+    "\n"
+  )
+
+  cat(
+    "Age.Median",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(MHQ2.Age.Median,
+    "\t"
+  ) # MHQ2
+
+  cat(
+    median(
+      Full_Data_MHQ2[data$NoLifetimeCriteria == 1, "MHQ2.Age"],
+      na.rm = TRUE
+    ),
+    "\t"
+  ) # No Criteria
+
+  cat(
+    median(
+      Full_Data_MHQ2[data$depression.ever.case == 1, "MHQ2.Age"],
+      na.rm = TRUE
+    ),
+    "\t"
+  ) # Depression
+
+  cat(
+    median(
+      Full_Data_MHQ2[data$BD1 == 1, "MHQ2.Age"],
+      na.rm = TRUE
+    ),
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    median(
+      Full_Data_MHQ2[data$PanicDisorder == 1, "MHQ2.Age"],
+      na.rm = TRUE
+    ),
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    median(
+      Full_Data_MHQ2[data$AnyFullThresholdEatingDisorder == 1, "MHQ2.Age"],
+      na.rm = TRUE
+    ),
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+  ## Sex
+
+  cat(
+    "Sex",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    table(
+      data$MHQ2.Sex, data$MHQ2_Completed
+    ),
+    "\t"
+  ) # MHQ2
+
+  cat(
+    table(
+      data$MHQ2.Sex, data$NoLifetimeCriteria
+    ),
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    table(
+      data$MHQ2.Sex, data$depression.ever.case
+    ),
+    "\t"
+  ) # Depression
+
+  cat(
+    table(
+      data$MHQ2.Sex, data$BD1
+    ),
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    table(
+      data$MHQ2.Sex, data$PanicDisorder
+    ),
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    table(
+      data$MHQ2.Sex, data$AnyFullThresholdEatingDisorder
+    ),
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+  ## Ethnicity
+
+  cat(
+    "Ethnicity",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    table(
+      data$MHQ2.Ethnicity, data$MHQ2_Completed
+    ),
+    "\t"
+  ) # MHQ2
+
+  cat(
+    table(
+      data$MHQ2.Ethnicity, data$NoLifetimeCriteria
+    ),
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    table(
+      data$MHQ2.Ethnicity, data$depression.ever.case
+    ),
+    "\t"
+  ) # Depression
+
+  cat(
+    table(
+      data$MHQ2.Ethnicity, data$BD1
+    ),
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    table(
+      data$MHQ2.Ethnicity, data$PanicDisorder
+    ),
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    table(
+      data$MHQ2.Ethnicity, data$AnyFullThresholdEatingDisorder
+    ),
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+  ## TDI
+
+  cat(
+    "TDI",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    table(
+      data$MHQ2.TDI, 
+      data$MHQ2_Completed
+    ), 
+    "\t"
+  ) # MHQ2
+
+  cat(
+    table(
+      data$MHQ2.TDI, 
+      data$NoLifetimeCriteria
+    ), 
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    table(
+      data$MHQ2.TDI, 
+      data$depression.ever.case
+    ), 
+    "\t"
+  ) # Depression
+
+  cat(
+    table(
+      data$MHQ2.TDI, 
+      data$BD1
+    ), 
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    table(
+      data$MHQ2.TDI, 
+      data$PanicDisorder
+    ), 
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    table(
+      data$MHQ2.TDI, 
+      data$AnyFullThresholdEatingDisorder
+    ), 
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+
+  ## Highest.Qualification
+
+  cat(
+    "Highest.Qualification",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    table(
+      data$MHQ2.Highest.Qualification, 
+      data$MHQ2_Completed
+    ), 
+    "\t"
+  ) # MHQ2
+
+  cat(
+    table(
+      data$MHQ2.Highest.Qualification, 
+      data$NoLifetimeCriteria
+    ), 
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    table(
+      data$MHQ2.Highest.Qualification, 
+      data$depression.ever.case
+    ), 
+    "\t"
+  ) # Depression
+
+  cat(
+    table(
+      data$MHQ2.Highest.Qualification, 
+      data$BD1
+    ), 
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    table(
+      data$MHQ2.Highest.Qualification, 
+      data$PanicDisorder
+    ), 
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    table(
+      data$MHQ2.Highest.Qualification, 
+      data$AnyFullThresholdEatingDisorder
+    ), 
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+
+  ## Housing
+
+  cat(
+    "Housing",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    table(
+      data$MHQ2.Housing, 
+      data$MHQ2_Completed
+    ), 
+    "\t"
+  ) # MHQ2
+
+  cat(
+    table(
+      data$MHQ2.Housing, 
+      data$NoLifetimeCriteria
+    ), 
+    "\t"
+  ) # No Lifetime Criteria 
+
+  cat(
+    table(
+      data$MHQ2.Housing, 
+      data$depression.ever.case
+    ), 
+    "\t"
+  ) # Depression
+
+  cat(
+    table(
+      data$MHQ2.Housing, 
+      data$BD1
+    ), 
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    table(
+      data$MHQ2.Housing, 
+      data$PanicDisorder
+    ), 
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    table(
+      data$MHQ2.Housing, 
+      data$AnyFullThresholdEatingDisorder
+    ), 
+    "\t"
+  ) # Eating disorder 
+
+  cat(
+    "\n"
+  )
+
+  ## Longstanding.Illness
+
+  cat(
+    "Longstanding.Illness",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    table(
+      data$MHQ2.Longstanding.Illness, 
+      data$MHQ2_Completed
+    ), 
+    "\t"
+  ) # MHQ2
+
+  cat(
+    table(
+      data$MHQ2.Longstanding.Illness,
+      data$NoLifetimeCriteria
+    ),
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    table(
+      data$MHQ2.Longstanding.Illness, 
+      data$depression.ever.case
+    ), 
+    "\t"
+  ) # Depression
+
+  cat(
+    table(
+      data$MHQ2.Longstanding.Illness, 
+      data$BD1
+    ), 
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    table(
+      data$MHQ2.Longstanding.Illness, 
+      data$PanicDisorder
+    ), 
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    table(
+      data$MHQ2.Longstanding.Illness, 
+      data$AnyFullThresholdEatingDisorder
+    ), 
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+
+  ## Neuroticism
+
+  cat(
+    "Neuroticism",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    mean(
+      data$MHQ2.Neuroticism, 
+      na.rm=T
+    ), 
+    "\t", 
+    sd(
+      data$MHQ2.Neuroticism, 
+      na.rm=T
+    ), 
+    "\t"
+  ) #MHQ2
+
+  cat(
+    mean(
+      Full_Data_MHQ2[data$NoLifetimeCriteria == 1, 
+	"MHQ2.Neuroticism"], 
+      na.rm=T
+    ), 
+    "\t",
+    sd(
+      Full_Data_MHQ2[data$NoLifetimeCriteria == 1, 
+	"MHQ2.Neuroticism"], 
+      na.rm=T
+    ), 
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    mean(
+      Full_Data_MHQ2[data$depression.ever.case == 1, 
+	"MHQ2.Neuroticism"], 
+      na.rm=T
+    ), 
+    "\t",
+    sd(
+      Full_Data_MHQ2[data$depression.ever.case == 1, 
+	"MHQ2.Neuroticism"], 
+      na.rm=T
+    ), 
+    "\t"
+  ) # Depression 
+
+  cat(
+    mean(
+      Full_Data_MHQ2[data$BD1 == 1, 
+	"MHQ2.Neuroticism"], 
+      na.rm=T
+    ), 
+    "\t",
+    sd(
+      Full_Data_MHQ2[data$BD1 == 1, 
+	"MHQ2.Neuroticism"], 
+      na.rm=T
+    ), 
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    mean(
+      Full_Data_MHQ2[data$PanicDisorder == 1, 
+	"MHQ2.Neuroticism"], 
+      na.rm=T
+    ), 
+    "\t",
+    sd(
+      Full_Data_MHQ2[data$PanicDisorder == 1, 
+	"MHQ2.Neuroticism"], 
+      na.rm=T
+    ), 
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    mean(
+      Full_Data_MHQ2[data$AnyFullThresholdEatingDisorder == 1,
+	"MHQ2.Neuroticism"],
+      na.rm=T
+    ),
+    "\t",
+    sd(
+      Full_Data_MHQ2[data$AnyFullThresholdEatingDisorder == 1,
+	"MHQ2.Neuroticism"],
+      na.rm=T
+    ),
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+
+  ## Smoking
+
+  cat(
+    "Smoking",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    table(
+      data$MHQ2.Smoking, 
+      data$MHQ2_Completed
+    ), 
+    "\t"
+  ) # MHQ2
+
+  cat(
+    table(
+      data$MHQ2.Smoking,
+      data$NoLifetimeCriteria
+    ),
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    table(
+      data$MHQ2.Smoking, 
+      data$depression.ever.case
+    ), 
+    "\t"
+  ) # Depression
+
+  cat(
+    table(
+      data$MHQ2.Smoking, 
+      data$BD1
+    ), 
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    table(
+      data$MHQ2.Smoking, 
+      data$PanicDisorder
+    ), 
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    table(
+      data$MHQ2.Smoking,
+      data$AnyFullThresholdEatingDisorder
+    ),
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+
+  ## Physical.Activity
+
+  cat(
+    "Physical.Activity",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    table(
+      data$MHQ2.Physical.Activity, 
+      data$MHQ2_Completed
+    ), 
+    "\t"
+  ) # MHQ2
+
+  cat(
+    table(
+      data$MHQ2.Physical.Activity,
+      data$NoLifetimeCriteria
+    ),
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    table(
+      data$MHQ2.Physical.Activity, 
+      data$depression.ever.case
+    ), 
+    "\t"
+  ) # Depression
+
+  cat(
+    table(
+      data$MHQ2.Physical.Activity, 
+      data$BD1
+    ), 
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    table(
+      data$MHQ2.Physical.Activity, 
+      data$PanicDisorder
+    ), 
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    table(
+      data$MHQ2.Physical.Activity,
+      data$AnyFullThresholdEatingDisorder
+    ),
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+  ## Childhood adverse experience
+
+  cat(
+    "Childhood adverse experience",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    table(
+      data$TraumaChildhood, 
+      data$MHQ2_Completed
+    ), 
+    "\t"
+  ) # MHQ2
+
+  cat(
+    table(
+      data$TraumaChildhood,
+      data$NoLifetimeCriteria
+    ),
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    table(
+      data$TraumaChildhood, 
+      data$depression.ever.case
+    ), 
+    "\t"
+  ) # Depression
+
+  cat(
+    table(
+      data$TraumaChildhood, 
+      data$BD1
+    ), 
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    table(
+      data$TraumaChildhood, 
+      data$PanicDisorder
+    ), 
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    table(
+      data$TraumaChildhood,
+      data$AnyFullThresholdEatingDisorder
+    ),
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+
+  ## Adult adverse experience
+
+  cat(
+    "Adult adverse experience",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    table(
+      data$TraumaAdulthood, 
+      data$MHQ2_Completed
+    ), 
+    "\t"
+  ) # MHQ2
+
+  cat(
+    table(
+      data$TraumaAdulthood,
+      data$NoLifetimeCriteria
+    ),
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    table(
+      data$TraumaAdulthood, 
+      data$depression.ever.case
+    ), 
+    "\t"
+  ) # Depression
+
+  cat(
+    table(
+      data$TraumaAdulthood, 
+      data$BD1
+    ), 
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    table(
+      data$TraumaAdulthood, 
+      data$PanicDisorder
+    ), 
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    table(
+      data$TraumaAdulthood,
+      data$AnyFullThresholdEatingDisorder
+    ),
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+
+  ## Social isolation
+
+  cat(
+    "Social isolation",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    table(
+      data$social_isolation, 
+      data$MHQ2_Completed
+    ), 
+    "\t"
+  ) # MHQ2
+
+  cat(
+    table(
+      data$social_isolation,
+      data$NoLifetimeCriteria
+    ),
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    table(
+      data$social_isolation, 
+      data$depression.ever.case
+    ), 
+    "\t"
+  ) # Depression
+
+  cat(
+    table(
+      data$social_isolation, 
+      data$BD1
+    ), 
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    table(
+      data$social_isolation, 
+      data$PanicDisorder
+    ), 
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    table(
+      data$social_isolation,
+      data$AnyFullThresholdEatingDisorder
+    ),
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+
+  ## Loneliness from UCLA score
+
+  cat(
+    "Loneliness from UCLA score",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    quantile(
+      data[,"UCLA_loneliness_sum"],
+      prob=c(0,0.25,0.5,0.75,1),
+      na.rm=TRUE
+    ), 
+    "\t"
+  ) # MHQ2
+
+  cat(
+    quantile(
+      data[!is.na(data$NoLifetimeCriteria) & data$NoLifetimeCriteria == 1,"UCLA_loneliness_sum"],
+      prob=c(0,0.25,0.5,0.75,1),
+      na.rm=TRUE
+    ),
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    quantile(
+      data[!is.na(data$depression.ever.case) & data$depression.ever.case == 1,"UCLA_loneliness_sum"],
+      prob=c(0,0.25,0.5,0.75,1),
+      na.rm=TRUE
+    ), 
+    "\t"
+  ) # Depression
+
+  cat(
+    quantile(
+      data[!is.na(data$BD1) & data$BD1 == 1,"UCLA_loneliness_sum"],
+      prob=c(0,0.25,0.5,0.75,1),
+      na.rm=TRUE
+    ), 
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    quantile(
+      data[!is.na(data$PanicDisorder) & data$PanicDisorder == 1,"UCLA_loneliness_sum"],
+      prob=c(0,0.25,0.5,0.75,1),
+      na.rm=TRUE
+    ), 
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    quantile(
+      data[!is.na(data$AnyFullThresholdEatingDisorder) & data$AnyFullThresholdEatingDisorder == 1,"UCLA_loneliness_sum"],
+      prob=c(0,0.25,0.5,0.75,1),
+      na.rm=TRUE
+    ),
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+
+  ## Low resilience from Brief Resilience Score
+
+  cat(
+    "Brief Resilience Score",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    table(
+      data$BRS, 
+      data$MHQ2_Completed
+    ), 
+    "\t"
+  ) # MHQ2
+
+  cat(
+    table(
+      data$BRS,
+      data$NoLifetimeCriteria
+    ),
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    table(
+      data$BRS, 
+      data$depression.ever.case
+    ), 
+    "\t"
+  ) # Depression
+
+  cat(
+    table(
+      data$BRS, 
+      data$BD1
+    ), 
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    table(
+      data$BRS, 
+      data$PanicDisorder
+    ), 
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    table(
+      data$BRS,
+      data$AnyFullThresholdEatingDisorder
+    ),
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+
+  ## EQ-5D VAS score median (IQR) (higher is better health)
+  ## Item is 29155-0.0
+
+  cat(
+    "EQ-5D VAS",
+    "\t",
+    "NA",
+    "\t"
+  )
+
+  cat(
+    quantile(
+      data[,`29155-0.0`],
+      prob=c(0,0.25,0.5,0.75,1),
+      na.rm=TRUE
+    ), 
+    "\t"
+  ) # MHQ2
+
+  cat(
+    quantile(
+      data[!is.na(data$NoLifetimeCriteria) & data$NoLifetimeCriteria == 1,`29155-0.0`],
+      prob=c(0,0.25,0.5,0.75,1),
+      na.rm=TRUE
+    ),
+    "\t"
+  ) # No Lifetime Criteria
+
+  cat(
+    quantile(
+      data[!is.na(data$depression.ever.case) & data$depression.ever.case == 1,`29155-0.0`],
+      prob=c(0,0.25,0.5,0.75,1),
+      na.rm=TRUE
+    ), 
+    "\t"
+  ) # Depression
+
+  cat(
+    quantile(
+      data[!is.na(data$BD1) & data$BD1 == 1,`29155-0.0`],
+      prob=c(0,0.25,0.5,0.75,1),
+      na.rm=TRUE
+    ), 
+    "\t"
+  ) # Bipolar I
+
+  cat(
+    quantile(
+      data[!is.na(data$PanicDisorder) & data$PanicDisorder == 1,`29155-0.0`],
+      prob=c(0,0.25,0.5,0.75,1),
+      na.rm=TRUE
+    ), 
+    "\t"
+  ) # Panic disorder
+
+  cat(
+    quantile(
+      data[!is.na(data$AnyFullThresholdEatingDisorder) & data$AnyFullThresholdEatingDisorder == 1,`29155-0.0`],
+      prob=c(0,0.25,0.5,0.75,1),
+      na.rm=TRUE
+    ),
+    "\t"
+  ) # Eating disorder
+
+  cat(
+    "\n"
+  )
+
+}
+
+## Table 3
+
+sink("Table3.txt")
+
+Table_3(Full_Data_MHQ2_T3)
+
+sink()
+
+rm(Full_Data_MHQ2_T3)
+
+## Supplementary Table 3a - Table 3 in females
+
+Full_Data_MHQ2_T3_Females <- Full_Data_MHQ2[
+  !is.na(
+    Full_Data_MHQ2$MHQ2_Completed
+  ) &
+  Full_Data_MHQ2$MHQ2_Completed == 1 &
+  !is.na(
+    Full_Data_MHQ2$MHQ2.Sex
+  ) &
+  Full_Data_MHQ2$MHQ2.Sex == "Female",
+]
+
+sink("SupplementaryTable3a.txt")
+
+Table_3(Full_Data_MHQ2_T3_Females)
+
+sink()
+
+rm(Full_Data_MHQ2_T3_Females)
+
+## Supplementary Table 3b - Table 3 in males
+
+Full_Data_MHQ2_T3_Males <- Full_Data_MHQ2[
+  !is.na(
+    Full_Data_MHQ2$MHQ2_Completed
+  ) &
+  Full_Data_MHQ2$MHQ2_Completed == 1 &
+  !is.na(
+    Full_Data_MHQ2$MHQ2.Sex
+  ) &
+  Full_Data_MHQ2$MHQ2.Sex == "Male",
+]
+
+sink("SupplementaryTable3b.txt")
+
+Table_3(Full_Data_MHQ2_T3_Males)
+
+sink()
+
+rm(Full_Data_MHQ2_T3_Males)
+
+```
 
 # Table 4 - NOT DEFINED
 
@@ -851,12 +2826,52 @@ Bulimia nervosa ever case
 Purging disorder ever case
 Harm to self ever case
 
+```{r Figure 5}
+
+Data_For_Upset <- Full_Data_MHQ2[Full_Data_MHQ2$MHQ2_Completed == 1,
+  c("eid",
+    "depression.ever.case",
+    "BD1",
+    "PanicDisorder",
+    "Anorexia_nervosa",
+    "Bulimia_nervosa",
+    "Purging_disorder",
+    "Self.Harm.Ever"
+  )
+]
+
+png(
+  "Figure5.png",
+  res=300,
+  height=1500,
+  width=3000
+)
+
+print(
+  upset(
+    Data_For_Upset,
+    nsets=200,
+    nintersects=20,
+    set_size.show = TRUE,
+    order.by = "freq",
+    set_size.scale_max = 45000
+  )
+)
+
+dev.off()
+
+```
+
+
+
+```{r Define MHQ1}
+
 ### Define MHQ1 Phenotypes for comparison
 ### Code directly converted from Davis et al 2020
 
 #####Physician Diagnosed Disorders#####
 
-Full_Data_MHQ2$SRSocPhobia<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRSocPhobia<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
   			   ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 1) |
 		                  (!is.na(`20544-0.2`) & `20544-0.2` == 1) |
 		                  (!is.na(`20544-0.3`) & `20544-0.3` == 1) |
@@ -874,7 +2889,7 @@ Full_Data_MHQ2$SRSocPhobia<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
 		                  (!is.na(`20544-0.15`) & `20544-0.15` == 1) |
 		                  (!is.na(`20544-0.16`) & `20544-0.16` == 1), 1, 0)))
 
-Full_Data_MHQ2$SRSchizophrenia<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRSchizophrenia<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 			       ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 2) |
 		                      (!is.na(`20544-0.2`) & `20544-0.2` == 2) |
 		                      (!is.na(`20544-0.3`) & `20544-0.3` == 2) |
@@ -892,7 +2907,7 @@ Full_Data_MHQ2$SRSchizophrenia<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), 
 		                      (!is.na(`20544-0.15`) & `20544-0.15` == 2) |
 		                      (!is.na(`20544-0.16`) & `20544-0.16` == 2), 1, 0)))
 
-Full_Data_MHQ2$SRPsychosisOther<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRPsychosisOther<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 			        ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 3) |
 		                       (!is.na(`20544-0.2`) & `20544-0.2` == 3) |
 		                       (!is.na(`20544-0.3`) & `20544-0.3` == 3) |
@@ -910,11 +2925,11 @@ Full_Data_MHQ2$SRPsychosisOther<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`),
 		                       (!is.na(`20544-0.15`) & `20544-0.15` == 3) |
 		                       (!is.na(`20544-0.16`) & `20544-0.16` == 3), 1, 0)))
 
-Full_Data_MHQ2$SRPsychosisAny<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
-					 ifelse((!is.na(SRSchizophrenia) & SRSchizophrenia == 1) | (!is.na(SRPsychosisOther) & SRPsychosisOther == 1), 1, 0)))
+Full_Data_MHQ2$MHQ1.SRPsychosisAny<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
+					 ifelse((!is.na(MHQ1.SRSchizophrenia) & MHQ1.SRSchizophrenia == 1) | (!is.na(MHQ1.SRPsychosisOther) & MHQ1.SRPsychosisOther == 1), 1, 0)))
 
 
-Full_Data_MHQ2$SRPersonalityDisorder<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRPersonalityDisorder<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 				     ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 4) |
 		                            (!is.na(`20544-0.2`) & `20544-0.2` == 4) |
 		      		            (!is.na(`20544-0.3`) & `20544-0.3` == 4) |
@@ -932,7 +2947,7 @@ Full_Data_MHQ2$SRPersonalityDisorder<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0
 		      		            (!is.na(`20544-0.15`) & `20544-0.15` == 4) |
 		      		            (!is.na(`20544-0.16`) & `20544-0.16` == 4), 1, 0)))
 
-Full_Data_MHQ2$SROtherPhobia<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SROtherPhobia<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 			     ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 5) |
 		      	            (!is.na(`20544-0.2`) & `20544-0.2` == 5) |
 		      	            (!is.na(`20544-0.3`) & `20544-0.3` == 5) |
@@ -950,7 +2965,7 @@ Full_Data_MHQ2$SROtherPhobia<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA
 		      	            (!is.na(`20544-0.15`) & `20544-0.15` == 5) |
 		      	            (!is.na(`20544-0.16`) & `20544-0.16` == 5), 1, 0)))
 
-Full_Data_MHQ2$SRPanicAttacks<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRPanicAttacks<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 			      ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 6) |
 		                     (!is.na(`20544-0.2`) & `20544-0.2` == 6) |
 		                     (!is.na(`20544-0.3`) & `20544-0.3` == 6) |
@@ -968,7 +2983,7 @@ Full_Data_MHQ2$SRPanicAttacks<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), N
 		                     (!is.na(`20544-0.15`) & `20544-0.15` == 6) |
 		                     (!is.na(`20544-0.16`) & `20544-0.16` == 6), 1, 0)))
 
-Full_Data_MHQ2$SROCD<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SROCD<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 		     ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 7) |
 		            (!is.na(`20544-0.2`) & `20544-0.2` == 7) |
 		            (!is.na(`20544-0.3`) & `20544-0.3` == 7) |
@@ -986,7 +3001,7 @@ Full_Data_MHQ2$SROCD<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
 		            (!is.na(`20544-0.15`) & `20544-0.15` == 7) |
 		            (!is.na(`20544-0.16`) & `20544-0.16` == 7), 1, 0)))
 
-Full_Data_MHQ2$SRManiaBIP<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRManiaBIP<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 			  ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 10) |
 		                 (!is.na(`20544-0.2`) & `20544-0.2` == 10) |
 		                 (!is.na(`20544-0.3`) & `20544-0.3` == 10) |
@@ -1004,7 +3019,7 @@ Full_Data_MHQ2$SRManiaBIP<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
 		                 (!is.na(`20544-0.15`) & `20544-0.15` == 10) |
 		                 (!is.na(`20544-0.16`) & `20544-0.16` == 10), 1, 0)))
 
-Full_Data_MHQ2$SRDepression<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRDepression<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 			    ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 11) |
 		                   (!is.na(`20544-0.2`) & `20544-0.2` == 11) |
 		                   (!is.na(`20544-0.3`) & `20544-0.3` == 11) |
@@ -1022,11 +3037,11 @@ Full_Data_MHQ2$SRDepression<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
 		                   (!is.na(`20544-0.15`) & `20544-0.15` == 11) |
 		                   (!is.na(`20544-0.16`) & `20544-0.16` == 11), 1, 0)))
 
-Full_Data_MHQ2$SRMood<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
-		      ifelse(!is.na(SRManiaBIP) & SRManiaBIP == 1 |
-		      	     !is.na(SRDepression) & SRDepression == 1, 1, 0)))
+Full_Data_MHQ2$MHQ1.SRMood<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
+		      ifelse(!is.na(MHQ1.SRManiaBIP) & MHQ1.SRManiaBIP == 1 |
+		      	     !is.na(MHQ1.SRDepression) & MHQ1.SRDepression == 1, 1, 0)))
 
-Full_Data_MHQ2$SRBulimiaNervosa<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRBulimiaNervosa<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 			        ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 12) |
 		                       (!is.na(`20544-0.2`) & `20544-0.2` == 12) |
 		                       (!is.na(`20544-0.3`) & `20544-0.3` == 12) |
@@ -1044,7 +3059,7 @@ Full_Data_MHQ2$SRBulimiaNervosa<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`),
 		                       (!is.na(`20544-0.15`) & `20544-0.15` == 12) |
 		                       (!is.na(`20544-0.16`) & `20544-0.16` == 12), 1, 0)))
 
-Full_Data_MHQ2$SRBingeEating<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRBingeEating<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 			     ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 13) |
 		                    (!is.na(`20544-0.2`) & `20544-0.2` == 13) |
 		                    (!is.na(`20544-0.3`) & `20544-0.3` == 13) |
@@ -1062,7 +3077,7 @@ Full_Data_MHQ2$SRBingeEating<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA
 		                    (!is.na(`20544-0.15`) & `20544-0.15` == 13) |
 		                    (!is.na(`20544-0.16`) & `20544-0.16` == 13), 1, 0)))
 
-Full_Data_MHQ2$SRASD<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRASD<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 		     ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 14) |
 		            (!is.na(`20544-0.2`) & `20544-0.2` == 14) |
 		            (!is.na(`20544-0.3`) & `20544-0.3` == 14) |
@@ -1080,7 +3095,7 @@ Full_Data_MHQ2$SRASD<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
 		            (!is.na(`20544-0.15`) & `20544-0.15` == 14) |
 		            (!is.na(`20544-0.16`) & `20544-0.16` == 14), 1, 0)))
 
-Full_Data_MHQ2$SRGADandOthers<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRGADandOthers<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 			      ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 15) |
 		                     (!is.na(`20544-0.2`) & `20544-0.2` == 15) |
 		                     (!is.na(`20544-0.3`) & `20544-0.3` == 15) |
@@ -1098,7 +3113,7 @@ Full_Data_MHQ2$SRGADandOthers<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), N
 		                     (!is.na(`20544-0.15`) & `20544-0.15` == 15) |
 		                     (!is.na(`20544-0.16`) & `20544-0.16` == 15), 1, 0)))
 
-Full_Data_MHQ2$SRAnorexiaNervosa<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRAnorexiaNervosa<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 			         ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 16) |
 		                        (!is.na(`20544-0.2`) & `20544-0.2` == 16) |
 		                        (!is.na(`20544-0.3`) & `20544-0.3` == 16) |
@@ -1116,12 +3131,12 @@ Full_Data_MHQ2$SRAnorexiaNervosa<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`)
 		                        (!is.na(`20544-0.15`) & `20544-0.15` == 16) |
 		                        (!is.na(`20544-0.16`) & `20544-0.16` == 16), 1, 0)))
 
-Full_Data_MHQ2$SREatingDisorderAny<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
-				   ifelse((!is.na(SRAnorexiaNervosa) & SRAnorexiaNervosa == 1) | 
-			         	  (!is.na(SRBulimiaNervosa) & SRBulimiaNervosa == 1) |
-			         	  (!is.na(SRBingeEating) & SRBingeEating == 1), 1, 0)))
+Full_Data_MHQ2$MHQ1.SREatingDisorderAny<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
+				   ifelse((!is.na(MHQ1.SRAnorexiaNervosa) & MHQ1.SRAnorexiaNervosa == 1) | 
+			         	  (!is.na(MHQ1.SRBulimiaNervosa) & MHQ1.SRBulimiaNervosa == 1) |
+			         	  (!is.na(MHQ1.SRBingeEating) & MHQ1.SRBingeEating == 1), 1, 0)))
 
-Full_Data_MHQ2$SRAgoraphobia<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRAgoraphobia<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 			     ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 17) |
 		                    (!is.na(`20544-0.2`) & `20544-0.2` == 17) |
 		                    (!is.na(`20544-0.3`) & `20544-0.3` == 17) |
@@ -1139,15 +3154,15 @@ Full_Data_MHQ2$SRAgoraphobia<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA
 		                    (!is.na(`20544-0.15`) & `20544-0.15` == 17) |
 		                    (!is.na(`20544-0.16`) & `20544-0.16` == 17), 1, 0)))
 
-Full_Data_MHQ2$SRAnxietyAny<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
-			    ifelse((!is.na(SRSocPhobia) & SRSocPhobia == 1) | 
-			           (!is.na(SRGADandOthers) & SRGADandOthers == 1) |
-			           (!is.na(SRPanicAttacks) & SRPanicAttacks == 1) |
-			           (!is.na(SRAgoraphobia) & SRAgoraphobia == 1) |
-			           (!is.na(SROtherPhobia) & SROtherPhobia == 1) |
-			           (!is.na(SROCD) & SROCD == 1), 1, 0)))
+Full_Data_MHQ2$MHQ1.SRAnxietyAny<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
+			    ifelse((!is.na(MHQ1.SRSocPhobia) & MHQ1.SRSocPhobia == 1) | 
+			           (!is.na(MHQ1.SRGADandOthers) & MHQ1.SRGADandOthers == 1) |
+			           (!is.na(MHQ1.SRPanicAttacks) & MHQ1.SRPanicAttacks == 1) |
+			           (!is.na(MHQ1.SRAgoraphobia) & MHQ1.SRAgoraphobia == 1) |
+			           (!is.na(MHQ1.SROtherPhobia) & MHQ1.SROtherPhobia == 1) |
+			           (!is.na(MHQ1.SROCD) & MHQ1.SROCD == 1), 1, 0)))
 
-Full_Data_MHQ2$SRADHD<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
+Full_Data_MHQ2$MHQ1.SRADHD<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA, 
 		      ifelse((!is.na(`20544-0.1`) & `20544-0.1` == 18) |
 		             (!is.na(`20544-0.2`) & `20544-0.2` == 18) |
 		             (!is.na(`20544-0.3`) & `20544-0.3` == 18) |
@@ -1170,7 +3185,7 @@ Full_Data_MHQ2$SRADHD<-with(Full_Data_MHQ2, ifelse(is.na(`20499-0.0`), NA,
 
 InterviewDepression<-apply(Full_Data_MHQ2[,grep("`20002.0", colnames(Full_Data_MHQ2))], 1, function(row) "1286" %in% row)
 
-Full_Data_MHQ2$InterviewDepression[c(InterviewDepression)]<-1
+Full_Data_MHQ2$MHQ1.InterviewDepression[c(InterviewDepression)]<-1
 
 ####HES Inpatient Diagnoses######
 
@@ -1185,7 +3200,7 @@ for(indiv in 1:dim(Full_Data_MHQ2)[1]){
     HESMood_Combined[indiv]<-ifelse(sum(HESMood[(((indiv-1)*length(ICDFields))+1):(indiv*length(ICDFields))]) == 0, 0, 1)
 }
 
-Full_Data_MHQ2$HESMood[c(HESMood_Combined==1)]<-1
+Full_Data_MHQ2$MHQ1.HESMood[c(HESMood_Combined==1)]<-1
 
 #####Drug-derived Diagnoses######
 
@@ -1205,37 +3220,37 @@ for(indiv in 1:dim(Full_Data_MHQ2)[1]){
     DrugDepression_Combined[indiv]<-ifelse(sum(DrugDepression[(((indiv-1)*length(antidepcodes))+1):(indiv*length(antidepcodes))]) == 0, 0, 1)
 }
 
-Full_Data_MHQ2$DrugDepression[DrugDepression_Combined==1]<-1
+Full_Data_MHQ2$MHQ1.DrugDepression[DrugDepression_Combined==1]<-1
 
 ###Smith Depression Diagnosis 2013
 
-Full_Data_MHQ2$SmithDepression<-with(Full_Data_MHQ2, ifelse(is.na(`20126-0.0`), NA,
+Full_Data_MHQ2$MHQ1.SmithDepression<-with(Full_Data_MHQ2, ifelse(is.na(`20126-0.0`), NA,
 			       ifelse(!is.na(`20126-0.0`) & `20126-0.0` > 2, 1, 0)))
 
 #####Depression######
 
 #####Recent depression: PHQ-9######
 
-Full_Data_MHQ2$PHQ9.No.Info<-with(Full_Data_MHQ2,ifelse((is.na(`20514-0.0`) | `20514-0.0` < 0) &
+Full_Data_MHQ2$MHQ1.PHQ9.No.Info<-with(Full_Data_MHQ2,ifelse((is.na(`20514-0.0`) | `20514-0.0` < 0) &
                                   (is.na(`20510-0.0`) | `20510-0.0` < 0),1,0))
 
-Full_Data_MHQ2$PHQ9.Screen<-with(Full_Data_MHQ2,ifelse(((!is.na(`20514-0.0`) & `20514-0.0` >= 2) |
+Full_Data_MHQ2$MHQ1.PHQ9.Screen<-with(Full_Data_MHQ2,ifelse(((!is.na(`20514-0.0`) & `20514-0.0` >= 2) |
 				  (!is.na(`20510-0.0`) & `20510-0.0` >= 2)) &
 				 (!is.na(PHQ9.No.Info) & PHQ9.No.Info == 0),1,0))
-Full_Data_MHQ2$PHQ9.Items<-0
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-0
 
-Full_Data_MHQ2$PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20514-0.0`) & `20514-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20507-0.0`) & `20507-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20510-0.0`) & `20510-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20508-0.0`) & `20508-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20517-0.0`) & `20517-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20518-0.0`) & `20518-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20519-0.0`) & `20519-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20511-0.0`) & `20511-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20513-0.0`) & `20513-0.0` >= 2, PHQ9.Items + 1, PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20514-0.0`) & `20514-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20507-0.0`) & `20507-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20510-0.0`) & `20510-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20508-0.0`) & `20508-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20517-0.0`) & `20517-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20518-0.0`) & `20518-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20519-0.0`) & `20519-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20511-0.0`) & `20511-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20513-0.0`) & `20513-0.0` >= 2, PHQ9.Items + 1, PHQ9.Items))
 
 
-Full_Data_MHQ2$PHQ9.Severity<-with(Full_Data_MHQ2, ifelse(`20514-0.0` < 0 | is.na(`20514-0.0`), 0, as.numeric(`20514-0.0`)-1) +
+Full_Data_MHQ2$MHQ1.PHQ9.Severity<-with(Full_Data_MHQ2, ifelse(`20514-0.0` < 0 | is.na(`20514-0.0`), 0, as.numeric(`20514-0.0`)-1) +
 			     ifelse(`20507-0.0` < 0 | is.na(`20507-0.0`), 0, as.numeric(`20507-0.0`)-1) +
 			     ifelse(`20510-0.0` < 0 | is.na(`20510-0.0`), 0, as.numeric(`20510-0.0`)-1) +
 			     ifelse(`20508-0.0` < 0 | is.na(`20508-0.0`), 0, as.numeric(`20508-0.0`)-1) +
@@ -1247,27 +3262,27 @@ Full_Data_MHQ2$PHQ9.Severity<-with(Full_Data_MHQ2, ifelse(`20514-0.0` < 0 | is.n
 
 #####Lifetime depression:  CIDI-MDD######
 
-Full_Data_MHQ2$CIDI.MDD.No.Info<-with(Full_Data_MHQ2,ifelse(((is.na(`20446-0.0`) | `20446-0.0` < 0) &
+Full_Data_MHQ2$MHQ1.CIDI.MDD.No.Info<-with(Full_Data_MHQ2,ifelse(((is.na(`20446-0.0`) | `20446-0.0` < 0) &
 				       (is.na(`20441-0.0`) | `20441-0.0` < 0 )), 1, 0))
 
-Full_Data_MHQ2$CIDI.MDD.Screen<-with(Full_Data_MHQ2,ifelse(((!is.na(`20446-0.0`) & `20446-0.0` == 1) |
+Full_Data_MHQ2$MHQ1.CIDI.MDD.Screen<-with(Full_Data_MHQ2,ifelse(((!is.na(`20446-0.0`) & `20446-0.0` == 1) |
 			              (!is.na(`20441-0.0`) & `20441-0.0` == 1)) &
 				     (!is.na(`20436-0.0`) & `20436-0.0` > 2) &
 				     (!is.na(`20439-0.0`) & `20439-0.0` > 1) &
 				     (!is.na(`20440-0.0`) & `20440-0.0` > 1), 1, 0))
 
-Full_Data_MHQ2$CIDI.MDD.Response<-0
+Full_Data_MHQ2$MHQ1.CIDI.MDD.Response<-0
 
-Full_Data_MHQ2$CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20446-0.0`) & `20446-0.0` > 0, CIDI.MDD.Response + 1, CIDI.MDD.Response))
-Full_Data_MHQ2$CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20441-0.0`) & `20441-0.0` > 0, CIDI.MDD.Response + 1, CIDI.MDD.Response))
-Full_Data_MHQ2$CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20449-0.0`) & `20449-0.0` > 0, CIDI.MDD.Response + 1, CIDI.MDD.Response))
-Full_Data_MHQ2$CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20536-0.0`) & `20536-0.0` > 0, CIDI.MDD.Response + 1, CIDI.MDD.Response))
-Full_Data_MHQ2$CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20532-0.0`) & `20532-0.0` > 0, CIDI.MDD.Response + 1, CIDI.MDD.Response))
-Full_Data_MHQ2$CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20435-0.0`) & `20435-0.0` > 0, CIDI.MDD.Response + 1, CIDI.MDD.Response))
-Full_Data_MHQ2$CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20450-0.0`) & `20450-0.0` > 0, CIDI.MDD.Response + 1, CIDI.MDD.Response))
-Full_Data_MHQ2$CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20437-0.0`) & `20437-0.0` > 0, CIDI.MDD.Response + 1, CIDI.MDD.Response))
+Full_Data_MHQ2$MHQ1.CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20446-0.0`) & `20446-0.0` > 0, MHQ1.CIDI.MDD.Response + 1, MHQ1.CIDI.MDD.Response))
+Full_Data_MHQ2$MHQ1.CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20441-0.0`) & `20441-0.0` > 0, MHQ1.CIDI.MDD.Response + 1, MHQ1.CIDI.MDD.Response))
+Full_Data_MHQ2$MHQ1.CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20449-0.0`) & `20449-0.0` > 0, MHQ1.CIDI.MDD.Response + 1, MHQ1.CIDI.MDD.Response))
+Full_Data_MHQ2$MHQ1.CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20536-0.0`) & `20536-0.0` > 0, MHQ1.CIDI.MDD.Response + 1, MHQ1.CIDI.MDD.Response))
+Full_Data_MHQ2$MHQ1.CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20532-0.0`) & `20532-0.0` > 0, MHQ1.CIDI.MDD.Response + 1, MHQ1.CIDI.MDD.Response))
+Full_Data_MHQ2$MHQ1.CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20435-0.0`) & `20435-0.0` > 0, MHQ1.CIDI.MDD.Response + 1, MHQ1.CIDI.MDD.Response))
+Full_Data_MHQ2$MHQ1.CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20450-0.0`) & `20450-0.0` > 0, MHQ1.CIDI.MDD.Response + 1, MHQ1.CIDI.MDD.Response))
+Full_Data_MHQ2$MHQ1.CIDI.MDD.Response<-with(Full_Data_MHQ2, ifelse(!is.na(`20437-0.0`) & `20437-0.0` > 0, MHQ1.CIDI.MDD.Response + 1, MHQ1.CIDI.MDD.Response))
 
-Full_Data_MHQ2$CIDI.MDD.Severity<-with(Full_Data_MHQ2, ifelse(as.numeric(`20446-0.0`) < 0 | is.na(`20446-0.0`), 0, as.numeric(`20446-0.0`)) +
+Full_Data_MHQ2$MHQ1.CIDI.MDD.Severity<-with(Full_Data_MHQ2, ifelse(as.numeric(`20446-0.0`) < 0 | is.na(`20446-0.0`), 0, as.numeric(`20446-0.0`)) +
 				 ifelse(as.numeric(`20441-0.0`) < 0 | is.na(`20441-0.0`), 0, as.numeric(`20441-0.0`)) +
 				 ifelse(as.numeric(`20449-0.0`) < 0 | is.na(`20449-0.0`), 0, as.numeric(`20449-0.0`)) +
 				 ifelse(as.numeric(`20536-0.0`) < 1 | is.na(`20536-0.0`), 0, 1) +
@@ -1280,116 +3295,116 @@ Full_Data_MHQ2$CIDI.MDD.Severity<-with(Full_Data_MHQ2, ifelse(as.numeric(`20446-
 
 ### Depressed ever is equivalent to screening for caseness on the CIDI
 
-Full_Data_MHQ2$Depressed.Ever<-with(Full_Data_MHQ2, ifelse(CIDI.MDD.No.Info == 1, NA,
-			      ifelse(CIDI.MDD.Screen == 1 & (!is.na(CIDI.MDD.Response) & CIDI.MDD.Response > 4), 1, 
-			      ifelse(CIDI.MDD.Screen == 0 & 
-			             (!is.na(PHQ9.Severity) & PHQ9.Severity < 5) & 
-				     (is.na(SRDepression) | (!is.na(SRDepression) & SRDepression == 0)) &
-				     (is.na(InterviewDepression) | (!is.na(InterviewDepression) & InterviewDepression == 0)), 0, NA))))
+Full_Data_MHQ2$MHQ1.Depressed.Ever<-with(Full_Data_MHQ2, ifelse(MHQ1.CIDI.MDD.No.Info == 1, NA,
+			      ifelse(MHQ1.CIDI.MDD.Screen == 1 & (!is.na(MHQ1.CIDI.MDD.Response) & MHQ1.CIDI.MDD.Response > 4), 1, 
+			      ifelse(MHQ1.CIDI.MDD.Screen == 0 & 
+			             (!is.na(MHQ1.PHQ9.Severity) & MHQ1.PHQ9.Severity < 5) & 
+				     (is.na(MHQ1.SRDepression) | (!is.na(MHQ1.SRDepression) & MHQ1.SRDepression == 0)) &
+				     (is.na(MHQ1.InterviewDepression) | (!is.na(MHQ1.InterviewDepression) & MHQ1.InterviewDepression == 0)), 0, NA))))
 
 ### Depressed ever severe has all non-core symptoms and "a lot" of impairment on the CIDI
 
-Full_Data_MHQ2$Depressed.Ever.Severe<-with(Full_Data_MHQ2, ifelse(is.na(Depressed.Ever), NA,
-				     ifelse(Depressed.Ever == 0, 0,
-				     ifelse(Depressed.Ever == 1 &
-				           (!is.na(CIDI.MDD.Severity) & CIDI.MDD.Severity == 8) &
+Full_Data_MHQ2$MHQ1.Depressed.Ever.Severe<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.Depressed.Ever), NA,
+				     ifelse(MHQ1.Depressed.Ever == 0, 0,
+				     ifelse(MHQ1.Depressed.Ever == 1 &
+				           (!is.na(MHQ1.CIDI.MDD.Severity) & MHQ1.CIDI.MDD.Severity == 8) &
 					   (!is.na(`20440-0.0`) & `20440-0.0` == 3), 1, 0))))
 
 ### Depression current is PHQ9 and CIDI case
 
-Full_Data_MHQ2$Depressed.Current<-with(Full_Data_MHQ2, ifelse(is.na(Depressed.Ever) | PHQ9.No.Info == 1, NA,
-				 ifelse(Depressed.Ever == 0 | (!is.na(PHQ9.Severity) & PHQ9.Severity < 5), 0,
-				 ifelse(Depressed.Ever == 1 & (!is.na(PHQ9.Screen) & PHQ9.Screen == 1) &
-				        (!is.na(PHQ9.Items) & PHQ9.Items > 4), 1, 0))))
+Full_Data_MHQ2$MHQ1.Depressed.Current<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.Depressed.Ever) | MHQ1.PHQ9.No.Info == 1, NA,
+				 ifelse(MHQ1.Depressed.Ever == 0 | (!is.na(MHQ1.PHQ9.Severity) & MHQ1.PHQ9.Severity < 5), 0,
+				 ifelse(MHQ1.Depressed.Ever == 1 & (!is.na(MHQ1.PHQ9.Screen) & MHQ1.PHQ9.Screen == 1) &
+				        (!is.na(MHQ1.PHQ9.Items) & MHQ1.PHQ9.Items > 4), 1, 0))))
 
 ### Depression current severe includes severity of PHQ9
 
-Full_Data_MHQ2$Depressed.Current.Severe<-with(Full_Data_MHQ2, ifelse(is.na(Depressed.Ever) | PHQ9.No.Info == 1, NA,
-					ifelse(Depressed.Ever == 0 | (!is.na(PHQ9.Severity) & PHQ9.Severity < 5), 0,
-					ifelse(Depressed.Ever == 1 & (!is.na(PHQ9.Screen) & PHQ9.Screen == 1) &
-					       (!is.na(PHQ9.Items) & PHQ9.Items > 4) & (!is.na(PHQ9.Severity) & PHQ9.Severity > 15), 1, 0))))
+Full_Data_MHQ2$MHQ1.Depressed.Current.Severe<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.Depressed.Ever) | MHQ1.PHQ9.No.Info == 1, NA,
+					ifelse(MHQ1.Depressed.Ever == 0 | (!is.na(MHQ1.PHQ9.Severity) & MHQ1.PHQ9.Severity < 5), 0,
+					ifelse(MHQ1.Depressed.Ever == 1 & (!is.na(MHQ1.PHQ9.Screen) & MHQ1.PHQ9.Screen == 1) &
+					       (!is.na(MHQ1.PHQ9.Items) & MHQ1.PHQ9.Items > 4) & (!is.na(MHQ1.PHQ9.Severity) & MHQ1.PHQ9.Severity > 15), 1, 0))))
 
 ### Subthreshold Depression
 
-Full_Data_MHQ2$Subthreshold.Depression<-with(Full_Data_MHQ2, ifelse((is.na(Depressed.Ever) | Depressed.Ever == 0) & 
-				              (((!is.na(SRDepression) & SRDepression == 1) | (!is.na(InterviewDepression) & InterviewDepression == 1)) |
-					       CIDI.MDD.Screen == 1 |
-					       (!is.na(PHQ9.Severity) & PHQ9.Severity > 5)), 1,
-				       ifelse(!is.na(Depressed.Ever) & Depressed.Ever == 1, 0, NA)))
+Full_Data_MHQ2$MHQ1.Subthreshold.Depression<-with(Full_Data_MHQ2, ifelse((is.na(MHQ1.Depressed.Ever) | MHQ1.Depressed.Ever == 0) & 
+				              (((!is.na(MHQ1.SRDepression) & MHQ1.SRDepression == 1) | (!is.na(MHQ1.InterviewDepression) & MHQ1.InterviewDepression == 1)) |
+					       MHQ1.CIDI.MDD.Screen == 1 |
+					       (!is.na(MHQ1.PHQ9.Severity) & MHQ1.PHQ9.Severity > 5)), 1,
+				       ifelse(!is.na(MHQ1.Depressed.Ever) & MHQ1.Depressed.Ever == 1, 0, NA)))
 
 ### Recurrent depression - if bipolar disorder I, excluded from depression diagnosis below
 
-Full_Data_MHQ2$Recurrent.Depression<-with(Full_Data_MHQ2, ifelse(is.na(Depressed.Ever) | is.na(`20442-0.0`), NA,
-				    ifelse(Depressed.Ever == 1 &
+Full_Data_MHQ2$MHQ1.Recurrent.Depression<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.Depressed.Ever) | is.na(`20442-0.0`), NA,
+				    ifelse(MHQ1.Depressed.Ever == 1 &
 				           !is.na(`20442-0.0`) & (`20442-0.0` > 1 | `20442-0.0` == -999), 1, 0)))
 
-Full_Data_MHQ2$Single.Depression<-with(Full_Data_MHQ2, ifelse(is.na(Depressed.Ever) | is.na(`20442-0.0`), NA,
-				 ifelse(Depressed.Ever == 1 & Recurrent.Depression == 0, 1, 0)))
+Full_Data_MHQ2$MHQ1.Single.Depression<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.Depressed.Ever) | is.na(`20442-0.0`), NA,
+				 ifelse(MHQ1.Depressed.Ever == 1 & MHQ1.Recurrent.Depression == 0, 1, 0)))
 
 #####BPAD#####
 
 ### Bipolar Diagnosis as from Smith et al (2013)
 
-Full_Data_MHQ2$SmithBipolar<-with(Full_Data_MHQ2, ifelse(is.na(`20126-0.0`), NA,
+Full_Data_MHQ2$MHQ1.SmithBipolar<-with(Full_Data_MHQ2, ifelse(is.na(`20126-0.0`), NA,
 			    ifelse(!is.na(`20126-0.0`) & `20126-0.0` < 3 & `20126-0.0` > 0, 1, 0)))
 
-Full_Data_MHQ2$SmithMood<-with(Full_Data_MHQ2, ifelse(is.na(`20126-0.0`), NA,
+Full_Data_MHQ2$MHQ1.SmithMood<-with(Full_Data_MHQ2, ifelse(is.na(`20126-0.0`), NA,
 		       	 ifelse(!is.na(`20126-0.0`) & `20126-0.0` > 0, 1, 0)))
 
 ### Possible Type I / Type II
 
-Full_Data_MHQ2$Total.Manifestations<-0
+Full_Data_MHQ2$MHQ1.Total.Manifestations<-0
 
-Full_Data_MHQ2$Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.1`) & `20548-0.1` > 0, Total.Manifestations + 1, Total.Manifestations))
-Full_Data_MHQ2$Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.2`) & `20548-0.2` > 0, Total.Manifestations + 1, Total.Manifestations))
-Full_Data_MHQ2$Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.3`) & `20548-0.3` > 0, Total.Manifestations + 1, Total.Manifestations))
-Full_Data_MHQ2$Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.4`) & `20548-0.4` > 0, Total.Manifestations + 1, Total.Manifestations))
-Full_Data_MHQ2$Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.5`) & `20548-0.5` > 0, Total.Manifestations + 1, Total.Manifestations))
-Full_Data_MHQ2$Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.6`) & `20548-0.6` > 0, Total.Manifestations + 1, Total.Manifestations))
-Full_Data_MHQ2$Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.7`) & `20548-0.7` > 0, Total.Manifestations + 1, Total.Manifestations))
-Full_Data_MHQ2$Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.8`) & `20548-0.8` > 0, Total.Manifestations + 1, Total.Manifestations))
+Full_Data_MHQ2$MHQ1.Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.1`) & `20548-0.1` > 0, MHQ1.Total.Manifestations + 1, MHQ1.Total.Manifestations))
+Full_Data_MHQ2$MHQ1.Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.2`) & `20548-0.2` > 0, MHQ1.Total.Manifestations + 1, MHQ1.Total.Manifestations))
+Full_Data_MHQ2$MHQ1.Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.3`) & `20548-0.3` > 0, MHQ1.Total.Manifestations + 1, MHQ1.Total.Manifestations))
+Full_Data_MHQ2$MHQ1.Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.4`) & `20548-0.4` > 0, MHQ1.Total.Manifestations + 1, MHQ1.Total.Manifestations))
+Full_Data_MHQ2$MHQ1.Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.5`) & `20548-0.5` > 0, MHQ1.Total.Manifestations + 1, MHQ1.Total.Manifestations))
+Full_Data_MHQ2$MHQ1.Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.6`) & `20548-0.6` > 0, MHQ1.Total.Manifestations + 1, MHQ1.Total.Manifestations))
+Full_Data_MHQ2$MHQ1.Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.7`) & `20548-0.7` > 0, MHQ1.Total.Manifestations + 1, MHQ1.Total.Manifestations))
+Full_Data_MHQ2$MHQ1.Total.Manifestations<-with(Full_Data_MHQ2, ifelse(!is.na(`20548-0.8`) & `20548-0.8` > 0, MHQ1.Total.Manifestations + 1, MHQ1.Total.Manifestations))
 
 ### Wider defined bipolar: mania plus three manifestations, or irritability plus four manifestations, for a week or more
 
-Full_Data_MHQ2$Wider.Bipolar.Definition<-with(Full_Data_MHQ2, ifelse(((is.na(`20501-0.0`) | `20501-0.0` < 0) &
+Full_Data_MHQ2$MHQ1.Wider.Bipolar.Definition<-with(Full_Data_MHQ2, ifelse(((is.na(`20501-0.0`) | `20501-0.0` < 0) &
 				 	        (is.na(`20502-0.0`) | `20502-0.0` < 0)), NA,
 				        ifelse(((`20501-0.0` == 1 &
-				       	        Full_Data_MHQ2$Total.Manifestations > 2) |
+				       	        Full_Data_MHQ2$MHQ1.Total.Manifestations > 2) |
 				               (`20502-0.0` == 1 &
-				                Full_Data_MHQ2$Total.Manifestations > 3)) &
+				                Full_Data_MHQ2$MHQ1.Total.Manifestations > 3)) &
 				       	      !is.na(`20492-0.0`) & `20492-0.0` == 3, 1, 
-				        ifelse((!is.na(SRManiaBIP) & SRManiaBIP == 0) & (is.na(SmithBipolar) | (!is.na(SmithBipolar) & SmithBipolar == 0)), 0, NA))))
+				        ifelse((!is.na(MHQ1.SRManiaBIP) & MHQ1.SRManiaBIP == 0) & (is.na(MHQ1.SmithBipolar) | (!is.na(MHQ1.SmithBipolar) & MHQ1.SmithBipolar == 0)), 0, NA))))
 
 ### Type I
 
-Full_Data_MHQ2$BPDI<-with(Full_Data_MHQ2, ifelse(is.na(Wider.Bipolar.Definition), NA,
-		    ifelse(Wider.Bipolar.Definition == 1 &
+Full_Data_MHQ2$MHQ1.BPDI<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.Wider.Bipolar.Definition), NA,
+		    ifelse(MHQ1.Wider.Bipolar.Definition == 1 &
 			  (!is.na(`20493-0.0`) & `20493-0.0` == 1) &
-			  (!is.na(Depressed.Ever) & Depressed.Ever == 1), 1, 0)))
+			  (!is.na(MHQ1.Depressed.Ever) & MHQ1.Depressed.Ever == 1), 1, 0)))
 
 ### If BIP Type 1, set depression diagnoses to NA
 
-Full_Data_MHQ2$Recurrent.Depression.With.BPD<-Full_Data_MHQ2$Recurrent.Depression
+Full_Data_MHQ2$MHQ1.Recurrent.Depression.With.BPD<-Full_Data_MHQ2$MHQ1.Recurrent.Depression
 
-Full_Data_MHQ2$Recurrent.Depression<-with(Full_Data_MHQ2, ifelse(BPDI == 1, NA, Recurrent.Depression))
+Full_Data_MHQ2$MHQ1.Recurrent.Depression<-with(Full_Data_MHQ2, ifelse(MHQ1.BPDI == 1, NA, MHQ1.Recurrent.Depression))
 
 
-Full_Data_MHQ2$Single.Depression.With.BPD<-Full_Data_MHQ2$Single.Depression
+Full_Data_MHQ2$MHQ1.Single.Depression.With.BPD<-Full_Data_MHQ2$MHQ1.Single.Depression
 
-Full_Data_MHQ2$Single.Depression<-with(Full_Data_MHQ2, ifelse(BPDI == 1, NA, Single.Depression))
+Full_Data_MHQ2$MHQ1.Single.Depression<-with(Full_Data_MHQ2, ifelse(MHQ1.BPDI == 1, NA, MHQ1.Single.Depression))
 
 ### Type II
 
-Full_Data_MHQ2$BPDII<-with(Full_Data_MHQ2, ifelse(is.na(Wider.Bipolar.Definition), NA,
-		     ifelse(Wider.Bipolar.Definition == 1 &
+Full_Data_MHQ2$MHQ1.BPDII<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.Wider.Bipolar.Definition), NA,
+		     ifelse(MHQ1.Wider.Bipolar.Definition == 1 &
 			   (!is.na(`20493-0.0`) & `20493-0.0` == 0) &
-			   (!is.na(Depressed.Ever) & Depressed.Ever == 1), 1, 0)))
+			   (!is.na(MHQ1.Depressed.Ever) & MHQ1.Depressed.Ever == 1), 1, 0)))
 
 #####Anxiety#####
 
 ###GAD-CIDI - Count of somatic symptoms on CIDI 
 
-Full_Data_MHQ2$GAD.CIDI.Somatic<-with(Full_Data_MHQ2, (!is.na(`20426-0.0`) & `20426-0.0` > 0) +
+Full_Data_MHQ2$MHQ1.GAD.CIDI.Somatic<-with(Full_Data_MHQ2, (!is.na(`20426-0.0`) & `20426-0.0` > 0) +
 			       	(!is.na(`20423-0.0`) & `20423-0.0` > 0) +
 			       	(!is.na(`20429-0.0`) & `20429-0.0` > 0) +
 			       	(!is.na(`20419-0.0`) & `20419-0.0` > 0) +
@@ -1399,7 +3414,7 @@ Full_Data_MHQ2$GAD.CIDI.Somatic<-with(Full_Data_MHQ2, (!is.na(`20426-0.0`) & `20
 
 ###GAD-7 - Score
 
-Full_Data_MHQ2$GAD7.Severity<-with(Full_Data_MHQ2, ifelse(`20506-0.0` < 0 | is.na(`20506-0.0`), 0, as.numeric(`20506-0.0`)-1) +
+Full_Data_MHQ2$MHQ1.GAD7.Severity<-with(Full_Data_MHQ2, ifelse(`20506-0.0` < 0 | is.na(`20506-0.0`), 0, as.numeric(`20506-0.0`)-1) +
 			     ifelse(`20509-0.0` < 0 | is.na(`20509-0.0`), 0, as.numeric(`20509-0.0`)-1) +
 			     ifelse(`20520-0.0` < 0 | is.na(`20520-0.0`), 0, as.numeric(`20520-0.0`)-1) +
 			     ifelse(`20515-0.0` < 0 | is.na(`20515-0.0`), 0, as.numeric(`20515-0.0`)-1) +
@@ -1409,19 +3424,19 @@ Full_Data_MHQ2$GAD7.Severity<-with(Full_Data_MHQ2, ifelse(`20506-0.0` < 0 | is.n
 
 ## Set all missing to NA
 
-Full_Data_MHQ2$GAD7.Severity<-with(Full_Data_MHQ2, ifelse((`20506-0.0` < 0 | is.na(`20506-0.0`)) &
+Full_Data_MHQ2$MHQ1.GAD7.Severity<-with(Full_Data_MHQ2, ifelse((`20506-0.0` < 0 | is.na(`20506-0.0`)) &
                                     (`20509-0.0` < 0 | is.na(`20509-0.0`)) &
                                     (`20520-0.0` < 0 | is.na(`20520-0.0`)) &
                                     (`20515-0.0` < 0 | is.na(`20515-0.0`)) &
                                     (`20516-0.0` < 0 | is.na(`20516-0.0`)) &
                                     (`20505-0.0` < 0 | is.na(`20505-0.0`)) &
-                                    (`20512-0.0` < 0 | is.na(`20512-0.0`)), NA, GAD7.Severity))
+                                    (`20512-0.0` < 0 | is.na(`20512-0.0`)), NA, MHQ1.GAD7.Severity))
 
 ###Generalised Anxiety Disorder Ever
 
-Full_Data_MHQ2$GAD.Ever<-with(Full_Data_MHQ2, ifelse((is.na(`20421-0.0`) | `20421-0.0` < 0), NA,
+Full_Data_MHQ2$MHQ1.GAD.Ever<-with(Full_Data_MHQ2, ifelse((is.na(`20421-0.0`) | `20421-0.0` < 0), NA,
 			ifelse((!is.na(`20421-0.0`) & `20421-0.0`  == 0) & 
-				GAD7.Severity < 5, 0,
+				MHQ1.GAD7.Severity < 5, 0,
 			ifelse((!is.na(`20421-0.0`) & `20421-0.0`  == 1) &
 			       (!is.na(`20420-0.0`) & (`20420-0.0` >= 6 | `20420-0.0` == -999)) &
 			       (!is.na(`20538-0.0`) & `20538-0.0` == 1) &
@@ -1432,33 +3447,33 @@ Full_Data_MHQ2$GAD.Ever<-with(Full_Data_MHQ2, ifelse((is.na(`20421-0.0`) | `2042
 			      ((!is.na(`20541-0.0`) & `20541-0.0` == 1) |
 			       (!is.na(`20539-0.0`) & `20539-0.0` == 3) |
 			       (!is.na(`20537-0.0`) & `20537-0.0` == 3)) &
-			       GAD.CIDI.Somatic >= 3 &
+			       MHQ1.GAD.CIDI.Somatic >= 3 &
 			       (!is.na(`20418-0.0`) & `20418-0.0` >= 2), 1, NA))))
 
 ###Generalised Anxiety Disorder Current
 
-Full_Data_MHQ2$GAD.Current<-with(Full_Data_MHQ2, ifelse(is.na(GAD.Ever) | is.na(GAD7.Severity), NA,
-			   ifelse(GAD.Ever == 1 & GAD7.Severity > 9, 1, 0)))
+Full_Data_MHQ2$MHQ1.GAD.Current<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.GAD.Ever) | is.na(MHQ1.GAD7.Severity), NA,
+			   ifelse(MHQ1.GAD.Ever == 1 & MHQ1.GAD7.Severity > 9, 1, 0)))
 
 #####Alcohol#####
 
 ### AUDIT Score
 
-Full_Data_MHQ2$AUDIT.Score<-0
-Full_Data_MHQ2$AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20414-0.0`) | `20414-0.0` < 0, AUDIT.Score, AUDIT.Score + as.numeric(`20414-0.0`)))
-Full_Data_MHQ2$AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20403-0.0`) | `20403-0.0` < 0, AUDIT.Score, AUDIT.Score + as.numeric(`20403-0.0`) - 1))
-Full_Data_MHQ2$AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20416-0.0`) | `20416-0.0` < 0, AUDIT.Score, AUDIT.Score + as.numeric(`20416-0.0`) - 1))
-Full_Data_MHQ2$AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20409-0.0`) | `20409-0.0` < 0, AUDIT.Score, AUDIT.Score + as.numeric(`20409-0.0`) - 1))
-Full_Data_MHQ2$AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20408-0.0`) | `20408-0.0` < 0, AUDIT.Score, AUDIT.Score + as.numeric(`20408-0.0`) - 1))
-Full_Data_MHQ2$AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20411-0.0`) | `20411-0.0` < 0, AUDIT.Score, AUDIT.Score + (2*as.numeric(`20411-0.0`))))
-Full_Data_MHQ2$AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20405-0.0`) | `20405-0.0` < 0, AUDIT.Score, AUDIT.Score + (2*as.numeric(`20405-0.0`))))
-Full_Data_MHQ2$AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20413-0.0`) | `20413-0.0` < 0, AUDIT.Score, AUDIT.Score + as.numeric(`20413-0.0`) - 1))
-Full_Data_MHQ2$AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20407-0.0`) | `20407-0.0` < 0, AUDIT.Score, AUDIT.Score + as.numeric(`20407-0.0`) - 1))
-Full_Data_MHQ2$AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20412-0.0`) | `20412-0.0` < 0, AUDIT.Score, AUDIT.Score + as.numeric(`20412-0.0`) - 1))
+Full_Data_MHQ2$MHQ1.AUDIT.Score<-0
+Full_Data_MHQ2$MHQ1.AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20414-0.0`) | `20414-0.0` < 0, MHQ1.AUDIT.Score, MHQ1.AUDIT.Score + as.numeric(`20414-0.0`)))
+Full_Data_MHQ2$MHQ1.AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20403-0.0`) | `20403-0.0` < 0, MHQ1.AUDIT.Score, MHQ1.AUDIT.Score + as.numeric(`20403-0.0`) - 1))
+Full_Data_MHQ2$MHQ1.AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20416-0.0`) | `20416-0.0` < 0, MHQ1.AUDIT.Score, MHQ1.AUDIT.Score + as.numeric(`20416-0.0`) - 1))
+Full_Data_MHQ2$MHQ1.AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20409-0.0`) | `20409-0.0` < 0, MHQ1.AUDIT.Score, MHQ1.AUDIT.Score + as.numeric(`20409-0.0`) - 1))
+Full_Data_MHQ2$MHQ1.AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20408-0.0`) | `20408-0.0` < 0, MHQ1.AUDIT.Score, MHQ1.AUDIT.Score + as.numeric(`20408-0.0`) - 1))
+Full_Data_MHQ2$MHQ1.AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20411-0.0`) | `20411-0.0` < 0, MHQ1.AUDIT.Score, MHQ1.AUDIT.Score + (2*as.numeric(`20411-0.0`))))
+Full_Data_MHQ2$MHQ1.AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20405-0.0`) | `20405-0.0` < 0, MHQ1.AUDIT.Score, MHQ1.AUDIT.Score + (2*as.numeric(`20405-0.0`))))
+Full_Data_MHQ2$MHQ1.AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20413-0.0`) | `20413-0.0` < 0, MHQ1.AUDIT.Score, MHQ1.AUDIT.Score + as.numeric(`20413-0.0`) - 1))
+Full_Data_MHQ2$MHQ1.AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20407-0.0`) | `20407-0.0` < 0, MHQ1.AUDIT.Score, MHQ1.AUDIT.Score + as.numeric(`20407-0.0`) - 1))
+Full_Data_MHQ2$MHQ1.AUDIT.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20412-0.0`) | `20412-0.0` < 0, MHQ1.AUDIT.Score, MHQ1.AUDIT.Score + as.numeric(`20412-0.0`) - 1))
 
 ### Alcohol Use Disorder
 
-Full_Data_MHQ2$Alcohol.Use.Disorder<-with(Full_Data_MHQ2, ifelse(AUDIT.Score > 7, 1,
+Full_Data_MHQ2$MHQ1.Alcohol.Use.Disorder<-with(Full_Data_MHQ2, ifelse(MHQ1.AUDIT.Score > 7, 1,
 				    ifelse(!is.na(`20404-0.0`) & `20404-0.0` == 1, NA, 
 				    ifelse((!is.na(`20414-0.0`) & `20414-0.0` == 0) |  
 				    	   (!is.na(`20403-0.0`) & `20403-0.0` == 1 &
@@ -1469,40 +3484,40 @@ Full_Data_MHQ2$Alcohol.Use.Disorder<-with(Full_Data_MHQ2, ifelse(AUDIT.Score > 7
 
 #####Cannabis#####
 
-Full_Data_MHQ2$Cannabis.Ever<-with(Full_Data_MHQ2, ifelse(is.na(`20453-0.0`) | `20453-0.0` < 0, NA,
+Full_Data_MHQ2$MHQ1.Cannabis.Ever<-with(Full_Data_MHQ2, ifelse(is.na(`20453-0.0`) | `20453-0.0` < 0, NA,
 			     ifelse(!is.na(`20453-0.0`) & `20453-0.0` > 0, 1, 0)))
 
-Full_Data_MHQ2$Cannabis.Daily<-with(Full_Data_MHQ2, ifelse(is.na(`20454-0.0`), NA,
+Full_Data_MHQ2$MHQ1.Cannabis.Daily<-with(Full_Data_MHQ2, ifelse(is.na(`20454-0.0`), NA,
 			      ifelse(!is.na(`20454-0.0`) & `20454-0.0` == 4, 1, 0)))
 
 #####Addictions Screen#####
 
 ###Addiction Ever
 
-Full_Data_MHQ2$Addiction.Ever.SelfReport<-with(Full_Data_MHQ2, ifelse(is.na(`20401-0.0`) | `20401-0.0`  < 0, NA, `20401-0.0`))
+Full_Data_MHQ2$MHQ1.Addiction.Ever.SelfReport<-with(Full_Data_MHQ2, ifelse(is.na(`20401-0.0`) | `20401-0.0`  < 0, NA, `20401-0.0`))
 
-Full_Data_MHQ2$Addiction.Ever<-with(Full_Data_MHQ2, ifelse((is.na(`20401-0.0`) | `20401-0.0`  < 0) &
-			             (is.na(Cannabis.Daily) | Cannabis.Daily < 0), NA, 
+Full_Data_MHQ2$MHQ1.Addiction.Ever<-with(Full_Data_MHQ2, ifelse((is.na(`20401-0.0`) | `20401-0.0`  < 0) &
+			             (is.na(MHQ1.Cannabis.Daily) | MHQ1.Cannabis.Daily < 0), NA, 
 			      ifelse(!is.na(`20401-0.0`) & `20401-0.0` == 0 & 
-			             AUDIT.Score < 16 & 
-				     ((!is.na(Cannabis.Ever) & Cannabis.Ever == 0) | (!is.na(Cannabis.Daily) & Cannabis.Daily == 0)), 0, 
+			             MHQ1.AUDIT.Score < 16 & 
+				     ((!is.na(MHQ1.Cannabis.Ever) & MHQ1.Cannabis.Ever == 0) | (!is.na(MHQ1.Cannabis.Daily) & MHQ1.Cannabis.Daily == 0)), 0, 
 			      ifelse(!is.na(`20401-0.0`) & `20401-0.0` == 1, 1, NA))))
 
-Full_Data_MHQ2$Substance.Addiction.Ever<-with(Full_Data_MHQ2, ifelse((is.na(`20406-0.0`) | `20406-0.0` < 0) &  
+Full_Data_MHQ2$MHQ1.Substance.Addiction.Ever<-with(Full_Data_MHQ2, ifelse((is.na(`20406-0.0`) | `20406-0.0` < 0) &  
 				   	       (is.na(`20456-0.0`) | `20456-0.0` < 0) &
 				   	       (is.na(`20503-0.0`) | `20503-0.0` < 0), NA, 
 				        ifelse(`20406-0.0` == 1 | `20456-0.0` == 1 | `20503-0.0` == 1, 1, 0)))
 
-Full_Data_MHQ2$Alcohol.Dependence.Ever<-with(Full_Data_MHQ2, ifelse((is.na(`20404-0.0`) | `20404-0.0`  < 0), NA, `20404-0.0`))
+Full_Data_MHQ2$MHQ1.Alcohol.Dependence.Ever<-with(Full_Data_MHQ2, ifelse((is.na(`20404-0.0`) | `20404-0.0`  < 0), NA, `20404-0.0`))
 
 ###Addiction Current
 
-Full_Data_MHQ2$Addiction.Current<-with(Full_Data_MHQ2, ifelse(is.na(Addiction.Ever) |
+Full_Data_MHQ2$MHQ1.Addiction.Current<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.Addiction.Ever) |
 			                (((is.na(`20415-0.0`) | `20415-0.0` < 0)) &
 					 ((is.na(`20504-0.0`) | `20504-0.0` < 0)) &
 					 ((is.na(`20457-0.0`) | `20457-0.0` < 0)) &
 					 ((is.na(`20432-0.0`) | `20432-0.0` < 0))), NA,
-				 ifelse(Addiction.Ever == 1 &
+				 ifelse(MHQ1.Addiction.Ever == 1 &
 				       ((!is.na(`20415-0.0`) & `20415-0.0` == 1) |
 				        (!is.na(`20504-0.0`) & `20504-0.0` == 1) |
 					(!is.na(`20457-0.0`) & `20457-0.0` == 1) |
@@ -1512,33 +3527,33 @@ Full_Data_MHQ2$Addiction.Current<-with(Full_Data_MHQ2, ifelse(is.na(Addiction.Ev
 
 ###Unusual.Experience Ever Hallucinations
 
-Full_Data_MHQ2$Unusual.Experience.Ever.Hallucinations<-with(Full_Data_MHQ2, ifelse((is.na(`20471-0.0`) | `20471-0.0` < 0) &
+Full_Data_MHQ2$MHQ1.Unusual.Experience.Ever.Hallucinations<-with(Full_Data_MHQ2, ifelse((is.na(`20471-0.0`) | `20471-0.0` < 0) &
 					            	       (is.na(`20463-0.0`) | `20463-0.0` < 0), NA,
 					     		ifelse((!is.na(`20471-0.0`) & `20471-0.0` == 1) |
 					            	       (!is.na(`20463-0.0`) & `20463-0.0` == 1), 1, 0)))
 
 ###Unusual.Experience.Ever.Delusions
 
-Full_Data_MHQ2$Unusual.Experience.Ever.Delusions<-with(Full_Data_MHQ2, ifelse((is.na(`20474-0.0`) | `20474-0.0` < 0) &
+Full_Data_MHQ2$MHQ1.Unusual.Experience.Ever.Delusions<-with(Full_Data_MHQ2, ifelse((is.na(`20474-0.0`) | `20474-0.0` < 0) &
 					       	   	  (is.na(`20468-0.0`) | `20468-0.0` < 0), NA,
 						   ifelse((!is.na(`20474-0.0`) & `20474-0.0` == 1) |
 					       	   	  (!is.na(`20468-0.0`) & `20468-0.0` == 1), 1, 0)))
 
 ###Unusual.Experience.Ever
 
-Full_Data_MHQ2$Unusual.Experience.Ever<-with(Full_Data_MHQ2, ifelse((!is.na(Unusual.Experience.Ever.Hallucinations) & Unusual.Experience.Ever.Hallucinations == 1) | 
-					        (!is.na(Unusual.Experience.Ever.Delusions) & Unusual.Experience.Ever.Delusions == 1), 1, 
-					 ifelse(!is.na(SRPsychosisAny) & SRPsychosisAny == 0, 0, NA)))
+Full_Data_MHQ2$MHQ1.Unusual.Experience.Ever<-with(Full_Data_MHQ2, ifelse((!is.na(MHQ1.Unusual.Experience.Ever.Hallucinations) & MHQ1.Unusual.Experience.Ever.Hallucinations == 1) | 
+					        (!is.na(MHQ1.Unusual.Experience.Ever.Delusions) & MHQ1.Unusual.Experience.Ever.Delusions == 1), 1, 
+					 ifelse(!is.na(MHQ1.SRPsychosisAny) & MHQ1.SRPsychosisAny == 0, 0, NA)))
 ###Unusual.Experience.Recent
 
-Full_Data_MHQ2$Unusual.Experience.Recent<-with(Full_Data_MHQ2, ifelse((is.na(`20467-0.0`) | `20467-0.0` < 0), NA,
+Full_Data_MHQ2$MHQ1.Unusual.Experience.Recent<-with(Full_Data_MHQ2, ifelse((is.na(`20467-0.0`) | `20467-0.0` < 0), NA,
 					   ifelse(`20467-0.0` > 1, 1, 0)))
 
 #####Trauma#####
 
 ###Trauma Childhood
 
-Full_Data_MHQ2$Trauma.Childhood<-with(Full_Data_MHQ2, ifelse((is.na(`20488-0.0`) | `20488-0.0` < 0) |
+Full_Data_MHQ2$MHQ1.Trauma.Childhood<-with(Full_Data_MHQ2, ifelse((is.na(`20488-0.0`) | `20488-0.0` < 0) |
 				       (is.na(`20487-0.0`) | `20487-0.0` < 0) |
 				       (is.na(`20490-0.0`) | `20490-0.0` < 0) |
 				       (is.na(`20491-0.0`) | `20491-0.0` < 0) |
@@ -1551,7 +3566,7 @@ Full_Data_MHQ2$Trauma.Childhood<-with(Full_Data_MHQ2, ifelse((is.na(`20488-0.0`)
 
 ###Trauma Adult
 
-Full_Data_MHQ2$Trauma.Adult<-with(Full_Data_MHQ2, ifelse((is.na(`20523-0.0`) | `20523-0.0` < 0) |
+Full_Data_MHQ2$MHQ1.Trauma.Adult<-with(Full_Data_MHQ2, ifelse((is.na(`20523-0.0`) | `20523-0.0` < 0) |
 				   (is.na(`20521-0.0`) | `20521-0.0` < 0) |
 				   (is.na(`20524-0.0`) | `20524-0.0` < 0) |
 				   (is.na(`20522-0.0`) | `20522-0.0` < 0) |
@@ -1564,7 +3579,7 @@ Full_Data_MHQ2$Trauma.Adult<-with(Full_Data_MHQ2, ifelse((is.na(`20523-0.0`) | `
 
 ###Trauma Catastrophic
 
-Full_Data_MHQ2$Trauma.Catastrophic<-with(Full_Data_MHQ2, ifelse((is.na(`20527-0.0`) | `20527-0.0` < 0) &
+Full_Data_MHQ2$MHQ1.Trauma.Catastrophic<-with(Full_Data_MHQ2, ifelse((is.na(`20527-0.0`) | `20527-0.0` < 0) &
 				          (is.na(`20526-0.0`) | `20526-0.0` < 0) &
 					  (is.na(`20528-0.0`) | `20528-0.0` < 0) &
 					  (is.na(`20529-0.0`) | `20529-0.0` < 0) &
@@ -1581,90 +3596,90 @@ Full_Data_MHQ2$Trauma.Catastrophic<-with(Full_Data_MHQ2, ifelse((is.na(`20527-0.
 
 ###PCL-6 - Trouble concentrating item is borrowed from PHQ9, scored 1-4, compare 1-5 for other items
 
-Full_Data_MHQ2$PCL.Score<-0
+Full_Data_MHQ2$MHQ1.PCL.Score<-0
 
-Full_Data_MHQ2$PCL.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20497-0.0`) | `20497-0.0` < 0, PCL.Score, as.numeric(`20497-0.0`) + 1 + PCL.Score))
-Full_Data_MHQ2$PCL.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20498-0.0`) | `20498-0.0` < 0, PCL.Score, as.numeric(`20498-0.0`) + 1 + PCL.Score))
-Full_Data_MHQ2$PCL.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20495-0.0`) | `20495-0.0` < 0, PCL.Score, as.numeric(`20495-0.0`) + 1 + PCL.Score))
-Full_Data_MHQ2$PCL.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20496-0.0`) | `20496-0.0` < 0, PCL.Score, as.numeric(`20496-0.0`) + 1 + PCL.Score))
-Full_Data_MHQ2$PCL.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20494-0.0`) | `20494-0.0` < 0, PCL.Score, as.numeric(`20494-0.0`) + 1 + PCL.Score))
-Full_Data_MHQ2$PCL.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20508-0.0`) | `20508-0.0` < 0, PCL.Score, as.numeric(`20508-0.0`) + PCL.Score))
+Full_Data_MHQ2$MHQ1.PCL.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20497-0.0`) | `20497-0.0` < 0, MHQ1.PCL.Score, as.numeric(`20497-0.0`) + 1 + MHQ1.PCL.Score))
+Full_Data_MHQ2$MHQ1.PCL.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20498-0.0`) | `20498-0.0` < 0, MHQ1.PCL.Score, as.numeric(`20498-0.0`) + 1 + MHQ1.PCL.Score))
+Full_Data_MHQ2$MHQ1.PCL.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20495-0.0`) | `20495-0.0` < 0, MHQ1.PCL.Score, as.numeric(`20495-0.0`) + 1 + MHQ1.PCL.Score))
+Full_Data_MHQ2$MHQ1.PCL.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20496-0.0`) | `20496-0.0` < 0, MHQ1.PCL.Score, as.numeric(`20496-0.0`) + 1 + MHQ1.PCL.Score))
+Full_Data_MHQ2$MHQ1.PCL.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20494-0.0`) | `20494-0.0` < 0, MHQ1.PCL.Score, as.numeric(`20494-0.0`) + 1 + MHQ1.PCL.Score))
+Full_Data_MHQ2$MHQ1.PCL.Score<-with(Full_Data_MHQ2, ifelse(is.na(`20508-0.0`) | `20508-0.0` < 0, MHQ1.PCL.Score, as.numeric(`20508-0.0`) + MHQ1.PCL.Score))
 
-Full_Data_MHQ2$PTSD<-with(Full_Data_MHQ2, ifelse((is.na(`20497-0.0`) | `20497-0.0` < 0) |
+Full_Data_MHQ2$MHQ1.PTSD<-with(Full_Data_MHQ2, ifelse((is.na(`20497-0.0`) | `20497-0.0` < 0) |
 			   (is.na(`20498-0.0`) | `20498-0.0` < 0) |
 			   (is.na(`20495-0.0`) | `20495-0.0` < 0) |
 			   (is.na(`20508-0.0`) | `20508-0.0` < 0), NA, 
-		     ifelse(PCL.Score > 13, 1, 0)))
+		     ifelse(MHQ1.PCL.Score > 13, 1, 0)))
 
 #####Self-Harm#####
 
 ### Self Harm Ever
 
-Full_Data_MHQ2$Self.Harm.Ever<-with(Full_Data_MHQ2, ifelse((is.na(`20480-0.0`) | `20480-0.0` < 0), NA, `20480-0.0`))
+Full_Data_MHQ2$MHQ1.Self.Harm.Ever<-with(Full_Data_MHQ2, ifelse((is.na(`20480-0.0`) | `20480-0.0` < 0), NA, `20480-0.0`))
 
 ### Life Not Worth Living and Suicide Attempt
 
-Full_Data_MHQ2$Not.Worth.Living<-with(Full_Data_MHQ2, ifelse(is.na(`20479-0.0`), NA,
+Full_Data_MHQ2$MHQ1.Not.Worth.Living<-with(Full_Data_MHQ2, ifelse(is.na(`20479-0.0`), NA,
 				ifelse(!is.na(`20479-0.0`) & `20479-0.0` > 0, 1, 0)))
 
-Full_Data_MHQ2$Self.Harm.Suicide.Attempt<-with(Full_Data_MHQ2, ifelse((is.na(`20479-0.0`) | `20479-0.0` < 0) |
+Full_Data_MHQ2$MHQ1.Self.Harm.Suicide.Attempt<-with(Full_Data_MHQ2, ifelse((is.na(`20479-0.0`) | `20479-0.0` < 0) |
 					        (is.na(`20483-0.0`) | `20483-0.0` < 0), NA,
 					 ifelse(`20479-0.0` > 0 &
 					        `20483-0.0` == 1, 1, 0)))
 
 #####Wellbeing#####
 
-Full_Data_MHQ2$WellbeingScore<-with(Full_Data_MHQ2, ifelse(is.na(`20458-0.0`) | `20458-0.0` < 0 | is.na(`20459-0.0`) | `20459-0.0` < 0 | is.na(`20460-0.0`) | `20460-0.0` < 0, NA, 
+Full_Data_MHQ2$MHQ1.WellbeingScore<-with(Full_Data_MHQ2, ifelse(is.na(`20458-0.0`) | `20458-0.0` < 0 | is.na(`20459-0.0`) | `20459-0.0` < 0 | is.na(`20460-0.0`) | `20460-0.0` < 0, NA, 
 			             ((7-as.numeric(`20458-0.0`)) + (7-as.numeric(`20459-0.0`)) + as.numeric(`20460-0.0`))))
  
 #####CombinedSelfReportConditions#####
 
-Full_Data_MHQ2$SRConditionsSum<-0
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRSchizophrenia == 1, SRConditionsSum + 1, SRConditionsSum)) 
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRPsychosisOther == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRDepression == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRManiaBIP == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRGADandOthers == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRPanicAttacks == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRAgoraphobia == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRSocPhobia == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SROtherPhobia == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SROCD == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRPersonalityDisorder == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRAnorexiaNervosa == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRBulimiaNervosa == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRBingeEating == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRASD == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(SRADHD == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(!is.na(Alcohol.Dependence.Ever) & Alcohol.Dependence.Ever == 1, SRConditionsSum + 1, SRConditionsSum))
-Full_Data_MHQ2$SRConditionsSum<-with(Full_Data_MHQ2, ifelse(!is.na(Addiction.Ever) & Addiction.Ever == 1, SRConditionsSum + 1, SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-0
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRSchizophrenia == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum)) 
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRPsychosisOther == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRDepression == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRManiaBIP == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRGADandOthers == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRPanicAttacks == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRAgoraphobia == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRSocPhobia == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SROtherPhobia == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SROCD == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRPersonalityDisorder == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRAnorexiaNervosa == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRBulimiaNervosa == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRBingeEating == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRASD == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(MHQ1.SRADHD == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(!is.na(MHQ1.Alcohol.Dependence.Ever) & MHQ1.Alcohol.Dependence.Ever == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
+Full_Data_MHQ2$MHQ1.SRConditionsSum<-with(Full_Data_MHQ2, ifelse(!is.na(MHQ1.Addiction.Ever) & MHQ1.Addiction.Ever == 1, MHQ1.SRConditionsSum + 1, MHQ1.SRConditionsSum))
 
-Full_Data_MHQ2$NoSRConditions<-with(Full_Data_MHQ2,ifelse(SRConditionsSum == 0, 1, 0))
+Full_Data_MHQ2$MHQ1.NoSRConditions<-with(Full_Data_MHQ2,ifelse(MHQ1.SRConditionsSum == 0, 1, 0))
 
-Full_Data_MHQ2$MultipleSRConditions<-with(Full_Data_MHQ2,ifelse(SRConditionsSum > 1, 1, 0))
+Full_Data_MHQ2$MHQ1.MultipleSRConditions<-with(Full_Data_MHQ2,ifelse(MHQ1.SRConditionsSum > 1, 1, 0))
 
 #####Depression Comorbidity Codes#####
 
-Full_Data_MHQ2$NoComorbidity<-with(Full_Data_MHQ2, ifelse(is.na(Wider.Bipolar.Definition) & is.na(GAD.Ever) & is.na(Alcohol.Use.Disorder) & is.na(Unusual.Experience.Ever), NA,
-			     ifelse((!is.na(Wider.Bipolar.Definition) & Wider.Bipolar.Definition == 1) | 
-			     	    (!is.na(GAD.Ever) & GAD.Ever == 1) |
-				    (!is.na(Alcohol.Use.Disorder) & Alcohol.Use.Disorder == 1) | 
-				    (!is.na(Unusual.Experience.Ever) & Unusual.Experience.Ever == 1), 0, 1)))
+Full_Data_MHQ2$MHQ1.NoComorbidity<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.Wider.Bipolar.Definition) & is.na(MHQ1.GAD.Ever) & is.na(MHQ1.Alcohol.Use.Disorder) & is.na(MHQ1.Unusual.Experience.Ever), NA,
+			     ifelse((!is.na(MHQ1.Wider.Bipolar.Definition) & MHQ1.Wider.Bipolar.Definition == 1) | 
+			     	    (!is.na(MHQ1.GAD.Ever) & MHQ1.GAD.Ever == 1) |
+				    (!is.na(MHQ1.Alcohol.Use.Disorder) & MHQ1.Alcohol.Use.Disorder == 1) | 
+				    (!is.na(MHQ1.Unusual.Experience.Ever) & MHQ1.Unusual.Experience.Ever == 1), 0, 1)))
 
-Full_Data_MHQ2$AnyComorbidity<-with(Full_Data_MHQ2, ifelse(is.na(Wider.Bipolar.Definition) & is.na(GAD.Ever) & is.na(Alcohol.Use.Disorder) & is.na(Unusual.Experience.Ever), NA,
-			      ifelse(NoComorbidity == 1, 0, 1)))
+Full_Data_MHQ2$MHQ1.AnyComorbidity<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.Wider.Bipolar.Definition) & is.na(MHQ1.GAD.Ever) & is.na(MHQ1.Alcohol.Use.Disorder) & is.na(MHQ1.Unusual.Experience.Ever), NA,
+			      ifelse(MHQ1.NoComorbidity == 1, 0, 1)))
 
-Full_Data_MHQ2$MultipleComorbidity<-with(Full_Data_MHQ2, ifelse(is.na(Wider.Bipolar.Definition) & is.na(GAD.Ever) & is.na(Alcohol.Use.Disorder) & is.na(Unusual.Experience.Ever), NA,
-				   ifelse(NoComorbidity == 1, 0,
-			     	   ifelse(((!is.na(Wider.Bipolar.Definition) & Wider.Bipolar.Definition == 1) & 
-			     	    	  ((!is.na(GAD.Ever) & GAD.Ever == 1) |
-				           (!is.na(Alcohol.Use.Disorder) & Alcohol.Use.Disorder == 1) | 
-				           (!is.na(Unusual.Experience.Ever) & Unusual.Experience.Ever == 1))) | 
-					  ((!is.na(GAD.Ever) & GAD.Ever == 1) & 
-				          ((!is.na(Alcohol.Use.Disorder) & Alcohol.Use.Disorder == 1) | 
-				           (!is.na(Unusual.Experience.Ever) & Unusual.Experience.Ever == 1))) | 
-					  ((!is.na(Alcohol.Use.Disorder) & Alcohol.Use.Disorder == 1) & 
-					  (!is.na(Unusual.Experience.Ever) & Unusual.Experience.Ever == 1)), 1, 0))))
+Full_Data_MHQ2$MHQ1.MultipleComorbidity<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.Wider.Bipolar.Definition) & is.na(MHQ1.GAD.Ever) & is.na(MHQ1.Alcohol.Use.Disorder) & is.na(MHQ1.Unusual.Experience.Ever), NA,
+				   ifelse(MHQ1.NoComorbidity == 1, 0,
+			     	   ifelse(((!is.na(MHQ1.Wider.Bipolar.Definition) & MHQ1.Wider.Bipolar.Definition == 1) & 
+			     	    	  ((!is.na(MHQ1.GAD.Ever) & MHQ1.GAD.Ever == 1) |
+				           (!is.na(MHQ1.Alcohol.Use.Disorder) & MHQ1.Alcohol.Use.Disorder == 1) | 
+				           (!is.na(MHQ1.Unusual.Experience.Ever) & MHQ1.Unusual.Experience.Ever == 1))) | 
+					  ((!is.na(MHQ1.GAD.Ever) & MHQ1.GAD.Ever == 1) & 
+				          ((!is.na(MHQ1.Alcohol.Use.Disorder) & MHQ1.Alcohol.Use.Disorder == 1) | 
+				           (!is.na(MHQ1.Unusual.Experience.Ever) & MHQ1.Unusual.Experience.Ever == 1))) | 
+					  ((!is.na(MHQ1.Alcohol.Use.Disorder) & MHQ1.Alcohol.Use.Disorder == 1) & 
+					  (!is.na(MHQ1.Unusual.Experience.Ever) & MHQ1.Unusual.Experience.Ever == 1)), 1, 0))))
 
 #####MH Screen######
 
@@ -1672,7 +3687,7 @@ Full_Data_MHQ2$MultipleComorbidity<-with(Full_Data_MHQ2, ifelse(is.na(Wider.Bipo
 ## 1 - Case of any kind
 ## 0 - Not case on any disorder - no to mental distress and professional help, NA on problems diagnosed
 
-Full_Data_MHQ2$MH.Screen<-with(Full_Data_MHQ2, ifelse(((is.na(`20500-0.0`) | `20500-0.0` < 0) |
+Full_Data_MHQ2$MHQ1.MH.Screen<-with(Full_Data_MHQ2, ifelse(((is.na(`20500-0.0`) | `20500-0.0` < 0) |
  			 	 (is.na(`20499-0.0`) | `20499-0.0` < 0)) &
 				 (!is.na(`20544-0.1`) & `20544-0.1` < 0), NA,
 			 ifelse(`20500-0.0` == 1 |
@@ -1682,28 +3697,78 @@ Full_Data_MHQ2$MH.Screen<-with(Full_Data_MHQ2, ifelse(((is.na(`20500-0.0`) | `20
 
 ##If case {any} -> case, NOT control
 
-Full_Data_MHQ2$MH.Screen<-with(Full_Data_MHQ2, ifelse((!is.na(Depressed.Ever) & Depressed.Ever == 1) |
-				(!is.na(Wider.Bipolar.Definition) & Wider.Bipolar.Definition == 1) |
-				(!is.na(GAD.Ever) & GAD.Ever == 1) |
-				(!is.na(Addiction.Ever) & Addiction.Ever == 1) |
-				(!is.na(Unusual.Experience.Ever) & Unusual.Experience.Ever == 1) |
-				(!is.na(PTSD) & PTSD == 1) |
-				(!is.na(Self.Harm.Ever) & Self.Harm.Ever == 1), 1, MH.Screen))
+Full_Data_MHQ2$MHQ1.MH.Screen<-with(Full_Data_MHQ2, ifelse((!is.na(MHQ1.Depressed.Ever) & MHQ1.Depressed.Ever == 1) |
+				(!is.na(MHQ1.Wider.Bipolar.Definition) & MHQ1.Wider.Bipolar.Definition == 1) |
+				(!is.na(MHQ1.GAD.Ever) & MHQ1.GAD.Ever == 1) |
+				(!is.na(MHQ1.Addiction.Ever) & MHQ1.Addiction.Ever == 1) |
+				(!is.na(MHQ1.Unusual.Experience.Ever) & MHQ1.Unusual.Experience.Ever == 1) |
+				(!is.na(MHQ1.PTSD) & MHQ1.PTSD == 1) |
+				(!is.na(MHQ1.Self.Harm.Ever) & MHQ1.Self.Harm.Ever == 1), 1, MHQ1.MH.Screen))
 
-Full_Data_MHQ2$MH.Questionnaires<-with(Full_Data_MHQ2, ifelse((!is.na(Depressed.Ever) & Depressed.Ever == 1) |
-				 	(!is.na(Wider.Bipolar.Definition) & Wider.Bipolar.Definition == 1) |
-					(!is.na(GAD.Ever) & GAD.Ever == 1) |
-					(!is.na(Alcohol.Use.Disorder) & Alcohol.Use.Disorder == 1) |
-					(!is.na(Unusual.Experience.Ever) & Unusual.Experience.Ever == 1) |
-					(!is.na(PTSD) & PTSD == 1) |
-					(!is.na(Self.Harm.Ever) & Self.Harm.Ever == 1), 1, 0))
+Full_Data_MHQ2$MHQ1.MH.Questionnaires<-with(Full_Data_MHQ2, ifelse((!is.na(MHQ1.Depressed.Ever) & MHQ1.Depressed.Ever == 1) |
+				 	(!is.na(MHQ1.Wider.Bipolar.Definition) & MHQ1.Wider.Bipolar.Definition == 1) |
+					(!is.na(MHQ1.GAD.Ever) & MHQ1.GAD.Ever == 1) |
+					(!is.na(MHQ1.Alcohol.Use.Disorder) & MHQ1.Alcohol.Use.Disorder == 1) |
+					(!is.na(MHQ1.Unusual.Experience.Ever) & MHQ1.Unusual.Experience.Ever == 1) |
+					(!is.na(MHQ1.PTSD) & MHQ1.PTSD == 1) |
+					(!is.na(MHQ1.Self.Harm.Ever) & MHQ1.Self.Harm.Ever == 1), 1, 0))
 
-Full_Data_MHQ2$MH.Questionnaires.Short<-with(Full_Data_MHQ2, ifelse((!is.na(Depressed.Ever) & Depressed.Ever == 1) |
-				 	      (!is.na(GAD.Ever) & GAD.Ever == 1) |
-					      (!is.na(Unusual.Experience.Ever) & Unusual.Experience.Ever == 1) |
-					      (!is.na(Addiction.Ever) & Addiction.Ever == 1), 1, 0))
+Full_Data_MHQ2$MHQ1.MH.Questionnaires.Short<-with(Full_Data_MHQ2, ifelse((!is.na(MHQ1.Depressed.Ever) & MHQ1.Depressed.Ever == 1) |
+				 	      (!is.na(MHQ1.GAD.Ever) & MHQ1.GAD.Ever == 1) |
+					      (!is.na(MHQ1.Unusual.Experience.Ever) & MHQ1.Unusual.Experience.Ever == 1) |
+					      (!is.na(MHQ1.Addiction.Ever) & MHQ1.Addiction.Ever == 1), 1, 0))
+
+
+```
 
 # Table 6 – MHQ1 vs MHQ2 – Current illness by Age
+
+```{r Additional age bands}
+
+## Age bands - derived from Davis et al
+
+define_age_bands_table_6 <- function(data, age.variable){
+  return(
+    ordered(
+      case_when(is.na(data[,age.variable]) ~ NA_character_,
+        data[,age.variable] >= 45 & data[,age.variable] <= 51 ~ "45to51",
+        data[,age.variable] >= 52 & data[,age.variable] <= 58 ~ "52to58",
+        data[,age.variable] >= 59 & data[,age.variable] <= 65 ~ "59to65",
+        data[,age.variable] >= 66 & data[,age.variable] <= 72 ~ "66to72",
+        data[,age.variable] >= 73 & data[,age.variable] <= 79 ~ "73to79",
+        data[,age.variable] >= 80 & data[,age.variable] <= 86 ~ "80to86",		
+        data[,age.variable] >= 87 ~ "87Plus",
+        .default = NA_character_
+      ),
+      levels=c("45to51", "52to58", "59to65", "66to72", "73to79", "80to86", "87Plus")
+    )
+  )
+}
+
+# UKB
+
+Full_Data_MHQ2$UKB.Age.Bands.Table6 <- define_age_bands_table_6(
+  data = Full_Data_MHQ2,
+  age.variable = "UKB.Age"
+)
+
+# MHQ1
+
+Full_Data_MHQ2$MHQ1.Age.Bands.Table6 <- define_age_bands_table_6(
+  data = Full_Data_MHQ2,
+  age.variable = "MHQ1.Age"
+)
+
+# MHQ2
+
+Full_Data_MHQ2$MHQ2.Age.Bands.Table6 <- define_age_bands_table_6(
+  data = Full_Data_MHQ2,
+  age.variable = "MHQ2.Age"
+)
+
+
+
+```
 
 Rows:
 N positive (%)

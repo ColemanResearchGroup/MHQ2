@@ -1,0 +1,50 @@
+packages <- c("data.table", "tidyverse", "dplyr",  "Hmisc", "stringi")
+lapply(X = packages, FUN = require, character.only = TRUE)
+
+Full_Data_MHQ2 <- readRDS("../Data_For_Tables_2024_03_15.rds")
+F29034 <- fread("/datasets/ukbiobank/ukb82087/phenotypes/ukb675453.csv", select=c("eid","29034-0.0"))
+
+Full_Data_MHQ2_F29034 <- left_join(Full_Data_MHQ2, F29034)
+Full_Data_MHQ2 <- Full_Data_MHQ2_F29034
+F29198 <- fread("/datasets/ukbiobank/ukb82087/phenotypes/ukb675453.csv", select=c("eid","29198-0.0"))
+
+Full_Data_MHQ2 <- left_join(Full_Data_MHQ2_F29034,F29198)
+
+Full_Data_MHQ2$f29034.0.0_clean <- ifelse(Full_Data_MHQ2$`29034-0.0` < 0 | is.na(Full_Data_MHQ2$`29034-0.0`), NA, Full_Data_MHQ2$`29034-0.0`)
+
+Full_Data_MHQ2$ApproxDateFirstDepEpisode <- with(Full_Data_MHQ2, case_when(
+is.na(Full_Data_MHQ2$`29198-0.0`) | is.na(MHQ2.Age) | is.na(Full_Data_MHQ2$f29034.0.0_clean) ~ NA,
+.default=as.Date(as.Date(Full_Data_MHQ2$`29198-0.0`) - as.difftime((MHQ2.Age-Full_Data_MHQ2$f29034.0.0_clean)*365.25, unit="days"))
+)
+)
+head(na.omit(Full_Data_MHQ2$ApproxDateFirstDepEpisode))
+
+#Earliest date of MHQ1 completion is 2016-07-13
+
+Full_Data_MHQ2$IncidentDepression <- with(Full_Data_MHQ2, case_when(
+is.na(ApproxDateFirstDepEpisode) ~ NA,
+ApproxDateFirstDepEpisode > as.Date("2016-07-13") ~ 1,
+.default = 0
+)
+)
+
+names(Full_Data_MHQ2)
+with(Full_Data_MHQ2, table(BD1, MHQ1.BPDI, useNA="a"))
+with(Full_Data_MHQ2, table(Self.Harm.Ever, MHQ1.Self.Harm.Ever, useNA="a"))
+with(Full_Data_MHQ2, table(cannabis_use, MHQ1.Cannabis.Ever, useNA="a"))
+with(Full_Data_MHQ2, table(SelfReportedDiagnosisMHQ2016Compatible, MHQ1.MultipleSRConditions, useNA="a"))
+with(Full_Data_MHQ2, table(SelfReportedDiagnosisMHQ2016Compatible, MHQ1.NoSRConditions, useNA="a"))
+with(Full_Data_MHQ2, table(SelfReportedDiagnosisMHQ2016Compatible, MHQ1.SRConditionsSum, useNA="a"))
+with(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$MHQ2_Completed), ], table(SelfReportedDiagnosisMHQ2016Compatible, MHQ1.SRConditionsSum, useNA="a"))
+with(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$MHQ2_Completed), ], table(SelfReportedDiagnosisMHQ2016Compatible, MHQ1.NoSRConditions, useNA="a"))
+with(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$MHQ2_Completed), ], table(cannabis_use, MHQ1.Cannabis.Ever, useNA="a"))
+with(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$MHQ2_Completed), ], table(Self.Harm.Ever, MHQ1.Self.Harm.Ever, useNA="a"))
+with(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$MHQ2_Completed), ], table(BD1, MHQ1.BPDI, useNA="a"))
+with(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$MHQ2_Completed), ], table(depressed.ever.case, MHQ1.Depressed.Ever, useNA="a"))
+with(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$MHQ2_Completed), ], table(depression.ever.case, MHQ1.Depressed.Ever, useNA="a"))
+with(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$MHQ2_Completed), ], table(depression.ever.case, IncidentDepreMHQ1.Depressed.Ever, useNA="a"))
+1642 +  564 +  231
+with(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$MHQ2_Completed), ], table(depression.ever.case, IncidentDepression, MHQ1.Depressed.Ever, MHQ2.Sex,useNA="a"))
+with(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$MHQ2_Completed), ], table(depression.ever.case, MHQ1.Depressed.Ever, MHQ2.Sex,useNA="a"))
+with(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$MHQ2_Completed) & Full_Data_MHQ2$depression.ever.case == 1 & Full_Data_MHQ2$MHQ1.Depressed.Ever == 0, ], table(IncidentDepression, MHQ2.Sex,useNA="a"))
+savehistory("YetMoreTablesCode.txt")

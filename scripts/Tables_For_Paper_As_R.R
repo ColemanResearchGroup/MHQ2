@@ -5,7 +5,7 @@ lapply(X = packages, FUN = require, character.only = TRUE)
 
 # Read in the data
 
-Full_Data_MHQ2 <- readRDS("../Full_Data_MHQ1_MHQ2_Update_2024_03_08.rds")
+Full_Data_MHQ2 <- readRDS("../Data_For_Tables_2024_03_15.rds")
 
 # Table 1 - Sample sizes
 
@@ -338,13 +338,33 @@ sink()
 
 # Figure 5 – Upset plot of disorder overlap
 
-# library(UpSetR)
-# png("Figure5.pdf", res = 300))
-# print(upset(Full_Data_MHQ2, nsets))
-# png()
+Data_For_Upset <- Full_Data_MHQ2[Full_Data_MHQ2$MHQ2_Completed == 1,
+  c("eid",
+    "depression.ever.case",
+    "BD1",
+    "PanicDisorder",
+    "Anorexia_nervosa",
+    "Bulimia_nervosa",
+    "Purging_disorder",
+    "Self.Harm.Ever"
+  )
+]
+
+Data_For_Upset$depression.ever.case <- ifelse(is.na(Data_For_Upset$depression.ever.case), 0, Data_For_Upset$depression.ever.case)
+Data_For_Upset$BD1 <- ifelse(is.na(Data_For_Upset$BD1), 0, Data_For_Upset$BD1)
+Data_For_Upset$PanicDisorder <- ifelse(is.na(Data_For_Upset$PanicDisorder), 0, Data_For_Upset$PanicDisorder)
+Data_For_Upset$Anorexia_nervosa <- ifelse(is.na(Data_For_Upset$Anorexia_nervosa), 0, Data_For_Upset$Anorexia_nervosa)
+Data_For_Upset$Bulimia_nervosa <- ifelse(is.na(Data_For_Upset$Bulimia_nervosa), 0, Data_For_Upset$Bulimia_nervosa)
+Data_For_Upset$Purging_disorder <- ifelse(is.na(Data_For_Upset$Purging_disorder), 0, Data_For_Upset$Purging_disorder)
+Data_For_Upset$Self.Harm.Ever <- ifelse(is.na(Data_For_Upset$Self.Harm.Ever), 0, Data_For_Upset$Self.Harm.Ever)
+
+library(UpSetR)
+png("Figure5.png", res=300, height=1500, width=3000)
+print(upset(Data_For_Upset, nsets=200, nintersects=20, set_size.show = TRUE, order.by = "freq", set_size.scale_max = 45000))
+dev.off()
 
 sink("Data_For_Figure5.txt")
-print(with(Full_Data_MHQ2[Full_Data_MHQ2$MHQ2.Completed == 1, ],
+print(with(Full_Data_MHQ2[Full_Data_MHQ2$MHQ2_Completed == 1, ],
     table(Full_Data_MHQ2$depression.ever.case,
       Full_Data_MHQ2$BD1,
       Full_Data_MHQ2$PanicDisorder,

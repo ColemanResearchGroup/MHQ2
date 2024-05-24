@@ -1,0 +1,105 @@
+
+packages <- c("data.table", "tidyverse", "dplyr",  "Hmisc", "stringi")
+lapply(X = packages, FUN = require, character.only = TRUE)
+
+Full_Data_MHQ2 <- readRDS("../Data_For_Tables_2024_03_15.rds")
+names(Full_Data_MHQ2)
+F29034 <- fread("/datasets/ukbiobank/ukb82087/phenotypes/ukb675453.csv", select=c("eid","29034-0.0"))
+
+Full_Data_MHQ2_F29034 <- left_join(Full_Data_MHQ2, F29034)
+Full_Data_MHQ2 <- Full_Data_MHQ2_F29034
+F29198 <- fread("/datasets/ukbiobank/ukb82087/phenotypes/ukb675453.csv", select=c("eid","29198-0.0"))
+
+Full_Data_MHQ2 <- left_join(Full_Data_MHQ2_F29034,F29198)
+Full_Data_MHQ2$ApproxDataFirstDepEpisode <- with(Full_Data_MHQ2, case_when(
+is.na(depression.ever.case) | depression.ever.case == 0 ~ NA_real_,
+Full_Data_MHQ2$ApproxDataFirstDepEpisode <- with(Full_Data_MHQ2, case_when(
+is.na("29198-0.0") | is.na(MHQ2.Age) | is.na("29034-0.0") ~ NA_real_,
+.default=as.Date(as.Date("29198-0.0") - as.Date(MHQ2.Age-"29034-0.0"))
+)
+)
+str(Full_Data_MHQ2$29198-0.0)
+str(Full_Data_MHQ2$`29198-0.0`)
+Full_Data_MHQ2$ApproxDataFirstDepEpisode <- with(Full_Data_MHQ2, case_when(
+is.na(Full_Data_MHQ2$`29198-0.0`) | is.na(MHQ2.Age) | is.na(Full_Data_MHQ2$`29034-0.0`) ~ NA_real_,
+.default=as.Date( Full_Data_MHQ2$`29198-0.0` - as.Date(MHQ2.Age-Full_Data_MHQ2$`29034-0.0`))
+)
+)
+Full_Data_MHQ2$ApproxDataFirstDepEpisode <- with(Full_Data_MHQ2, case_when(
+is.na(Full_Data_MHQ2$`29198-0.0`) | is.na(MHQ2.Age) | is.na(Full_Data_MHQ2$`29034-0.0`) ~ NA_real_,
+.default=as.Date( Full_Data_MHQ2$`29198-0.0` - (MHQ2.Age-Full_Data_MHQ2$`29034-0.0`))
+)
+)
+head(Full_Data_MHQ2$MHQ2.Age-Full_Data_MHQ2$`29034-0.0`)
+head(Full_Data_MHQ2$MHQ2.Age)
+head(Full_Data_MHQ2$`29034-0.0`)
+table(Full_Data_MHQ2$`29034-0.0`)
+Full_Data_MHQ2$f29034.0.0_clean <- ifelse(Full_Data_MHQ2$`29034-0.0` < 0 | is.na(Full_Data_MHQ2$`29034-0.0`), NA, Full_Data_MHQ2$`29034-0.0`)
+table(Full_Data_MHQ2$f29034.0.0_clean)
+#difftime(
+Full_Data_MHQ2$ApproxDataFirstDepEpisode <- with(Full_Data_MHQ2, case_when(
+is.na(Full_Data_MHQ2$`29198-0.0`) | is.na(MHQ2.Age) | is.na(Full_Data_MHQ2$f29034.0.0_clean) ~ NA_real_,
+.default=as.Date( Full_Data_MHQ2$`29198-0.0` - ((MHQ2.Age-Full_Data_MHQ2$f29034.0.0_clean)*365.25)) 
+)
+)
+Full_Data_MHQ2$ApproxDataFirstDepEpisode <- with(Full_Data_MHQ2, case_when(
+is.na(Full_Data_MHQ2$`29198-0.0`) | is.na(MHQ2.Age) | is.na(Full_Data_MHQ2$f29034.0.0_clean) ~ NA_real_,
+.default=as.Date(Full_Data_MHQ2$`29198-0.0` - as.difftime((MHQ2.Age-Full_Data_MHQ2$f29034.0.0_clean)*365.25, unit="days")) 
+)
+)
+Full_Data_MHQ2$ApproxDataFirstDepEpisode <- with(Full_Data_MHQ2, case_when(
+is.na(Full_Data_MHQ2$`29198-0.0`) | is.na(MHQ2.Age) | is.na(Full_Data_MHQ2$f29034.0.0_clean) ~ NA_real_,
+.default=as.Date(as.Date(Full_Data_MHQ2$`29198-0.0`) - as.difftime((MHQ2.Age-Full_Data_MHQ2$f29034.0.0_clean)*365.25, unit="days")) 
+)
+)
+head(as.Date(Full_Data_MHQ2$`29198-0.0`))
+str(as.Date(Full_Data_MHQ2$`29198-0.0`))
+Full_Data_MHQ2$ApproxDataFirstDepEpisode <- with(Full_Data_MHQ2, case_when(
+is.na(Full_Data_MHQ2$`29198-0.0`) | is.na(MHQ2.Age) | is.na(Full_Data_MHQ2$f29034.0.0_clean) ~ NA,
+.default=as.Date(as.Date(Full_Data_MHQ2$`29198-0.0`) - as.difftime((MHQ2.Age-Full_Data_MHQ2$f29034.0.0_clean)*365.25, unit="days"))
+)
+)
+names(Full_Data_MHQ2)[names(Full_Data_MHQ2) == "ApproxDataFirstDepEpisode"] <- "ApproxDateFirstDepEpisode"
+head(na.omit(Full_Data_MHQ2$ApproxDateFirstDepEpisode))
+# Earliest date of MHQ1 completion is 2016-07-13
+Full_Data_MHQ2$IncidentDepression <- with(Full_Data_MHQ2, case_when(
+is.na(ApproxDataFirstDepEpisode) ~ NA,
+ApproxDataFirstDepEpisode > as.Date("2016-07-13") ~ 1, 
+.default ~ 0
+)
+)
+Full_Data_MHQ2$IncidentDepression <- with(Full_Data_MHQ2, case_when(
+is.na(ApproxDateFirstDepEpisode) ~ NA,
++ ApproxDateFirstDepEpisode > as.Date("2016-07-13") ~ 1,
+.default ~ 0
+)
+)
+Full_Data_MHQ2$IncidentDepression <- with(Full_Data_MHQ2, case_when(
+is.na(ApproxDateFirstDepEpisode) ~ NA,
+ApproxDateFirstDepEpisode > as.Date("2016-07-13") ~ 1,
+.default = 0
+)
+)
+table(Full_Data_MHQ2$IncidentDepression)
+head(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$IncidentDepression), c("ApproxDateFirstDepEpisode", "IncidentDepression")])
+head(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$IncidentDepression) & Full_Data_MHQ2$IncidentDepression == 1, c("ApproxDateFirstDepEpisode", "IncidentDepression")])
+min(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$IncidentDepression) & Full_Data_MHQ2$IncidentDepression == 1, c("ApproxDateFirstDepEpisode")])
+max(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$IncidentDepression) & Full_Data_MHQ2$IncidentDepression == 0, c("ApproxDateFirstDepEpisode")])
+names(Full_Data_MHQ2)
+with(Full_Data_MHQ2, table(depression.ever.case, MHQ1.Depressed.Ever, useNA="a"))
+with(Full_Data_MHQ2, table(depression.ever.case, depression.ever.subthreshold, MHQ1.Depressed.Ever, useNA="a"))
+with(Full_Data_MHQ2, table(depression.ever.case, depression.subthreshold, MHQ1.Depressed.Ever, useNA="a"))
+with(Full_Data_MHQ2, table(depression.ever.case, MHQ1.Depressed.Ever, useNA="a"))
+with(Full_Data_MHQ2, table(depression.ever.case, MHQ1.Depressed.Ever, IncidentDepression, useNA="a"))
+with(Full_Data_MHQ2, table(depression.ever.case, IncidentDepression, MHQ1.Depressed.Ever, useNA="a"))
+max(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$IncidentDepression) & Full_Data_MHQ2$IncidentDepression == 1 & !is.na(Full_Data_MHQ2$MHQ1.Depressed.Ever) & Full_Data_MHQ2$MHQ1.Depressed.Ever == 1, c("ApproxDateFirstDepEpisode")])
+min(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$IncidentDepression) & Full_Data_MHQ2$IncidentDepression == 1 & !is.na(Full_Data_MHQ2$MHQ1.Depressed.Ever) & Full_Data_MHQ2$MHQ1.Depressed.Ever == 1, c("ApproxDateFirstDepEpisode")])
+length(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$IncidentDepression) & Full_Data_MHQ2$IncidentDepression == 1 & !is.na(Full_Data_MHQ2$MHQ1.Depressed.Ever) & Full_Data_MHQ2$MHQ1.Depressed.Ever == 1, c("ApproxDateFirstDepEpisode")])
+table(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$IncidentDepression) & Full_Data_MHQ2$IncidentDepression == 1 & !is.na(Full_Data_MHQ2$MHQ1.Depressed.Ever) & Full_Data_MHQ2$MHQ1.Depressed.Ever == 1, c("ApproxDateFirstDepEpisode")])
+table(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$IncidentDepression) & Full_Data_MHQ2$IncidentDepression == 1 & !is.na(Full_Data_MHQ2$MHQ1.Depressed.Ever) & Full_Data_MHQ2$MHQ1.Depressed.Ever == 1, c("MHQ2.Age)])
+table(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$IncidentDepression) & Full_Data_MHQ2$IncidentDepression == 1 & !is.na(Full_Data_MHQ2$MHQ1.Depressed.Ever) & Full_Data_MHQ2$MHQ1.Depressed.Ever == 1, c("MHQ2.Age")])
+table(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$IncidentDepression) & Full_Data_MHQ2$IncidentDepression == 1 & !is.na(Full_Data_MHQ2$MHQ1.Depressed.Ever) & Full_Data_MHQ2$MHQ1.Depressed.Ever == 1, c("f29034.0.0_clean")])
+table(Full_Data_MHQ2[!is.na(Full_Data_MHQ2$IncidentDepression) & Full_Data_MHQ2$IncidentDepression == 1 & !is.na(Full_Data_MHQ2$MHQ1.Depressed.Ever) & Full_Data_MHQ2$MHQ1.Depressed.Ever == 1, c("MHQ2.Age")], Full_Data_MHQ2[!is.na(Full_Data_MHQ2$IncidentDepression) & Full_Data_MHQ2$IncidentDepression == 1 & !is.na(Full_Data_MHQ2$MHQ1.Depressed.Ever) & Full_Data_MHQ2$MHQ1.Depressed.Ever == 1, c("f29034.0.0_clean")])
+with(Full_Data_MHQ2, table(depression.ever.case, IncidentDepression, MHQ1.Depressed.Ever, useNA="a"))
+1642+564+277
+savehistory("More_Tables_Code.txt")

@@ -53,3 +53,5 @@ Loading required package: stringi
 [[5]]
 [1] TRUE
 
+null device 
+          1 
