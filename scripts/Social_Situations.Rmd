@@ -62,6 +62,24 @@ dat <- dat %>%
     )
   )
 
+if(diagnosticsFlag) dat %>%
+  group_by(
+    `29162-0.0`,
+    `29163-0.0`,
+    `29167-0.0`,
+    social_isolation
+  ) %>%
+  tally()
+
+# View(dat %>%
+#   group_by(
+#     `29162-0.0`,
+#     `29163-0.0`,
+#     `29167-0.0`,
+#     social_isolation
+#   ) %>%
+#   tally())
+
 ```
 
 # Virtually connected
@@ -85,6 +103,22 @@ dat <- dat %>%
       TRUE ~ 0
     )
   )
+
+if(diagnosticsFlag) dat %>%
+  group_by(
+    `29164-0.0`,
+    `29168-0.0`,
+    virtually_connected
+  ) %>%
+  tally()
+
+# View(dat %>%
+#   group_by(
+#     `29164-0.0`,
+#     `29168-0.0`,
+#     virtually_connected
+#   ) %>%
+#   tally())
 
 ```
 
@@ -163,6 +197,12 @@ dat <- dat[, !grepl(
   "_recoded_social$",
   colnames(dat)
 )]
+
+if(diagnosticsFlag) dat %>%
+  group_by(
+    UCLA_loneliness_sum
+  ) %>%
+  tally()
 
 ```
 
@@ -290,5 +330,11 @@ dat <- dat[, !grepl(
   "_recoded_social$",
   colnames(dat)
 )]
+
+if(diagnosticsFlag) dat %>%
+  group_by(
+    BRS
+  ) %>%
+  tally()
 
 ```

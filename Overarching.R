@@ -28,17 +28,23 @@ argOutputDataFilePath<-clOptions$`output-data-file-path`
 argVariables<-clOptions$variables
 
 #for testing
-#dat <- readRDS('data/MHQ2_Height_Alcohol_Field_Anonymous.rds')
-#inputDataFilePath <- 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
-#argInputDataFilePath <- 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
-#argVariables <- "Self.Harm.Ever,BD1"
+# dat <- readRDS('data/MHQ2_Height_Alcohol_Field_Anonymous.rds')
+# #if(!any(colnames(dat)=="eid")) dat$eid<-1:nrow(dat)
+# #dat$ID<-dat$eid
+# variablesToExtract=NULL
+# inputDataFilePath=NA
+# # inputDataFilePath <- 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
+# outputDataFilePath=NA
+# writeOutput=F
+# diagnosticsFlag=F
 
 runAllScriptsOverarching <- function(
     dat=NULL,
-    variablesToExtract=producedVariables,
+    variablesToExtract=NULL,
     inputDataFilePath=NA,
     outputDataFilePath=NA,
-    writeOutput=F
+    writeOutput=F,
+    diagnosticsFlag=F   #set this to T if you want to print debugging information
     ){
   
   cat("\nRunning the MHQ2 overarching coding script.\n")
@@ -48,6 +54,8 @@ runAllScriptsOverarching <- function(
   if(is.na(outputDataFilePath)){
     outputDataFilePath<-"runAllScriptsOverarching.tsv"
   }
+  
+
   
   toReturn<-c()
   
@@ -295,6 +303,8 @@ runAllScriptsOverarching <- function(
     return(toReturn)
   }
 
+  #+++JZ: Did we expect there to be a variable called eid? Now we have both eid and ID because the scripts use ID.
+  if(!any(colnames(dat)=="eid")) dat$eid<-1:nrow(dat)
   dat$ID<-dat$eid #this is a temporary ID variable to be able to link copies of derived datasets with the original
   
   # Process

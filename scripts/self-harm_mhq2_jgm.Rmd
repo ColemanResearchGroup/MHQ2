@@ -74,4 +74,13 @@ dat$Suicide.Attempt <- with(
   )
 )
 
+if(diagnosticsFlag) dat %>%
+  group_by(
+    Not.Worth.Living,
+    Self.Harm.Ever,
+    Self.Harm.Ever.12m,
+    Suicide.Attempt
+  ) %>%
+  tally()
+
 ```

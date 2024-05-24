@@ -71,8 +71,8 @@ trauma_data <- dat %>%
 ```{r, purl=FALSE}
 
 # Inspect modified columns
-glimpse(trauma_data)
-summary(trauma_data)
+if(diagnosticsFlag) glimpse(trauma_data)
+if(diagnosticsFlag) summary(trauma_data)
 
 ```
 
@@ -110,8 +110,8 @@ modified_columns <- trauma_data %>%
   )
 
 # Inspect modified columns
-glimpse(modified_columns)
-summary(modified_columns)
+if(diagnosticsFlag) glimpse(modified_columns)
+if(diagnosticsFlag) summary(modified_columns)
 
 ```
 
@@ -173,7 +173,7 @@ trauma_data <- trauma_data %>%
     )
   )
 
-trauma_data %>%
+if(diagnosticsFlag) trauma_data %>%
   with(
     table(
       TraumaChildhood,
@@ -244,7 +244,7 @@ trauma_data <- trauma_data %>%
     )
   )
 
-trauma_data %>%
+if(diagnosticsFlag) trauma_data %>%
   with(
     table(
       TraumaAdulthood,
@@ -345,8 +345,8 @@ trauma_data <- trauma_data %>%
       TRUE ~ 0
     )
   )
-q
-trauma_data %>%
+
+if(diagnosticsFlag) trauma_data %>%
   with(
     table(
       Trauma12Months,

@@ -76,7 +76,7 @@ dat$SelfReportedAnorexiaNervosa <- grep_reports(
 
 
 ```{r}
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(SelfReportedAnorexiaNervosa)
 ```
 
@@ -92,7 +92,7 @@ dat$SelfReportedBulimiaNervosa <- grep_reports(
 
 
 ```{r}
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(SelfReportedBulimiaNervosa)
 ```
 
@@ -109,7 +109,7 @@ dat$SelfReportedBingeEatingDisorder <- grep_reports(
 
 
 ```{r}
-dat %>%
+if(diagnosticsFlag) dat %>%
   count(SelfReportedBingeEatingDisorder)
 ```
 
