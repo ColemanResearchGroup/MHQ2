@@ -3,7 +3,7 @@ Ever thought life was not worth living (29108) (HB1). Yes, once (01) OR Yes, mor
 
 ```{r}
 
-dat$Not.Worth.Living <- with(
+dat$MHQ2.LifeNotWorthLivingEver <- with(
   dat,
   case_when(
     is.na(`29108-0.0`) |
@@ -19,7 +19,7 @@ Deliberately harmed yourself (29111) (HB3) Yes , once (01) OR Yes, more than onc
 
 ```{r}
 
-dat$Self.Harm.Ever <- with(
+dat$MHQ2.SelfHarmEver <- with(
   dat,
   case_when(
     is.na(`29111-0.0`) |
@@ -37,7 +37,7 @@ Deliberately harmed yourself (29111) (HB3) = Yes, once (01) OR Yes, more than on
 
 ```{r}
 
-dat$Self.Harm.Ever.12m <- with(
+dat$MHQ2.SelfHarm12Month <- with(
   dat,
   case_when(
     is.na(`29111-0.0`) |
@@ -59,7 +59,7 @@ Harmed self with intent (29116) (HB6) = Yes, once (01) OR Yes, more than once (0
 
 ```{r}
 
-dat$Suicide.Attempt <- with(
+dat$MHQ2.SuicideAttemptEver <- with(
   dat,
   case_when(
     is.na(`29111-0.0`) |
@@ -76,10 +76,10 @@ dat$Suicide.Attempt <- with(
 
 if(diagnosticsFlag) dat %>%
   group_by(
-    Not.Worth.Living,
-    Self.Harm.Ever,
-    Self.Harm.Ever.12m,
-    Suicide.Attempt
+    MHQ2.LifeNotWorthLivingEver,
+    MHQ2.SelfHarmEver,
+    MHQ2.SelfHarm12Month,
+    MHQ2.SuicideAttemptEver
   ) %>%
   tally()
 

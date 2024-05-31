@@ -31,6 +31,7 @@ dat <- readRDS("data/MHQ2_Anonymous.rds")
 ```
 
 # 1. Depression ever case
+
 Algorithm: 
 Persistent sadness (29011) = Yes (1) OR Loss of interest (29012) = Yes (1)
 AND
@@ -49,6 +50,7 @@ Sleep change 29022 (Yes (1));
 Trouble concentrating 29026 (Yes (1)); 
 Feeling worthless 29027 (Yes (1)); 
 Thinking about death 29029 (Yes (1))
+
 ```{r Depression ever case}
 
 if(diagnosticsFlag) unique(dat$`29014-0.0`)
@@ -161,8 +163,8 @@ dat <-
     ) # anything ^ 0 equals 1, show NA if all items are missing
   ) %>%
   mutate(
-    # depression ever case
-    depression.ever.case = case_when(
+    # MHQ2.DepressionEverCase
+    MHQ2.DepressionEverCase = case_when(
       cidid.screen == 1 &
         !is.na(cidid.symptom.score) &
         cidid.symptom.score >= 5 ~ 1,
@@ -190,6 +192,7 @@ rm(cidid_symptoms)
 ```
 
 # 2. Depression ever control
+
 NOT mental health diagnosis (MHC1) (29000) = Depression (1)
 AND NOT Persistent Sadness (29011) = Yes
 AND NOT Loss of interest (29012) = Yes
@@ -203,6 +206,7 @@ AND NOT PHQ full score >= 5 (see below)
 •	Trouble concentrating (29008) = More than half of the days (2) or Nearly every day (3)
 •	Moving slowly (29009) = More than half of the days (2) or Nearly every day (3)
 •	Thoughts death (29010) = Several days (1) More than half of the days (2) or Nearly every day (3)
+
 ```{r Depression ever control}
 
 phq_symptoms <- c(
@@ -269,7 +273,7 @@ dat <-
     )
   ) %>%
   mutate(
-    depression.ever.control = case_when(
+    MHQ2.DepressionEverControl = case_when(
       tmp_29000 == FALSE &
         `29011-0.0` == 0 &
         `29012-0.0` == 0 &
@@ -308,6 +312,7 @@ PHQ full score >= 5 (see below)
 •	Trouble concentrating (29008) = More than half of the days (2) or Nearly every day (3)
 •	Moving slowly (29009) = More than half of the days (2) or Nearly every day (3)
 •	Thoughts death (29010) = Several days (1) More than half of the days (2) or Nearly every day (3)
+
 ```{r subthreshold depressive symptoms ever}
 
 dat$tmp_29000 <- apply(
@@ -345,10 +350,10 @@ dat <-
     )
   ) %>%
   mutate(
-    depression.subthreshold = case_when(
-      depression.ever.case == 1 |
+    MHQ2.DepressionSubthreshold = case_when(
+      MHQ2.DepressionEverCase == 1 |
         subthreshold == 1 ~ 1,
-      depression.ever.case == 0 &
+      MHQ2.DepressionEverCase == 0 &
         subthreshold == 0 ~ 0,
       .default = NA_real_
     )

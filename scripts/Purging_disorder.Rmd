@@ -10,6 +10,19 @@ date: "2023-11-07"
 library("tidyverse")
 ```
 
+# Extended Purging
+
+```{r}
+dat <- dat %>%
+  mutate(
+    MHQ2.ExtendedPurgingPhenotype = case_when(
+      is.na(`29144-0.0`) |
+        `29144-0.0` < 0 ~ NA_real_,
+      TRUE ~ `29144-0.0`
+    )
+  )
+```
+
 # Purging disorder
 
 Was there a time in your life when you made yourself vomit, used laxatives, diuretics or pills, on their own or in combination, at least once a week as a way to control your body shape or weight? = 1 Yes, at least once a week 
@@ -30,7 +43,7 @@ During the time when you were engaging in these behaviours, how dependent was yo
 ```{r}
 dat <- dat %>%
   mutate(
-    Purging_disorder = case_when(
+    MHQ2.PurgingDisorder = case_when(
       # Purging behaviours & once a week
       `29144-0.0` == 1 &
         # & at least three months
@@ -49,7 +62,7 @@ if(diagnosticsFlag) dat %>%
     `29144-0.0`,
     `29145-0.0`,
     `29146-0.0`,
-    Purging_disorder
+    MHQ2.PurgingDisorder
   ) %>%
   tally()
 ```
@@ -62,10 +75,10 @@ if(diagnosticsFlag) dat %>%
     `29145-0.0`, # weight loss behaviours duration
     `29146-0.0`, # weight loss behaviours self-esteem
     `29205-0.0`, # end date ED section MHQ2
-    Purging_disorder
+    MHQ2.PurgingDisorder
   ) %>%
   filter(
-    Purging_disorder == 1
+    MHQ2.PurgingDisorder == 1
   )
 ```
 
@@ -73,7 +86,7 @@ if(diagnosticsFlag) dat %>%
 Purging disorder
 ```{r}
 if(diagnosticsFlag) dat %>%
-  count(Purging_disorder)
+  count(MHQ2.PurgingDisorder)
 ```
 
 Expected total n that has answered the MHQ2 questionnaire 169,697

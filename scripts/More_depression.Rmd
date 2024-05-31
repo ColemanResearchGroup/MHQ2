@@ -55,36 +55,36 @@ Excluded if number of episodes missing or bipolar state missing
 dat <-
   dat %>%
   mutate(
-    depression.single = case_when(
-      depression.ever.case == 1 &
+    MHQ2.DepressionSingle = case_when(
+      MHQ2.DepressionEverCase == 1 &
         (`29033-0.0` == 1 & !is.na(`29033-0.0`)) &
-        BD1 == 0 ~ 1,
-      depression.ever.case == 0 |
+        MHQ2.BD1 == 0 ~ 1,
+      MHQ2.DepressionEverCase == 0 |
         (
           `29033-0.0` > 1 &
             !is.na(`29033-0.0`)
         ) |
         `29033-0.0` == -4  |
-        BD1 == 1 ~ 0,
+        MHQ2.BD1 == 1 ~ 0,
       .default = NA_real_
     )
   )
 
 if(diagnosticsFlag) dat %>%
   group_by(
-    depression.ever.case,
+    MHQ2.DepressionEverCase,
     `29033-0.0`,
-    BD1,
-    depression.single
+    MHQ2.BD1,
+    MHQ2.DepressionSingle
   ) %>%
   tally()
 
 View(dat %>%
   group_by(
-    depression.ever.case,
+    MHQ2.DepressionEverCase,
     `29033-0.0`,
-    BD1,
-    depression.single
+    MHQ2.BD1,
+    MHQ2.DepressionSingle
   ) %>%
   tally())
 
@@ -104,8 +104,8 @@ Excluded if number of episodes missing or bipolar state missing
 dat <-
   dat %>%
   mutate(
-    depression.recurrent = case_when(
-      depression.ever.case == 1 &
+    MHQ2.DepressionRecurrent = case_when(
+      MHQ2.DepressionEverCase == 1 &
         (
           !is.na(`29033-0.0`) &
             (
@@ -113,9 +113,9 @@ dat <-
                 `29033-0.0` == -4
             )
         ) &
-        BD1 == 0 ~ 1,
-      depression.ever.case == 0 |
-        BD1 == 1 |
+        MHQ2.BD1 == 0 ~ 1,
+      MHQ2.DepressionEverCase == 0 |
+        MHQ2.BD1 == 1 |
         `29033-0.0` == 1  ~ 0,
       .default = NA_real_
     )
@@ -123,19 +123,19 @@ dat <-
 
 if(diagnosticsFlag) dat %>%
   group_by(
-    depression.ever.case,
+    MHQ2.DepressionEverCase,
     `29033-0.0`,
-    BD1,
-    depression.recurrent
+    MHQ2.BD1,
+    MHQ2.DepressionRecurrent
   ) %>%
   tally()
 
 # View(dat %>%
 #   group_by(
-#     depression.ever.case,
+#     MHQ2.DepressionEverCase,
 #     `29033-0.0`,
-#     BD1,
-#     depression.recurrent
+#     MHQ2.BD1,
+#     MHQ2.DepressionRecurrent
 #   ) %>%
 #   tally())
 
@@ -151,10 +151,10 @@ start within two months of event (29013) = Yes (1)
 dat <-
   dat %>%
   mutate(
-    depression.single.event = case_when(
-      depression.single == 1 &
+    MHQ2.DepressionSingleEvent = case_when(
+      MHQ2.DepressionSingle == 1 &
         `29013-0.0` == 1 ~ 1,
-      depression.single == 0 |
+      MHQ2.DepressionSingle == 0 |
         `29013-0.0` == 0 ~ 0,
       .default = NA_real_
     )
@@ -162,19 +162,19 @@ dat <-
 
 if(diagnosticsFlag) dat %>%
   group_by(
-    depression.ever.case,
+    MHQ2.DepressionEverCase,
     `29033-0.0`,
-    BD1,
-    depression.single.event
+    MHQ2.BD1,
+    MHQ2.DepressionSingleEvent
   ) %>%
   tally()
 
 # View(dat %>%
 #   group_by(
-#     depression.ever.case,
+#     MHQ2.DepressionEverCase,
 #     `29033-0.0`,
-#     BD1,
-#     depression.single.event
+#     MHQ2.BD1,
+#     MHQ2.DepressionSingleEvent
 #   ) %>%
 #   tally())
 
@@ -190,10 +190,10 @@ Or has it been suggested that you had post-natal depression? (29035) = Yes (1)
 dat <-
   dat %>%
   mutate(
-    depression.postnatal = case_when(
-      depression.ever.case == 1 &
+    MHQ2.DepressionPostnatal = case_when(
+      MHQ2.DepressionEverCase == 1 &
         `29035-0.0` == 1 ~ 1,
-      depression.ever.case == 0 |
+      MHQ2.DepressionEverCase == 0 |
         `29035-0.0` == 0 ~ 0,
       .default = NA_real_
     )
@@ -201,19 +201,19 @@ dat <-
 
 if(diagnosticsFlag) dat %>%
   group_by(
-    depression.ever.case,
+    MHQ2.DepressionEverCase,
     `29033-0.0`,
-    BD1,
-    depression.postnatal
+    MHQ2.BD1,
+    MHQ2.DepressionPostnatal
   ) %>%
   tally()
 
 # View(dat %>%
 #   group_by(
-#     depression.ever.case,
+#     MHQ2.DepressionEverCase,
 #     `29033-0.0`,
-#     BD1,
-#     depression.postnatal
+#     MHQ2.BD1,
+#     MHQ2.DepressionPostnatal
 #   ) %>%
 #   tally())
 
@@ -307,8 +307,8 @@ dat <-
     )
   ) %>%
   mutate(
-    depression.melancholic = case_when(
-      depression.ever.case == 1 &
+    MHQ2.DepressionMelancholic = case_when(
+      MHQ2.DepressionEverCase == 1 &
         (
           `29012-0.0` == 1 |
             `29016-0.0` == 0
@@ -317,7 +317,7 @@ dat <-
           melan.symptom.score > 2 &
             !is.na(melan.symptom.score)
         ) ~ 1,
-      depression.ever.case == 0 |
+      MHQ2.DepressionEverCase == 0 |
         (
           `29012-0.0` == 0 &
             `29016-0.0` == 1
@@ -336,19 +336,19 @@ dat <-
 
 if(diagnosticsFlag) dat %>%
   group_by(
-    depression.ever.case,
+    MHQ2.DepressionEverCase,
     `29012-0.0`,
     `29016-0.0`,
-    depression.melancholic
+    MHQ2.DepressionMelancholic
   ) %>%
   tally()
 
 # View(dat %>%
 #   group_by(
-#     depression.ever.case,
+#     MHQ2.DepressionEverCase,
 #     `29012-0.0`,
 #     `29016-0.0`,
-#     depression.melancholic
+#     MHQ2.DepressionMelancholic
 #   ) %>%
 #   tally())
 
@@ -438,16 +438,16 @@ dat <-
     )
   ) %>%
   mutate(
-    depression.atypical = case_when(
-      depression.ever.case == 1 &
-        depression.melancholic == 0 &
+    MHQ2.DepressionAtypical = case_when(
+      MHQ2.DepressionEverCase == 1 &
+        MHQ2.DepressionMelancholic == 0 &
         `29016-0.0` == 1 &
         (
           atypical.symptom.score > 1 &
             !is.na(atypical.symptom.score)
         ) ~ 1,
-      depression.ever.case == 0 |
-        depression.melancholic == 1 |
+      MHQ2.DepressionEverCase == 0 |
+        MHQ2.DepressionMelancholic == 1 |
         `29016-0.0` == 0 |
         atypical.symptom.score <= 1 ~ 0,
       .default = NA_real_
@@ -463,15 +463,15 @@ dat <-
 
 if(diagnosticsFlag) dat %>%
   group_by(
-    depression.ever.case,
-    depression.atypical
+    MHQ2.DepressionEverCase,
+    MHQ2.DepressionAtypical
   ) %>%
   tally()
 
 # View(dat %>%
 #   group_by(
-#     depression.ever.case,
-#     depression.atypical
+#     MHQ2.DepressionEverCase,
+#     MHQ2.DepressionAtypical
 #   ) %>%
 #   tally())
 
@@ -483,15 +483,15 @@ if(diagnosticsFlag) dat %>%
 dat <-
   dat %>%
   select(
-    depression.ever.case,
+    MHQ2.DepressionEverCase,
     depression.ever.control,
     depression.subthreshold,
-    depression.single,
-    depression.recurrent,
-    depression.single.event,
-    depression.postnatal,
-    depression.melancholic,
-    depression.atypical
+    MHQ2.DepressionSingle,
+    MHQ2.DepressionRecurrent,
+    MHQ2.DepressionSingleEvent,
+    MHQ2.DepressionPostnatal,
+    MHQ2.DepressionMelancholic,
+    MHQ2.DepressionAtypical
   )
 
 saveRDS(dat, "life_time_depression.rds")

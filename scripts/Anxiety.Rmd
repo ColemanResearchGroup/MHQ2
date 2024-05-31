@@ -51,7 +51,7 @@ anx_pad_field_numbers <- as.character(29058:29075)
 # select anxiety & panic field numbers into dataframe
 ```{r}
 anx_pad_data <- dat %>%
-  select(ID,
+  select(eid,
     matches(
       paste(
         anx_pad_field_numbers,
@@ -109,7 +109,7 @@ Check response minimum is 0 and max is 21
 ```{r}
 anx_pad_data <- anx_pad_data %>%
   mutate(
-    Gad7Score = rowSums(
+    MHQ2.GAD7Score = rowSums(
       select(.,
         "29058-0.0_mod",
         "29059-0.0_mod",
@@ -123,10 +123,10 @@ anx_pad_data <- anx_pad_data %>%
     )
   )
 
-if(diagnosticsFlag) summary(anx_pad_data$Gad7Score)
+if(diagnosticsFlag) summary(anx_pad_data$MHQ2.GAD7Score)
 
 if(diagnosticsFlag) anx_pad_data %>%
-  count(Gad7Score)
+  count(MHQ2.GAD7Score)
 ```
 
 Create column that counts the number of NAs for GAD7 score
@@ -175,28 +175,28 @@ GAD7 full score >= 10. (10 is moderate anxiety). Ref: Kroenke K, Spitzer RL, Wil
 +++ ATK: note that there is no control algorithm criteria in the MHQ2 algorithm guidance. Confirm with team whether or not the below handling of controls should be added. We have added the following criteria (not specified in MHQ2 algorithm doc): 0 is assigned if they score less than 10, and in case they could score on the missed NA items [max 3 each] taking them above a threshold of 10, this is handled by including a threshold where their score + NA count x3 does not take them above 10
 
 ```{r}
-# Create a new column named 'GadCurrent' in the data frame
-# Calculate 'GadCurrent' value.
+# Create a new column named 'MHQ2.GADDerivedAnxiety' in the data frame
+# Calculate 'MHQ2.GADDerivedAnxiety' value.
 anx_pad_data <- anx_pad_data %>%
   mutate(
-    GadCurrent = case_when(
-      # If 'Gad7Score' is missing (NA) Assign NA to the 'GadCurrent' column.
-      is.na(Gad7Score) ~ NA_real_,
-      # If 'Gad7Score' is greater than 9 (i.e. >=10 for moderate current Gad)
-      # Assign 1 to the 'GadCurrent' column (as case)
-      Gad7Score > 9 ~ 1,
+    MHQ2.GADDerivedAnxiety = case_when(
+      # If 'MHQ2.GAD7Score' is missing (NA) Assign NA to the 'MHQ2.GADDerivedAnxiety' column.
+      is.na(MHQ2.GAD7Score) ~ NA_real_,
+      # If 'MHQ2.GAD7Score' is greater than 9 (i.e. >=10 for moderate current Gad)
+      # Assign 1 to the 'MHQ2.GADDerivedAnxiety' column (as case)
+      MHQ2.GAD7Score > 9 ~ 1,
       # If score less than 10, and adding score with NA count *3
       # (in case they score on the missed NA items [max 3 each]
       # taking them above threshold of 10)
       # Assign 0
-      Gad7Score < 10 & Gad7Score + Gad7NaCount * 3 < 10 ~ 0,
+      MHQ2.GAD7Score < 10 & MHQ2.GAD7Score + Gad7NaCount * 3 < 10 ~ 0,
       # NA if no conditions are met
       TRUE ~ NA_real_
     )
   )
 
 if(diagnosticsFlag) anx_pad_data %>%
-  count(GadCurrent)
+  count(MHQ2.GADDerivedAnxiety)
 ```
 
 # Panic attacks ever
@@ -293,7 +293,7 @@ Create panic attacks ever case
 
 ```{r}
 anx_pad_data <- anx_pad_data %>%
-  mutate(PanicAttacksEver = case_when(
+  mutate(MHQ2.PanicAttacksEver = case_when(
     is.na(PanicSymptomsCount) ~ NA,
     PanicSymptomsCount < 4 ~ 0,
     PanicSymptomsCount > 3 ~ 1
@@ -301,7 +301,7 @@ anx_pad_data <- anx_pad_data %>%
   )
 
 if(diagnosticsFlag) anx_pad_data %>%
-  count(PanicAttacksEver)
+  count(MHQ2.PanicAttacksEver)
 ```
 
 ## Panic disorder
@@ -334,9 +334,9 @@ Coding for 29070-0.0 (how long Continue to worry about panic attacks or their co
 
 ```{r}
 anx_pad_data <- anx_pad_data %>%
-  mutate(PanicDisorder = case_when(
+  mutate(MHQ2.PanicDisorder = case_when(
     # Symptoms {panic attack ever}
-    PanicAttacksEver == 1 &
+    MHQ2.PanicAttacksEver == 1 &
       (
         # Feel anxious more panic attacks = Yes
         `29067-0.0_mod` == 1 |
@@ -365,30 +365,30 @@ anx_pad_data <- anx_pad_data %>%
   )
 
 if(diagnosticsFlag) anx_pad_data %>%
-  count(PanicDisorder)
+  count(MHQ2.PanicDisorder)
 ```
 
 # Update the original dataset
 ```{r Update the original dataset}
 
-setDT(dat, key = "ID")
-setDT(anx_pad_data, key = "ID")
+setDT(dat, key = "eid")
+setDT(anx_pad_data, key = "eid")
 
 dat[anx_pad_data,
-    on = c("ID"),
+    on = c("eid"),
     c(
-      "Gad7Score",
-      "GadCurrent",
+      "MHQ2.GAD7Score",
+      "MHQ2.GADDerivedAnxiety",
       "PanicSymptomsCount",
-      "PanicAttacksEver",
-      "PanicDisorder"
+      "MHQ2.PanicAttacksEver",
+      "MHQ2.PanicDisorder"
     )
     := list(
-      i.Gad7Score,
-      i.GadCurrent,
+      i.MHQ2.GAD7Score,
+      i.MHQ2.GADDerivedAnxiety,
       i.PanicSymptomsCount,
-      i.PanicAttacksEver,
-      i.PanicDisorder
+      i.MHQ2.PanicAttacksEver,
+      i.MHQ2.PanicDisorder
     )]
 
 
@@ -401,11 +401,11 @@ dat <- as.data.frame(dat)
 ```{r save data, purl=FALSE}
 anx_pad_data %>%
   select(
-    Gad7Score,
-    GadCurrent,
+    MHQ2.GAD7Score,
+    MHQ2.GADDerivedAnxiety,
     PanicSymptomsCount,
-    PanicAttacksEver,
-    PanicDisorder
+    MHQ2.PanicAttacksEver,
+    MHQ2.PanicDisorder
   ) %>%
   saveRDS(
     file = "/file/path/anxiety_algorithms.rds"

@@ -263,7 +263,7 @@ NB: This sumscore should only be used in the BED DSM5 algorithm, i.e., to indica
 ```{r BED DSM5 algorithm}
 dat <- dat %>%
   mutate(
-    Binge_eating_disorder = case_when(
+    MHQ2.BingeEatingDisorderDSM5 = case_when(
       # "Have you had recurrent episodes of excessive overeating
       # or binge eating (i.e. eating significantly more than what
       # most people eat in a similar period of time,
@@ -318,13 +318,13 @@ if(diagnosticsFlag) dat %>%
     `29137-0.0`, # distress
     `29140-0.0`, # compensatory behaviours during binge eating
     BE_not_during_AN,
-    Binge_eating_disorder
+    MHQ2.BingeEatingDisorderDSM5
   )
 ```
 
 # Check 2
 ```{r, purl=FALSE}
 if(diagnosticsFlag) dat %>%
-  count(Binge_eating_disorder)
+  count(MHQ2.BingeEatingDisorderDSM5)
 ```
 

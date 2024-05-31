@@ -92,8 +92,8 @@ runAllScriptsOverarching <- function(
     "MHQ2.CurrentMoreSevereDepression",
     "MHQ2.DepressionMedicationHelped",
     "MHQ2.DepressionNonMedicationTherapyHelped",
-    "MHQ2.Hypomania.Ever",
-    "MHQ2.Mania.Ever",
+    "MHQ2.HypomaniaEver",
+    "MHQ2.ManiaEver",
     "MHQ2.BD1",
     "MHQ2.BipolarControl",
     "MHQ2.WiderBipolar",
@@ -108,7 +108,6 @@ runAllScriptsOverarching <- function(
     "MHQ2.AnorexiaNervosaRestricting"
     "MHQ2.ExtendedOvereatingPhenotype",
     "MHQ2.BulimiaNervosa",
-    "MHQ2.BingeEatingDisorderICD11",
     "MHQ2.BingeEatingDisorderDSM5",
     "MHQ2.ExtendedPurgingPhenotype",    
     "MHQ2.PurgingDisorder",
@@ -173,6 +172,8 @@ runAllScriptsOverarching <- function(
     paste0("290",40:48,"-0.0"), #medication/non-medication helped symptoms of depression
     paste0("290",49:50,"-0.0"),#mania
     paste0("29051-0.",0:7),#mania
+    "20126-0.0",
+    "20544-0.0",
     "29052-0.0",
     "29056-0.0",
     "29057-0.0",
@@ -237,7 +238,8 @@ runAllScriptsOverarching <- function(
     "29176-0.0",
     "29178-0.0",
     "29180-0.0",
-    "20117-0.0" #Alcohol dependence from baseline
+    "20406-0.0", #Alcohol addiction from MHQ1
+    "20404-0.0", #Alcohol dependence from MHQ1    
   )
   
   requiredVariables<-unlist(requiredVariables)
@@ -268,10 +270,6 @@ runAllScriptsOverarching <- function(
     return(toReturn)
   }
 
-  #+++JZ: Did we expect there to be a variable called eid? Now we have both eid and ID because the scripts use ID.
-  if(!any(colnames(dat)=="eid")) dat$eid<-1:nrow(dat)
-  dat$ID<-dat$eid #this is a temporary ID variable to be able to link copies of derived datasets with the original
-  
   # Process
   # Execute all scripts from the source. These must be configured to be compatible with this process.
   for(iDS in 1:nrow(meta.scripts)){
@@ -288,8 +286,24 @@ runAllScriptsOverarching <- function(
       local=TRUE #execute in local environment i.e. the function
     )
   }
+
+  # Execute additional commands to produce AnyAlgorithmBasedDisorder
+  # Note that this does not distinguish between controls and missing data
   
-  
+  dat$MHQ2.AnyAlgorithmBasedDisorder <- with(dat,
+    ifelse(
+      (!is.na(MHQ2.DepressionEverCase) & MHQ2.DepressionEverCase == 1) |
+      (!is.na(MHQ2.PanicDisorder) & MHQ2.PanicDisorder == 1) |
+      (!is.na(MHQ2.AnorexiaNervosa) & MHQ2.AnorexiaNervosa == 1) |
+      (!is.na(MHQ2.BulimiaNervosa) & MHQ2.BulimiaNervosa == 1) |
+      (!is.na(MHQ2.BingeEatingDisorder) & MHQ2.BingeEatingDisorder == 1) |
+      (!is.na(MHQ2.PurgingDisorder) & MHQ2.PurgingDisorder == 1) |
+      (!is.na(MHQ2.AlcoholHazardousHarmfulUseCase) & MHQ2.AlcoholHazardousHarmfulUseCase == 1),
+      1,
+      0
+    )
+  )
+
   #export results
   toReturn$processedDat<-dat[,producedVariables]
   
@@ -322,7 +336,7 @@ if(interactive()==FALSE){
       outputDataFilePath = argOutputDataFilePath,
       variablesToExtract = argVariables2,
       writeOutput = TRUE
-    )
+    )MHQ2.
   } else {
     print_help(clParser)
   }

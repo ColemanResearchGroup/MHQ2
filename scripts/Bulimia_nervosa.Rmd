@@ -192,12 +192,30 @@ if(diagnosticsFlag) dat %>%
   count(BE_other_weight_control)
 ```
 
+# Overeating Phenotype
+
+Have you had recurrent episodes of excessive overeating or binge eating?
+
+29132 = 02 Yes, at least once a week
+
+```{r}
+dat <- dat %>%
+  mutate(
+    MHQ2.ExtendedOvereatingPhenotype = case_when(
+      is.na(`29132-0.0`) |
+        `29132-0.0` < 0 ~ NA_real_,
+      29132-0.0 != 2 ~ 0,
+      29132-0.0 == 2 ~ 1
+    )
+  )
+```
+
 # Bulimia nervosa
 
 ```{r}
 dat <- dat %>%
   mutate(
-    Bulimia_nervosa = case_when(
+    MHQ2.BulimiaNervosa = case_when(
       # Criterion A
       # Have you had recurrent episodes of excessive overeating
       # or binge eating = 2 Yes, at least once a week
@@ -261,7 +279,7 @@ dat <- dat %>%
 ```{r, purl=FALSE}
 if(diagnosticsFlag) dat %>%
   select(
-    Bulimia_nervosa,
+    MHQ2.BulimiaNervosa,
     `29132-0.0`, # binge eating
     `29135-0.0`, # frequency of loss of control
     BE_made_yourself_vomit,
@@ -283,5 +301,5 @@ if(diagnosticsFlag) dat %>%
 # Check
 ```{r, purl=FALSE}
 if(diagnosticsFlag) dat %>%
-  count(Bulimia_nervosa)
+  count(MHQ2.BulimiaNervosa)
 ```

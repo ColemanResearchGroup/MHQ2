@@ -254,8 +254,8 @@ dat[c(
   as.numeric
 )
 
-#Rewrites Sum_AUDIT to NA if all AUDIT scores are missing/NA
-dat$Sum_AUDIT <- apply(
+#Rewrites MHQ2.AUDITScore to NA if all AUDIT scores are missing/NA
+dat$MHQ2.AUDITScore <- apply(
   dat[, c(
     "29091-0.0",
     "29092-0.0",
@@ -293,9 +293,9 @@ Harmful alcohol use: Score {AUDIT full scale} >= 16 (when items scored 0-4)
 #Hazardous use
 dat <- dat %>%
   mutate(
-    alcohol_hazardous_use = case_when(
-      is.na(Sum_AUDIT) ~ NA_real_,
-      Sum_AUDIT >= 8 ~ 1,
+    MHQ2.AlcoholHazardousHarmfulUseCase = case_when(
+      is.na(MHQ2.AUDITScore) ~ NA_real_,
+      MHQ2.AUDITScore >= 8 ~ 1,
       TRUE ~ 0
     )
   )
@@ -303,9 +303,9 @@ dat <- dat %>%
 #Harmful use
 dat <- dat %>%
   mutate(
-    alcohol_harmful_use = case_when(
-      is.na(Sum_AUDIT) ~ NA_real_,
-      Sum_AUDIT >= 16 ~ 1,
+    MHQ2.AlcoholHarmfulDrinking = case_when(
+      is.na(MHQ2.AUDITScore) ~ NA_real_,
+      MHQ2.AUDITScore >= 16 ~ 1,
       TRUE ~ 0
     )
   )
@@ -318,8 +318,9 @@ AUDIT full scale score under cut-off (8), excluding those who reported alcohol a
 
 AND 
 NOT {ever alcohol dependence} 
->Used data field 20117: alcohol drinker status = never. (-3) Prefer not to answer, (0) Never, (1) Previous, (2) Current
-> '20117-0.0' == 0 
+>Used data fields 20404-0.0 and 20406-0.0 from MHQ1 ("Ever physically dependent on alcohol", "Ever addicted to alcohol" alcohol drinker status = never. (-3) Prefer not to answer, (0) Never, (1) Previous, (2) Current
+> is.na('20404-0.0') | '20404-0.0' != 1
+> is.na('20406-0.0') | '20406-0.0' != 1 
 
 AND 
 NOT reason for reducing amount of alcohol drunk 2664 = “ill health”, “doctor’s advice”or “health precaution” [1,2or3]
@@ -333,12 +334,27 @@ Vast majority of UKB have 20117-0.0==1.
 ```{r}
 dat <- dat %>%
   mutate(
-    alcohol_nonuse = case_when(
-      Sum_AUDIT < 8 &
-        `20117-0.0` == 0 &
+    MHQ2.AlcoholHazardousHarmfulUseControl = case_when(
+      MHQ2.AUDITScore < 8 &
+        (
+	  is.na(`20404-0.0`) |
+	    `20404-0.0` != 1
+	) &
+	(
+	  is.na(`20406-0.0`) |
+	    `20406-0.0` != 1
+	) &
         `2664-0.0` %in% c(4, 5)
       ~ 1,
-      Sum_AUDIT >= 8 |
+      MHQ2.AUDITScore >= 8 |
+        (
+	  !is.na(`20404-0.0`) &
+	    `20404-0.0` == 1
+	) |
+	(
+	  !is.na(`20406-0.0`) &
+	    `20406-0.0` == 1
+	) |
         `20117-0.0` %in% c(1, 2) |
         `2664-0.0` %in% c(1, 2, 3)
       ~ 0,
@@ -356,7 +372,7 @@ Used cannabis (CU1) = Yes, 1-2 times (01) OR Yes, 3-10 times (02) OR Yes, 11-100
 ```{r}
 dat <- dat %>%
   mutate(
-    cannabis_use = case_when(
+    MHQ2.CannabisUseEver = case_when(
       `29104-0.0` %in% c(1, 2, 3, 4) ~ 1,
       `29104-0.0` == 0 ~ 0,
       TRUE ~ NA_integer_
@@ -374,7 +390,7 @@ How often = Every day (04)
 if(diagnosticsFlag) unique(dat$`29107-0.0`)
 dat <- dat %>%
   mutate(
-    daily_cannabis_use = case_when(
+    MHQ2.CannabisUseDaily = case_when(
       `29107-0.0` == 3 ~ 1,
       `29107-0.0` >= 0 & `29107-0.0` < 3 ~ 0,
       TRUE ~ NA_integer_

@@ -33,7 +33,7 @@ EVALUATE Score > 1 = positive
 
 dat <- dat %>%
   mutate(
-    social_isolation = case_when(
+    MHQ2.SocialIsolation = case_when(
       (
         is.na(`29162-0.0`) |
           `29162-0.0` < 0
@@ -67,7 +67,7 @@ if(diagnosticsFlag) dat %>%
     `29162-0.0`,
     `29163-0.0`,
     `29167-0.0`,
-    social_isolation
+    MHQ2.SocialIsolation
   ) %>%
   tally()
 
@@ -76,7 +76,7 @@ if(diagnosticsFlag) dat %>%
 #     `29162-0.0`,
 #     `29163-0.0`,
 #     `29167-0.0`,
-#     social_isolation
+#     MHQ2.SocialIsolation
 #   ) %>%
 #   tally())
 
@@ -91,7 +91,7 @@ OR Virtual weekly (SS4a, 29168) NOT= None of the above (0)
 
 dat <- dat %>%
   mutate(
-    virtually_connected = case_when(
+    MHQ2.VirtuallyConnected = case_when(
       (is.na(`29164-0.0`) |
          `29164-0.0` < 0) |
         (
@@ -108,7 +108,7 @@ if(diagnosticsFlag) dat %>%
   group_by(
     `29164-0.0`,
     `29168-0.0`,
-    virtually_connected
+    MHQ2.VirtuallyConnected
   ) %>%
   tally()
 
@@ -116,7 +116,7 @@ if(diagnosticsFlag) dat %>%
 #   group_by(
 #     `29164-0.0`,
 #     `29168-0.0`,
-#     virtually_connected
+#     MHQ2.VirtuallyConnected
 #   ) %>%
 #   tally())
 
@@ -184,7 +184,7 @@ dat <- dat %>%
   )
 
 ##Sum of UCLA scores
-dat$UCLA_loneliness_sum <- rowSums(
+dat$MHQ2.UCLALoneliness <- rowSums(
   dat[, c(
     "29172-0.0_recoded_social",
     "29173-0.0_recoded_social",
@@ -200,7 +200,7 @@ dat <- dat[, !grepl(
 
 if(diagnosticsFlag) dat %>%
   group_by(
-    UCLA_loneliness_sum
+    MHQ2.UCLALoneliness
   ) %>%
   tally()
 
@@ -313,10 +313,10 @@ dat <- dat %>%
     )
   )
 
-##BRS score sum
+##MHQ2.BriefResilienceScale score sum
 dat <- dat %>%
   mutate(
-    BRS = (
+    MHQ2.BriefResilienceScale = (
       `29175-0.0_recoded_social` +
         `29177-0.0_recoded_social` +
         `29179-0.0_recoded_social` +
@@ -333,7 +333,7 @@ dat <- dat[, !grepl(
 
 if(diagnosticsFlag) dat %>%
   group_by(
-    BRS
+    MHQ2.BriefResilienceScale
   ) %>%
   tally()
 

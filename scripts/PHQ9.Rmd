@@ -171,7 +171,7 @@ if(diagnosticsFlag) dat %>%
 
 dat <- dat %>%
   mutate(
-    PHQ9.derived.depression = case_when(
+    MHQ2.PHQ9DerivedDepression = case_when(
       PHQ9.No.Info == 1 ~ NA_real_,
       (
         !is.na(PHQ9.Screen) &
@@ -189,7 +189,7 @@ if(diagnosticsFlag) dat %>%
   group_by(
     PHQ9.Screen,
     PHQ9.Items,
-    PHQ9.derived.depression
+    MHQ2.PHQ9DerivedDepression
   ) %>%
   tally()
 
@@ -197,7 +197,7 @@ if(diagnosticsFlag) dat %>%
 #   group_by(
 #     PHQ9.Screen,
 #     PHQ9.Items,
-#     PHQ9.derived.depression
+#     MHQ2.PHQ9DerivedDepression
 #   ) %>%
 #   tally())
 
@@ -211,7 +211,7 @@ Cut-offs used are: < 5 No depression; 5-15 Less severe depression; >15 More seve
 
 dat <- dat %>%
   mutate(
-    PHQ9.Severity = rowSums(
+    MHQ2.PHQ9Score = rowSums(
       across(
         c(
           `29002-0.0`,
@@ -234,7 +234,7 @@ dat <- dat %>%
     )
   )
 
-### Set PHQ9.Severity to NA, if all items are missing
+### Set MHQ2.PHQ9Score to NA, if all items are missing
 
 conditions <- Reduce(
   `&`,
@@ -249,7 +249,7 @@ conditions <- Reduce(
   )
 )
 
-dat$PHQ9.Severity[conditions] <- NA
+dat$MHQ2.PHQ9Score[conditions] <- NA
 
 ```
 
@@ -264,30 +264,62 @@ Current Depression controls (0 = controls): Scores negative on PHQ9 algorithm an
 
 dat <- dat %>%
   mutate(
-    Depressed.Current = case_when(
+    depressed.current = case_when(
       PHQ9.No.Info == 1 ~ NA_real_,
-      PHQ9.derived.depression == 0 &
+      MHQ2.PHQ9DerivedDepression == 0 &
         (
-          !is.na(PHQ9.Severity) &
-            PHQ9.Severity < 5
+          !is.na(MHQ2.PHQ9Score) &
+            MHQ2.PHQ9Score < 5
         ) ~ 0,
-      depression.ever.case == 1 &
+      MHQ2.DepressionEverCase == 1 &
         (
           !is.na(PHQ9.Screen) &
             PHQ9.Screen == 1
         ) &
         (
-          !is.na(PHQ9.Items) & PHQ9.Items > 4
-        ) ~ 1, # need to merge depression.ever.case
+          !is.na(PHQ9.Items) &
+	    PHQ9.Items > 4
+        ) ~ 1, # need to merge MHQ2.DepressionEverCase
+      TRUE ~ NA_real_
+    )
+  )
+
+dat <- dat %>%
+  mutate(
+    MHQ2.DepressedCurrentCase = case_when(
+      PHQ9.No.Info == 1 ~ NA_real_,
+      MHQ2.DepressionEverCase == 1 &
+        (
+          !is.na(PHQ9.Screen) &
+            PHQ9.Screen == 1
+        ) &
+        (
+          !is.na(PHQ9.Items) &
+	    PHQ9.Items > 4
+        ) ~ 1, # need to merge MHQ2.DepressionEverCase
+      TRUE ~ NA_real_
+    )
+  )
+
+dat <- dat %>%
+  mutate(
+    MHQ2.DepressedCurrentControl = case_when(
+      PHQ9.No.Info == 1 ~ NA_real_,
+      MHQ2.PHQ9DerivedDepression == 0 &
+        (
+          !is.na(MHQ2.PHQ9Score) &
+            MHQ2.PHQ9Score < 5
+        ) ~ 0,
       TRUE ~ NA_real_
     )
   )
 
 if(diagnosticsFlag) dat %>%
   group_by(
-    PHQ9.derived.depression,
-    depression.ever.case,
-    Depressed.Current
+    MHQ2.PHQ9DerivedDepression,
+    MHQ2.DepressionEverCase,
+    MHQ2.DepressedCurrentCase,
+    MHQ2.DepressedCurrentControl
   ) %>%
   tally()
 
@@ -302,15 +334,15 @@ and it plus controls for current depression will contain all of those who answer
 
 dat <- dat %>%
   mutate(
-    Current.subthreshold.Depression = case_when(
+    MHQ2.CurrentSubthresholdDepression = case_when(
       PHQ9.No.Info == 1 ~ NA_real_,
       (
-        !is.na(PHQ9.Severity) &
-          PHQ9.Severity >= 5
+        !is.na(MHQ2.PHQ9Score) &
+          MHQ2.PHQ9Score >= 5
       ) |
-        PHQ9.derived.depression == 1 ~ 1,
-      !is.na(Depressed.Current) &
-        Depressed.Current == 0 ~ 0,
+        MHQ2.PHQ9DerivedDepression == 1 ~ 1,
+      !is.na(depressed.current) &
+        depressed.current == 0 ~ 0,
       TRUE ~ NA_real_
     )
   )
@@ -325,16 +357,16 @@ current depression with PHQ9 full score > 15
 
 dat <- dat %>%
   mutate(
-    Current.more.severe.depression = case_when(
+    MHQ2.CurrentMoreSevereDepression = case_when(
       PHQ9.No.Info == 1 ~ NA_real_,
-      Depressed.Current == 0 |
+      depressed.current == 0 |
         (
-          is.na(PHQ9.Severity) |
-            PHQ9.Severity <= 15
+          is.na(MHQ2.PHQ9Score) |
+            MHQ2.PHQ9Score <= 15
         ) ~ 0,
-      Depressed.Current == 1 &
-        !is.na(PHQ9.Severity) &
-        PHQ9.Severity > 15 ~ 1,
+      depressed.current == 1 &
+        !is.na(MHQ2.PHQ9Score) &
+        MHQ2.PHQ9Score > 15 ~ 1,
       TRUE ~ NA_real_
     )
   )
@@ -410,8 +442,8 @@ dat$`29039`[c(`29039`)] <- 1
 
 dat <- dat %>%
   mutate(
-    Depressed.medication.helped = case_when(
-      depression.ever.case == 1 &
+    MHQ2.DepressionMedicationHelped = case_when(
+      MHQ2.DepressionEverCase == 1 &
         `29038` == 1 &
         `29039` == 1 &
         (
@@ -423,7 +455,7 @@ dat <- dat %>%
             `29045-0.0` == 1 |
             `29046-0.0` == 1
         ) ~ 1,
-      depression.ever.case == 1 &
+      MHQ2.DepressionEverCase == 1 &
         `29039` == 1 &
         (
           (
@@ -442,8 +474,8 @@ dat <- dat %>%
 
 if(diagnosticsFlag) dat %>%
   group_by(
-    depression.ever.case,
-    Depressed.medication.helped
+    MHQ2.DepressionEverCase,
+    MHQ2.DepressionMedicationHelped
   ) %>%
   tally()
 
@@ -464,7 +496,7 @@ if(diagnosticsFlag) dat %>%
 ### Non-medication therapy helped
 
 Any of the talking therapies or other therapeutic activities that participant reported participating in helped symptoms of depression (at least a little).
-depression.ever.case=1 
+MHQ2.DepressionEverCase=1 
 AND
 29047.0.0: Activities undertaken to treat depression (D29) = “Talking therapies, such as psychotherapy, counselling, group therapy or CBT” (1) 
 OR 
@@ -496,11 +528,11 @@ dat$`29047`[c(`29047`)] <- 1
 
 dat <- dat %>%
   mutate(
-    Depressed.non_medication.therapy.helped = case_when(
-      depression.ever.case == 1 &
+    MHQ2.DepressionNonMedicationTherapyHelped = case_when(
+      MHQ2.DepressionEverCase == 1 &
         `29047` == 1 &
         `29048-0.0` == 1 ~ 1,
-      depression.ever.case == 1 &
+      MHQ2.DepressionEverCase == 1 &
         `29047` == 1 &
         (
           `29048-0.0` == 0 |
@@ -512,8 +544,8 @@ dat <- dat %>%
 
 if(diagnosticsFlag) dat %>%
   group_by(
-    depression.ever.case,
-    Depressed.non_medication.therapy.helped
+    MHQ2.DepressionEverCase,
+    MHQ2.DepressionNonMedicationTherapyHelped
   ) %>%
   tally()
 
@@ -522,17 +554,18 @@ if(diagnosticsFlag) dat %>%
 ## Save variables for export
 ```{r Save variables for export, purl=FALSE}
 export_variables <- c(
-  "ID",
+  "eid",
   "PHQ9.No.Info",
   "PHQ9.Screen",
   "PHQ9.Items",
-  "PHQ9.derived.depression",
-  "PHQ9.Severity",
-  "Depressed.Current",
-  "Current.subthreshold.Depression",
-  "Current.more.severe.depression",
-  "Depressed.medication.helped",
-  "Depressed.non_medication.therapy.helped"
+  "MHQ2.PHQ9DerivedDepression",
+  "MHQ2.PHQ9Score",
+  "MHQ2.DepressedCurrentCase",
+  "MHQ2.DepressedCurrentControl",
+  "MHQ2.CurrentSubthresholdDepression",
+  "MHQ2.CurrentMoreSevereDepression",
+  "MHQ2.DepressionMedicationHelped",
+  "MHQ2.DepressionNonMedicationTherapyHelped"
 )
 ```
 

@@ -24,8 +24,8 @@ library("data.table")
 
 ```{r read in data, purl=FALSE}
 MHQ2 <- readRDS("data/MHQ2_Height_Alcohol_Field_Anonymous.rds")
-MHQ2$ID<-1:nrow(MHQ2)
-setDT(MHQ2,key = "ID")
+#MHQ2$ID<-1:nrow(MHQ2)
+#setDT(MHQ2,key = "ID")
 ```
 
 #Binge Eating behaviours, as used in BED_DSM5.Rmd

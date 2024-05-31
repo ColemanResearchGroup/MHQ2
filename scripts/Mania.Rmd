@@ -105,7 +105,7 @@ dat$Total.Manifestations <- with(
 
 ```{r}
 
-dat$Hypomania.Ever <- with(
+dat$MHQ2.HypomaniaEver <- with(
   dat,
   case_when(
     (
@@ -156,7 +156,7 @@ Needed treatment=Yes OR Caused problems=Yes
 
 ```{r}
 
-dat$Mania.Ever <- with(
+dat$MHQ2.ManiaEver <- with(
   dat,
   case_when(
     (
@@ -222,39 +222,76 @@ dat$Mania.Ever <- with(
 
 # Bipolar affective disorder type 1 (BD1) definition
 Case(depression ever) AND symptoms (Mania ever)
+
 ```{r}
 
-dat$BD1 <- with(
+dat$MHQ2.BD1 <- with(
   dat,
   ifelse(
     (
-      !is.na(depression.ever.case) &
-        depression.ever.case == 1
-    ) & #depression.ever.case EXTERNAL FROM LT_DEPRESSION
+      !is.na(MHQ2.DepressionEverCase) &
+        MHQ2.DepressionEverCase == 1
+    ) & 
       (
-        !is.na(Mania.Ever) &
-          Mania.Ever == 1
+        !is.na(MHQ2.ManiaEver) &
+          MHQ2.ManiaEver == 1
       ),
     1,
     0
   )
 )
+
+```
+
+# Bipolar controls
+NOT {hypomania/mania}
+AND
+NOT {categorised bipolar @ baseline 20126 = 1 or 2}
+AND
+NOT {self-reported bipolar 20544=10}
+
+```{r}
+
+dat$MHQ2.BipolarControl <- with(
+  dat,
+  ifelse(
+    !is.na(MHQ2.HypomaniaEver) &
+      MHQ2.HypomaniaEver == 0 &
+      !is.na(MHQ2.ManiaEver) &
+      MHQ2.ManiaEver == 0 &
+      (
+        is.na(20126-0.0) |
+	(
+	  20126-0.0 != 1 &
+	  20126-0.0 != 2
+        )
+      ) &
+      (
+        is.na(20544-0.0) |
+          20544-0.0 != 10
+      ),
+    1,
+    0
+  )
+)
+
 ```
 
 # Wide bipolar spectrum
 Case (depression ever) AND Symptoms (hypomania/mania ever)
+
 ```{r}
 
-dat$Wider.Bipolar <- with(
+dat$MHQ2.WiderBipolar <- with(
   dat,
   ifelse(
     (
-      !is.na(depression.ever.case) &
-        depression.ever.case == 1
+      !is.na(MHQ2.DepressionEverCase) &
+        MHQ2.DepressionEverCase == 1
     ) &
       (
-        !is.na(Hypomania.Ever) &
-          Hypomania.Ever == 1
+        !is.na(MHQ2.HypomaniaEver) &
+          MHQ2.HypomaniaEver == 1
       ),
     1,
     0

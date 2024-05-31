@@ -147,7 +147,7 @@ Coding	Meaning
 
 trauma_data <- trauma_data %>%
   mutate(
-    TraumaChildhood = case_when(
+    MHQ2.TraumaChildhood = case_when(
       (
         is.na(`29076-0.0_mod`) &
           is.na(`29077-0.0_mod`) &
@@ -176,7 +176,7 @@ trauma_data <- trauma_data %>%
 if(diagnosticsFlag) trauma_data %>%
   with(
     table(
-      TraumaChildhood,
+      MHQ2.TraumaChildhood,
       useNA = "a"
     )
   )
@@ -217,7 +217,7 @@ Coding	Meaning
 
 trauma_data <- trauma_data %>%
   mutate(
-    TraumaAdulthood = case_when(
+    MHQ2.TraumaAdulthood = case_when(
       (
         is.na(`29081-0.0_mod`) &
           is.na(`29082-0.0_mod`) &
@@ -247,7 +247,7 @@ trauma_data <- trauma_data %>%
 if(diagnosticsFlag) trauma_data %>%
   with(
     table(
-      TraumaAdulthood,
+      MHQ2.TraumaAdulthood,
       useNA = "a"
     )
   )
@@ -309,7 +309,7 @@ Coding	Meaning
 
 trauma_data <- trauma_data %>%
   mutate(
-    Trauma12Months = case_when(
+    MHQ2.Trauma12Month = case_when(
       (
         is.na(`29081-0.0_mod`) &
           is.na(`29082-0.0_mod`) &
@@ -349,7 +349,7 @@ trauma_data <- trauma_data %>%
 if(diagnosticsFlag) trauma_data %>%
   with(
     table(
-      Trauma12Months,
+      MHQ2.Trauma12Month,
       useNA = "a"
     )
   )
@@ -361,9 +361,9 @@ if(diagnosticsFlag) trauma_data %>%
 
 selected_columns <- trauma_data %>%
   select(
-    TraumaChildhood,
-    TraumaAdulthood,
-    Trauma12Months
+    MHQ2.TraumaChildhood,
+    MHQ2.TraumaAdulthood,
+    MHQ2.Trauma12Month
   )
 
 ```
