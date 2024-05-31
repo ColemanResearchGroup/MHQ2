@@ -105,7 +105,7 @@ runAllScriptsOverarching <- function(
     "MHQ2.BMIAtLowWeight",
     "MHQ2.AnorexiaNervosa",
     "MHQ2.AnorexiaNervosaBingeEatingPurging",
-    "MHQ2.AnorexiaNervosaRestricting"
+    "MHQ2.AnorexiaNervosaRestricting",
     "MHQ2.ExtendedOvereatingPhenotype",
     "MHQ2.BulimiaNervosa",
     "MHQ2.BingeEatingDisorderDSM5",
@@ -336,7 +336,7 @@ if(interactive()==FALSE){
       outputDataFilePath = argOutputDataFilePath,
       variablesToExtract = argVariables2,
       writeOutput = TRUE
-    )MHQ2.
+    )
   } else {
     print_help(clParser)
   }
