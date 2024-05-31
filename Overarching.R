@@ -3,47 +3,82 @@
 # author: "Johan Zvrskovec"
 # date: '2023-12-20'
 #
-# This is the overarching script. It works as a wrapper around the coding scripts for individual parts of MHQ2, as of now.
+# This is the overarching script.
+# It works as a wrapper around the coding scripts for individual parts of MHQ2.
 
 # Clear global environment prior to initiation
 remove(list = ls())
 
 # Load dependencies
-packages <- c("data.table", "tidyverse", "dplyr", "optparse")
-lapply(X = packages, FUN = require, character.only = TRUE)
+packages <- c(
+  "data.table",
+  "tidyverse",
+  "dplyr",
+  "optparse"
+)
+
+lapply(
+  X = packages,
+  FUN = require,
+  character.only = TRUE
+)
 
 #parse command line arguments
 clParser <- OptionParser()
-clParser <- add_option(clParser, c("-i", "--input-data-file-path"), type="character", default=NA,
-                       help="File path to a file to read as the data to process.\n")
-clParser <- add_option(clParser, c("-o", "--output-data-file-path"), type="character", default=NA,
-                       help="File path to a file to write as the processed data.\n")
-clParser <- add_option(clParser, c("-v", "--variables"), type="character", default=NA,
-                       help="A comma separated string with variable names to export from the processed data.\n")
 
-clOptions<-parse_args(clParser)
-argInputDataFilePath<-clOptions$`input-data-file-path`
-argOutputDataFilePath<-clOptions$`output-data-file-path`
-argVariables<-clOptions$variables
+clParser <- add_option(
+  clParser,
+  c(
+    "-i",
+    "--input-data-file-path"
+  ),
+  type = "character",
+  default = NA,
+  help = "File path to a file to read as the data to process.\n"
+)
+
+clParser <- add_option(
+  clParser,
+  c(
+    "-o",
+    "--output-data-file-path"
+  ),
+  type = "character",
+  default = NA,
+  help = "File path to a file to write as the processed data.\n"
+)
+
+clParser <- add_option(
+  clParser,
+  c(
+    "-v",
+    "--variables"
+  ),
+  type = "character",
+  default = NA,
+  help = "Comma separated string of variable names to export from the processed data.\n"
+)
+
+clOptions <- parse_args(clParser)
+argInputDataFilePath <- clOptions$`input-data-file-path`
+argOutputDataFilePath <- clOptions$`output-data-file-path`
+argVariables <- clOptions$variables
 
 runAllScriptsOverarching <- function(
-    dat=NULL,
-    variablesToExtract=NULL,
-    inputDataFilePath=NA,
-    outputDataFilePath=NA,
-    writeOutput=F,
-    diagnosticsFlag=F   #set this to T if you want to print debugging information
-    ){
-  
+  dat = NULL,
+  variablesToExtract = NA,
+  inputDataFilePath = NA,
+  outputDataFilePath = NA,
+  writeOutput = FALSE,
+  diagnosticsFlag = FALSE #set to T if you want to print debugging information
+) {
+
   cat("\nRunning the MHQ2 overarching coding script.\n")
-  
-  
+
   #dedicated argument defaults - we cannot set these in the normal way because of the hard coded defaults from the run script
   if(is.na(outputDataFilePath)){
     outputDataFilePath<-"runAllScriptsOverarching.tsv"
   }
-  
-
   
   toReturn<-c()
   
@@ -109,7 +144,7 @@ runAllScriptsOverarching <- function(
     "MHQ2.ExtendedOvereatingPhenotype",
     "MHQ2.BulimiaNervosa",
     "MHQ2.BingeEatingDisorderDSM5",
-    "MHQ2.ExtendedPurgingPhenotype",    
+    "MHQ2.ExtendedPurgingPhenotype",
     "MHQ2.PurgingDisorder",
     "MHQ2.AUDITScore",
     "MHQ2.AlcoholHazardousHarmfulUseCase",
@@ -131,6 +166,10 @@ runAllScriptsOverarching <- function(
   )
   
   toReturn$producedVariables<-producedVariables
+
+  if(is.na(variablesToExtract)){
+    variablesToExtract <- producedVariables
+  }
   
   if(length(variablesToExtract)>0){
     #assess misspecified variables in variablesToExtract
@@ -239,7 +278,7 @@ runAllScriptsOverarching <- function(
     "29178-0.0",
     "29180-0.0",
     "20406-0.0", #Alcohol addiction from MHQ1
-    "20404-0.0", #Alcohol dependence from MHQ1    
+    "20404-0.0" #Alcohol dependence from MHQ1
   )
   
   requiredVariables<-unlist(requiredVariables)
@@ -254,7 +293,7 @@ runAllScriptsOverarching <- function(
       if(any(grep(pattern = "\\.rds$", x = inputDataFilePath, ignore.case = T))){
         dat <- readRDS(inputDataFilePath)
       } else { #assume tsv format otherwise
-        dat <- fread(file = inputDataFilePath, na.strings =c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
       }
     } else {
       stop("No input file specified\n")
@@ -269,7 +308,7 @@ runAllScriptsOverarching <- function(
     toReturn$missingVariables<-missingVariables
     return(toReturn)
   }
-
+  
   # Process
   # Execute all scripts from the source. These must be configured to be compatible with this process.
   for(iDS in 1:nrow(meta.scripts)){
@@ -283,10 +322,10 @@ runAllScriptsOverarching <- function(
     )
     source(
       paste0(cFilename,".R"),
-      local=TRUE #execute in local environment i.e. the function
+      local = TRUE #execute in local environment i.e. the function
     )
   }
-
+  
   # Execute additional commands to produce AnyAlgorithmBasedDisorder
   # Note that this does not distinguish between controls and missing data
   
@@ -318,8 +357,6 @@ runAllScriptsOverarching <- function(
   cat("\nThe data has been processsed and the resulting dataframe is in the returned sub-object processedDat.\n")
   
   return(toReturn)
-  
-
 }
 
 #execute function if we run from the command line
@@ -342,7 +379,6 @@ if(interactive()==FALSE){
   }
 }
 
-
 #test of whole function
 # result <-runAllScriptsOverarching(
 #   variablesToExtract = c("Depressed.Current","Mania.Ever"),
@@ -354,4 +390,3 @@ if(interactive()==FALSE){
 #   variablesToExtract = c("Depressed.Current","Mania.Ever","crap"),
 #   inputDataFilePath = 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
 #   )
-

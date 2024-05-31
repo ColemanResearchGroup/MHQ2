@@ -252,6 +252,31 @@ NOT {self-reported bipolar 20544=10}
 
 ```{r}
 
+grep_reports <- function(data, codes) {
+  return(
+    apply(
+      X = data,
+      MARGIN = 1,
+      FUN = function(selected_row) {
+	if (all(is.na(selected_row))) {
+          return(NA_real_)
+        } else {
+          return(sign(sum(codes %in% selected_row)))
+        }
+      }
+    )
+  )
+}
+
+
+dat$SelfReportedBipolarDisorder <- grep_reports(
+  data = dat[, grep(
+    "^29000-",
+    colnames(dat)
+  )],
+  codes = 2
+)
+
 dat$MHQ2.BipolarControl <- with(
   dat,
   ifelse(
@@ -267,8 +292,8 @@ dat$MHQ2.BipolarControl <- with(
         )
       ) &
       (
-        is.na(20544-0.0) |
-          20544-0.0 != 10
+        is.na(SelfReportedBipolarDisorder) |
+          SelfReportedBipolarDisorder != 1
       ),
     1,
     0

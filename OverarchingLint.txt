@@ -1,0 +1,918 @@
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:27:1: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+clParser <- OptionParser()
+^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:29:1: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+clParser <- add_option(
+^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:40:1: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+clParser <- add_option(
+^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:51:1: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+clParser <- add_option(
+^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:59:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 88 characters.
+  help = "Comma separated string of variable names to export from the processed data.\n"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:62:1: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+clOptions <- parse_args(clParser)
+^~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:63:1: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+argInputDataFilePath <- clOptions$`input-data-file-path`
+^~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:64:1: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+argOutputDataFilePath <- clOptions$`output-data-file-path`
+^~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:65:1: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+argVariables <- clOptions$variables
+^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:67:1: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+runAllScriptsOverarching <- function(
+^~~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:69:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  variablesToExtract = NA,
+  ^~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:70:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  inputDataFilePath = NA,
+  ^~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:71:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  outputDataFilePath = NA,
+  ^~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:72:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  writeOutput = FALSE,
+  ^~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:73:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  diagnosticsFlag = FALSE #set to T if you want to print debugging information
+  ^~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:78:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 125 characters.
+  #dedicated argument defaults - we cannot set these in the normal way because of the hard coded defaults from the run script
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:79:5: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+  if(is.na(outputDataFilePath)){
+    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:79:32: style: [brace_linter] There should be a space before an opening curly brace.
+  if(is.na(outputDataFilePath)){
+                               ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:79:32: style: [paren_body_linter] There should be a space between a right parenthesis and a body expression.
+  if(is.na(outputDataFilePath)){
+                               ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:80:5: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+    outputDataFilePath<-"runAllScriptsOverarching.tsv"
+    ^~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:80:23: style: [infix_spaces_linter] Put spaces around all infix operators.
+    outputDataFilePath<-"runAllScriptsOverarching.tsv"
+                      ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:82:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:83:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  toReturn<-c()
+  ^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:83:11: style: [infix_spaces_linter] Put spaces around all infix operators.
+  toReturn<-c()
+          ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:84:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:87:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:87:15: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
+              ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:87:45: style: [commas_linter] Commas should always have a space after.
+  meta.scripts<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
+                                            ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:87:54: style: [commas_linter] Commas should always have a space after.
+  meta.scripts<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
+                                                     ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:88:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts.dependency<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
+  ^~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:88:3: warning: [object_usage_linter] local variable 'meta.scripts.dependency' assigned but may not be used
+  meta.scripts.dependency<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
+  ^~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:88:26: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts.dependency<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
+                         ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:88:56: style: [commas_linter] Commas should always have a space after.
+  meta.scripts.dependency<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
+                                                       ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:88:65: style: [commas_linter] Commas should always have a space after.
+  meta.scripts.dependency<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
+                                                                ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:89:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:90:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED","Self_reported")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:90:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED","Self_reported")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:90:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED","Self_reported")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:90:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED","Self_reported")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:90:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED","Self_reported")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:90:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 103 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED","Self_reported")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:90:88: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED","Self_reported")
+                                                                                       ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:91:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED_ED","Self_reported_eating_disorder")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:91:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED_ED","Self_reported_eating_disorder")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:91:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED_ED","Self_reported_eating_disorder")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:91:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED_ED","Self_reported_eating_disorder")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:91:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED_ED","Self_reported_eating_disorder")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:91:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 122 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED_ED","Self_reported_eating_disorder")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:91:91: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED_ED","Self_reported_eating_disorder")
+                                                                                          ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:92:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("ANXIETY","Anxiety")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:92:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("ANXIETY","Anxiety")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:92:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("ANXIETY","Anxiety")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:92:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("ANXIETY","Anxiety")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:92:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("ANXIETY","Anxiety")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:92:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 91 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("ANXIETY","Anxiety")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:92:82: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("ANXIETY","Anxiety")
+                                                                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:93:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("LT_DEPRESSION","Lifetime_depression")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:93:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("LT_DEPRESSION","Lifetime_depression")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:93:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("LT_DEPRESSION","Lifetime_depression")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:93:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("LT_DEPRESSION","Lifetime_depression")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:93:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("LT_DEPRESSION","Lifetime_depression")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:93:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 109 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("LT_DEPRESSION","Lifetime_depression")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:93:88: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("LT_DEPRESSION","Lifetime_depression")
+                                                                                       ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:94:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PHQ9","PHQ9")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:94:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PHQ9","PHQ9")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:94:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PHQ9","PHQ9")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:94:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PHQ9","PHQ9")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:94:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PHQ9","PHQ9")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:94:79: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PHQ9","PHQ9")
+                                                                              ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:94:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 85 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PHQ9","PHQ9")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:95:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_HARM","Self_harm")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:95:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_HARM","Self_harm")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:95:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_HARM","Self_harm")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:95:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_HARM","Self_harm")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:95:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_HARM","Self_harm")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:95:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 95 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_HARM","Self_harm")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:95:84: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_HARM","Self_harm")
+                                                                                   ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:96:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("TRAUMA","Trauma")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:96:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("TRAUMA","Trauma")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:96:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("TRAUMA","Trauma")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:96:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("TRAUMA","Trauma")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:96:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("TRAUMA","Trauma")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:96:81: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("TRAUMA","Trauma")
+                                                                                ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:96:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 89 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("TRAUMA","Trauma")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:97:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MANIA","Mania")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:97:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MANIA","Mania")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:97:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MANIA","Mania")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:97:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MANIA","Mania")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:97:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MANIA","Mania")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:97:80: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MANIA","Mania")
+                                                                               ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:97:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 87 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MANIA","Mania")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:98:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MORE_DEPRESSION","More_depression")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:98:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MORE_DEPRESSION","More_depression")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:98:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MORE_DEPRESSION","More_depression")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:98:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MORE_DEPRESSION","More_depression")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:98:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MORE_DEPRESSION","More_depression")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:98:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 107 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MORE_DEPRESSION","More_depression")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:98:90: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MORE_DEPRESSION","More_depression")
+                                                                                         ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:99:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("AN","Anorexia_nervosa")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:99:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("AN","Anorexia_nervosa")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:99:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("AN","Anorexia_nervosa")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:99:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("AN","Anorexia_nervosa")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:99:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("AN","Anorexia_nervosa")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:99:77: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("AN","Anorexia_nervosa")
+                                                                            ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:99:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 95 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("AN","Anorexia_nervosa")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:100:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BE_ND_AN","BE_not_during_AN")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:100:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BE_ND_AN","BE_not_during_AN")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:100:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BE_ND_AN","BE_not_during_AN")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:100:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BE_ND_AN","BE_not_during_AN")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:100:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BE_ND_AN","BE_not_during_AN")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:100:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 101 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BE_ND_AN","BE_not_during_AN")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:100:83: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BE_ND_AN","BE_not_during_AN")
+                                                                                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:101:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED","Binge_eating_disorder")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:101:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED","Binge_eating_disorder")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:101:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED","Binge_eating_disorder")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:101:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED","Binge_eating_disorder")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:101:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED","Binge_eating_disorder")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:101:78: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED","Binge_eating_disorder")
+                                                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:101:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 101 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED","Binge_eating_disorder")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:102:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BN","Bulimia_nervosa")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:102:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BN","Bulimia_nervosa")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:102:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BN","Bulimia_nervosa")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:102:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BN","Bulimia_nervosa")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:102:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BN","Bulimia_nervosa")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:102:77: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BN","Bulimia_nervosa")
+                                                                            ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:102:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 94 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BN","Bulimia_nervosa")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:103:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PURGINGD","Purging_disorder")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:103:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PURGINGD","Purging_disorder")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:103:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PURGINGD","Purging_disorder")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:103:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PURGINGD","Purging_disorder")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:103:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PURGINGD","Purging_disorder")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:103:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 101 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PURGINGD","Purging_disorder")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:103:83: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PURGINGD","Purging_disorder")
+                                                                                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:104:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SUBSTANCES","Alcohol_cannabis")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:104:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SUBSTANCES","Alcohol_cannabis")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:104:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SUBSTANCES","Alcohol_cannabis")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:104:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SUBSTANCES","Alcohol_cannabis")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:104:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SUBSTANCES","Alcohol_cannabis")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:104:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 103 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SUBSTANCES","Alcohol_cannabis")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:104:85: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SUBSTANCES","Alcohol_cannabis")
+                                                                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:105:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SOCIAL","Social_situations")
+  ^~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:105:34: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SOCIAL","Social_situations")
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:105:37: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SOCIAL","Social_situations")
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:105:46: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SOCIAL","Social_situations")
+                                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:105:68: style: [infix_spaces_linter] Put spaces around all infix operators.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SOCIAL","Social_situations")
+                                                                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:105:81: style: [commas_linter] Commas should always have a space after.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SOCIAL","Social_situations")
+                                                                                ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:105:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 100 characters.
+  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SOCIAL","Social_situations")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:107:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  producedVariables <- c(
+  ^~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:167:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:168:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  toReturn$producedVariables<-producedVariables
+  ^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:168:29: style: [infix_spaces_linter] Put spaces around all infix operators.
+  toReturn$producedVariables<-producedVariables
+                            ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:170:5: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+  if(is.na(variablesToExtract)){
+    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:170:32: style: [brace_linter] There should be a space before an opening curly brace.
+  if(is.na(variablesToExtract)){
+                               ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:170:32: style: [paren_body_linter] There should be a space between a right parenthesis and a body expression.
+  if(is.na(variablesToExtract)){
+                               ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:171:5: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+    variablesToExtract <- producedVariables
+    ^~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:173:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:174:5: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+  if(length(variablesToExtract)>0){
+    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:174:32: style: [infix_spaces_linter] Put spaces around all infix operators.
+  if(length(variablesToExtract)>0){
+                               ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:174:35: style: [brace_linter] There should be a space before an opening curly brace.
+  if(length(variablesToExtract)>0){
+                                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:174:35: style: [paren_body_linter] There should be a space between a right parenthesis and a body expression.
+  if(length(variablesToExtract)>0){
+                                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:176:5: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+    misspecifiedVariables <- variablesToExtract[!(variablesToExtract %in% producedVariables)]
+    ^~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:176:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 93 characters.
+    misspecifiedVariables <- variablesToExtract[!(variablesToExtract %in% producedVariables)]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:177:7: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+    if(length(misspecifiedVariables)>0){
+      ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:177:37: style: [infix_spaces_linter] Put spaces around all infix operators.
+    if(length(misspecifiedVariables)>0){
+                                    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:177:40: style: [brace_linter] There should be a space before an opening curly brace.
+    if(length(misspecifiedVariables)>0){
+                                       ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:177:40: style: [paren_body_linter] There should be a space between a right parenthesis and a body expression.
+    if(length(misspecifiedVariables)>0){
+                                       ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:178:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+      warning("There are specified variables that are not produced by this script.")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:180:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 96 characters.
+      warning("A list of misspecified variables is in the return object misspecifiedVariables.")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:181:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 93 characters.
+      warning("Note that the script uses case sensitive matching for specified variables.\n")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:182:7: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+      toReturn$misspecifiedVariables<-misspecifiedVariables
+      ^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:182:37: style: [infix_spaces_linter] Put spaces around all infix operators.
+      toReturn$misspecifiedVariables<-misspecifiedVariables
+                                    ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:186:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:187:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  requiredVariables <- c(
+  ^~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:190:23: style: [commas_linter] Commas should always have a space after.
+    paste0("29000-0.",0:19), #self reported diagnoses
+                      ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:191:19: style: [commas_linter] Commas should always have a space after.
+    paste0("2900",2:9,"-0.0"), #Depression ever
+                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:191:23: style: [commas_linter] Commas should always have a space after.
+    paste0("2900",2:9,"-0.0"), #Depression ever
+                      ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:192:18: style: [commas_linter] Commas should always have a space after.
+    paste0("290",10:15,"-0.0"), #Depression ever
+                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:192:24: style: [commas_linter] Commas should always have a space after.
+    paste0("290",10:15,"-0.0"), #Depression ever
+                       ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:209:23: style: [commas_linter] Commas should always have a space after.
+    paste0("29038-0.",0:2), #medication helped symptoms of depression
+                      ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:210:23: style: [commas_linter] Commas should always have a space after.
+    paste0("29039-0.",0:6), #medication helped symptoms of depression
+                      ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:211:18: style: [commas_linter] Commas should always have a space after.
+    paste0("290",40:48,"-0.0"), #medication/non-medication helped symptoms of depression
+                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:211:24: style: [commas_linter] Commas should always have a space after.
+    paste0("290",40:48,"-0.0"), #medication/non-medication helped symptoms of depression
+                       ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:211:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 88 characters.
+    paste0("290",40:48,"-0.0"), #medication/non-medication helped symptoms of depression
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:212:18: style: [commas_linter] Commas should always have a space after.
+    paste0("290",49:50,"-0.0"),#mania
+                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:212:24: style: [commas_linter] Commas should always have a space after.
+    paste0("290",49:50,"-0.0"),#mania
+                       ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:212:32: style: [commas_linter] Commas should always have a space after.
+    paste0("290",49:50,"-0.0"),#mania
+                               ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:213:23: style: [commas_linter] Commas should always have a space after.
+    paste0("29051-0.",0:7),#mania
+                      ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:213:28: style: [commas_linter] Commas should always have a space after.
+    paste0("29051-0.",0:7),#mania
+                           ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:219:18: style: [commas_linter] Commas should always have a space after.
+    paste0("290",58:64,"-0.0"), #gad7
+                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:219:24: style: [commas_linter] Commas should always have a space after.
+    paste0("290",58:64,"-0.0"), #gad7
+                       ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:220:23: style: [commas_linter] Commas should always have a space after.
+    paste0("29065-0.",0:12),#Panic attack symptoms
+                      ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:220:29: style: [commas_linter] Commas should always have a space after.
+    paste0("29065-0.",0:12),#Panic attack symptoms
+                            ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:227:18: style: [commas_linter] Commas should always have a space after.
+    paste0("290",76:90,"-0.0"), #trauma, abuse
+                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:227:24: style: [commas_linter] Commas should always have a space after.
+    paste0("290",76:90,"-0.0"), #trauma, abuse
+                       ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:232:17: style: [commas_linter] Commas should always have a space after.
+    "29125-0.0",#Anorexia nervosa
+                ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:238:23: style: [commas_linter] Commas should always have a space after.
+    paste0("29130-0.",0:6), #Anorexia nervosa
+                      ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:239:17: style: [commas_linter] Commas should always have a space after.
+    "29132-0.0",#Binge eating disorder
+                ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:244:23: style: [commas_linter] Commas should always have a space after.
+    paste0("29136-0.",0:4), #Binge eating disorder
+                      ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:245:23: style: [commas_linter] Commas should always have a space after.
+    paste0("29140-0.",0:6), #Binge eating disorder, Bulimia nervosa
+                      ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:283:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:284:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  requiredVariables<-unlist(requiredVariables)
+  ^~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:284:20: style: [infix_spaces_linter] Put spaces around all infix operators.
+  requiredVariables<-unlist(requiredVariables)
+                   ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:285:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:286:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  toReturn$requiredVariables <- requiredVariables
+  ^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:287:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:290:5: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+  if(is.null(dat)){
+    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:290:19: style: [brace_linter] There should be a space before an opening curly brace.
+  if(is.null(dat)){
+                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:290:19: style: [paren_body_linter] There should be a space between a right parenthesis and a body expression.
+  if(is.null(dat)){
+                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:291:7: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+    if(!is.na(inputDataFilePath)){
+      ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:291:34: style: [brace_linter] There should be a space before an opening curly brace.
+    if(!is.na(inputDataFilePath)){
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:291:34: style: [paren_body_linter] There should be a space between a right parenthesis and a body expression.
+    if(!is.na(inputDataFilePath)){
+                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:293:9: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+      if(any(grep(pattern = "\\.rds$", x = inputDataFilePath, ignore.case = T))){
+        ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:293:78: style: [T_and_F_symbol_linter] Use TRUE instead of the symbol T.
+      if(any(grep(pattern = "\\.rds$", x = inputDataFilePath, ignore.case = T))){
+                                                                            ~^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:293:81: style: [brace_linter] There should be a space before an opening curly brace.
+      if(any(grep(pattern = "\\.rds$", x = inputDataFilePath, ignore.case = T))){
+                                                                                ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:293:81: style: [paren_body_linter] There should be a space between a right parenthesis and a body expression.
+      if(any(grep(pattern = "\\.rds$", x = inputDataFilePath, ignore.case = T))){
+                                                                                ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:293:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+      if(any(grep(pattern = "\\.rds$", x = inputDataFilePath, ignore.case = T))){
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:296:16: warning: [object_usage_linter] no visible global function definition for 'fread'
+        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+               ^~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:296:67: style: [commas_linter] Commas should always have a space after.
+        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+                                                                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:296:70: style: [commas_linter] Commas should always have a space after.
+        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+                                                                     ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:296:75: style: [commas_linter] Commas should always have a space after.
+        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+                                                                          ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:296:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 200 characters.
+        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:296:99: style: [commas_linter] Commas should always have a space after.
+        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+                                                                                                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:296:114: style: [T_and_F_symbol_linter] Use TRUE instead of the symbol T.
+        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+                                                                                                                ~^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:296:124: style: [T_and_F_symbol_linter] Use TRUE instead of the symbol T.
+        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+                                                                                                                          ~^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:296:146: style: [T_and_F_symbol_linter] Use TRUE instead of the symbol T.
+        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+                                                                                                                                                ~^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:296:162: style: [T_and_F_symbol_linter] Use FALSE instead of the symbol F.
+        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+                                                                                                                                                                ~^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:296:174: warning: [object_usage_linter] no visible binding for global variable 'nThreads'
+        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+                                                                                                                                                                             ^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:296:200: style: [T_and_F_symbol_linter] Use FALSE instead of the symbol F.
+        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+                                                                                                                                                                                                      ~^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:302:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:304:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  missingVariables <- requiredVariables[!(requiredVariables %in% colnames(dat))]
+  ^~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:305:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:306:5: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+  if(length(missingVariables)>0){
+    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:306:30: style: [infix_spaces_linter] Put spaces around all infix operators.
+  if(length(missingVariables)>0){
+                             ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:306:33: style: [brace_linter] There should be a space before an opening curly brace.
+  if(length(missingVariables)>0){
+                                ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:306:33: style: [paren_body_linter] There should be a space between a right parenthesis and a body expression.
+  if(length(missingVariables)>0){
+                                ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:307:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 188 characters.
+    warning("There are required variables missing. The script will terminate and return further information. A list of missing variables is in the returned sub-object missingVariables.\n")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:308:5: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+    toReturn$missingVariables<-missingVariables
+    ^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:308:30: style: [infix_spaces_linter] Put spaces around all infix operators.
+    toReturn$missingVariables<-missingVariables
+                             ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:311:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:313:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 101 characters.
+  # Execute all scripts from the source. These must be configured to be compatible with this process.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:314:6: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+  for(iDS in 1:nrow(meta.scripts)){
+     ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:314:14: warning: [seq_linter] 1:nrow(...) is likely to be wrong in the empty edge case. Use seq_len(nrow(...)) instead.
+  for(iDS in 1:nrow(meta.scripts)){
+             ^~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:315:6: style: [commented_code_linter] Commented code should be removed.
+    #iDS <- 2 #test
+     ^~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:316:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+    
+^~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:317:5: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+    cCode<-meta.scripts[iDS,c("code")]
+    ^~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:317:5: warning: [object_usage_linter] local variable 'cCode' assigned but may not be used
+    cCode<-meta.scripts[iDS,c("code")]
+    ^~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:317:10: style: [infix_spaces_linter] Put spaces around all infix operators.
+    cCode<-meta.scripts[iDS,c("code")]
+         ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:317:29: style: [commas_linter] Commas should always have a space after.
+    cCode<-meta.scripts[iDS,c("code")]
+                            ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:318:5: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+    cFilename<-meta.scripts[iDS,c("filename.ex.suffix")]
+    ^~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:318:14: style: [infix_spaces_linter] Put spaces around all infix operators.
+    cFilename<-meta.scripts[iDS,c("filename.ex.suffix")]
+             ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:318:33: style: [commas_linter] Commas should always have a space after.
+    cFilename<-meta.scripts[iDS,c("filename.ex.suffix")]
+                                ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:321:27: style: [commas_linter] Commas should always have a space after.
+      file.path("scripts",paste0(cFilename,".Rmd"))
+                          ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:321:44: style: [commas_linter] Commas should always have a space after.
+      file.path("scripts",paste0(cFilename,".Rmd"))
+                                           ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:324:24: style: [commas_linter] Commas should always have a space after.
+      paste0(cFilename,".R"),
+                       ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:328:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:331:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:335:6: style: [indentation_linter] Indentation should be 8 spaces but is 6 spaces.
+      (!is.na(MHQ2.PanicDisorder) & MHQ2.PanicDisorder == 1) |
+     ^~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:340:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 95 characters.
+      (!is.na(MHQ2.AlcoholHazardousHarmfulUseCase) & MHQ2.AlcoholHazardousHarmfulUseCase == 1),
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:347:3: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+  toReturn$processedDat<-dat[,producedVariables]
+  ^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:347:24: style: [infix_spaces_linter] Put spaces around all infix operators.
+  toReturn$processedDat<-dat[,producedVariables]
+                       ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:347:31: style: [commas_linter] Commas should always have a space after.
+  toReturn$processedDat<-dat[,producedVariables]
+                              ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:348:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:349:5: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+  if(length(variablesToExtract)>0){
+    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:349:32: style: [infix_spaces_linter] Put spaces around all infix operators.
+  if(length(variablesToExtract)>0){
+                               ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:349:35: style: [brace_linter] There should be a space before an opening curly brace.
+  if(length(variablesToExtract)>0){
+                                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:349:35: style: [paren_body_linter] There should be a space between a right parenthesis and a body expression.
+  if(length(variablesToExtract)>0){
+                                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:350:5: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+    toReturn$processedDat<-toReturn$processedDat[,variablesToExtract] #do we want to have a case-insensitive option here?
+    ^~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:350:26: style: [infix_spaces_linter] Put spaces around all infix operators.
+    toReturn$processedDat<-toReturn$processedDat[,variablesToExtract] #do we want to have a case-insensitive option here?
+                         ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:350:51: style: [commas_linter] Commas should always have a space after.
+    toReturn$processedDat<-toReturn$processedDat[,variablesToExtract] #do we want to have a case-insensitive option here?
+                                                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:350:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 121 characters.
+    toReturn$processedDat<-toReturn$processedDat[,variablesToExtract] #do we want to have a case-insensitive option here?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:352:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:353:5: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+  if(writeOutput){
+    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:353:18: style: [brace_linter] There should be a space before an opening curly brace.
+  if(writeOutput){
+                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:353:18: style: [paren_body_linter] There should be a space between a right parenthesis and a body expression.
+  if(writeOutput){
+                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:354:50: style: [commas_linter] Commas should always have a space after.
+    data.table::fwrite(x = toReturn$processedDat,file = outputDataFilePath, append = F,quote = F,sep = "\t",col.names = T)
+                                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:354:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 122 characters.
+    data.table::fwrite(x = toReturn$processedDat,file = outputDataFilePath, append = F,quote = F,sep = "\t",col.names = T)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:354:87: style: [T_and_F_symbol_linter] Use FALSE instead of the symbol F.
+    data.table::fwrite(x = toReturn$processedDat,file = outputDataFilePath, append = F,quote = F,sep = "\t",col.names = T)
+                                                                                     ~^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:354:88: style: [commas_linter] Commas should always have a space after.
+    data.table::fwrite(x = toReturn$processedDat,file = outputDataFilePath, append = F,quote = F,sep = "\t",col.names = T)
+                                                                                       ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:354:97: style: [T_and_F_symbol_linter] Use FALSE instead of the symbol F.
+    data.table::fwrite(x = toReturn$processedDat,file = outputDataFilePath, append = F,quote = F,sep = "\t",col.names = T)
+                                                                                               ~^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:354:98: style: [commas_linter] Commas should always have a space after.
+    data.table::fwrite(x = toReturn$processedDat,file = outputDataFilePath, append = F,quote = F,sep = "\t",col.names = T)
+                                                                                                 ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:354:109: style: [commas_linter] Commas should always have a space after.
+    data.table::fwrite(x = toReturn$processedDat,file = outputDataFilePath, append = F,quote = F,sep = "\t",col.names = T)
+                                                                                                            ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:354:122: style: [T_and_F_symbol_linter] Use TRUE instead of the symbol T.
+    data.table::fwrite(x = toReturn$processedDat,file = outputDataFilePath, append = F,quote = F,sep = "\t",col.names = T)
+                                                                                                                        ~^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:356:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:357:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 113 characters.
+  cat("\nThe data has been processsed and the resulting dataframe is in the returned sub-object processedDat.\n")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:358:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+  
+^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:363:3: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+if(interactive()==FALSE){
+  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:363:17: style: [infix_spaces_linter] Put spaces around all infix operators.
+if(interactive()==FALSE){
+                ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:363:25: style: [brace_linter] There should be a space before an opening curly brace.
+if(interactive()==FALSE){
+                        ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:363:25: style: [paren_body_linter] There should be a space between a right parenthesis and a body expression.
+if(interactive()==FALSE){
+                        ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:365:5: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+  if(!is.na(argInputDataFilePath)){
+    ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:365:35: style: [brace_linter] There should be a space before an opening curly brace.
+  if(!is.na(argInputDataFilePath)){
+                                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:365:35: style: [paren_body_linter] There should be a space between a right parenthesis and a body expression.
+  if(!is.na(argInputDataFilePath)){
+                                  ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:367:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+    
+^~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:368:5: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+    argVariables2<-NA
+    ^~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:368:18: style: [infix_spaces_linter] Put spaces around all infix operators.
+    argVariables2<-NA
+                 ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:369:7: style: [spaces_left_parentheses_linter] Place a space before left parenthesis, except in a function call.
+    if(!is.na(argVariables)) argVariables2<-unlist(strsplit(argVariables,split = ",",fixed = TRUE))
+      ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:369:30: style: [object_name_linter] Variable and function name style should match symbols, CamelCase, snake_case or lowercase.
+    if(!is.na(argVariables)) argVariables2<-unlist(strsplit(argVariables,split = ",",fixed = TRUE))
+                             ^~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:369:43: style: [infix_spaces_linter] Put spaces around all infix operators.
+    if(!is.na(argVariables)) argVariables2<-unlist(strsplit(argVariables,split = ",",fixed = TRUE))
+                                          ^~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:369:74: style: [commas_linter] Commas should always have a space after.
+    if(!is.na(argVariables)) argVariables2<-unlist(strsplit(argVariables,split = ",",fixed = TRUE))
+                                                                         ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:369:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 99 characters.
+    if(!is.na(argVariables)) argVariables2<-unlist(strsplit(argVariables,split = ",",fixed = TRUE))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:369:86: style: [commas_linter] Commas should always have a space after.
+    if(!is.na(argVariables)) argVariables2<-unlist(strsplit(argVariables,split = ",",fixed = TRUE))
+                                                                                     ^
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:370:1: style: [trailing_whitespace_linter] Trailing whitespace is superfluous.
+    
+^~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:384:5: style: [commented_code_linter] Commented code should be removed.
+#   variablesToExtract = c("Depressed.Current","Mania.Ever"),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:385:5: style: [commented_code_linter] Commented code should be removed.
+#   inputDataFilePath = 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:390:5: style: [commented_code_linter] Commented code should be removed.
+#   variablesToExtract = c("Depressed.Current","Mania.Ever","crap"),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/scratch/prj/ukbiobank/usr/KCL_Data_Analyses/MHQ2/MHQ2/Overarching.R:391:5: style: [commented_code_linter] Commented code should be removed.
+#   inputDataFilePath = 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
