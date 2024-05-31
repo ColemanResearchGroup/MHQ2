@@ -149,7 +149,6 @@ runAllScriptsOverarching <- function(
     "MHQ2.AUDITScore",
     "MHQ2.AlcoholHazardousHarmfulUseCase",
     "MHQ2.AlcoholHarmfulDrinking",
-    "MHQ2.AlcoholHazardousHarmfulUseControl",
     "MHQ2.CannabisUseEver",
     "MHQ2.CannabisUseDaily",
     "MHQ2.LifeNotWorthLivingEver",
