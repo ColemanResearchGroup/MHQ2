@@ -64,45 +64,119 @@ argInputDataFilePath <- clOptions$`input-data-file-path`
 argOutputDataFilePath <- clOptions$`output-data-file-path`
 argVariables <- clOptions$variables
 
+# Set diagnosticsFlag to TRUE to print debugging information
+
 runAllScriptsOverarching <- function(
   dat = NULL,
   variablesToExtract = NA,
   inputDataFilePath = NA,
   outputDataFilePath = NA,
   writeOutput = FALSE,
-  diagnosticsFlag = FALSE #set to T if you want to print debugging information
+  diagnosticsFlag = FALSE
 ) {
 
   cat("\nRunning the MHQ2 overarching coding script.\n")
 
-  #dedicated argument defaults - we cannot set these in the normal way because of the hard coded defaults from the run script
-  if(is.na(outputDataFilePath)){
-    outputDataFilePath<-"runAllScriptsOverarching.tsv"
+  # dedicated argument default
+  # cannot set these in the normal way
+  # because of the hard coded defaults from the run script
+
+  if (is.na(outputDataFilePath)) {
+    outputDataFilePath <- "runAllScriptsOverarching.tsv"
   }
-  
-  toReturn<-c()
-  
+
+  toReturn <- c()
+
   # MHQ2 metadata
   # Describes datasets/instruments/scripts
-  meta.scripts<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
-  meta.scripts.dependency<-data.frame(matrix(data = NA,nrow = 0,ncol = 0))
-  
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED","Self_reported")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_REPORTED_ED","Self_reported_eating_disorder")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("ANXIETY","Anxiety")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("LT_DEPRESSION","Lifetime_depression")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PHQ9","PHQ9")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SELF_HARM","Self_harm")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("TRAUMA","Trauma")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MANIA","Mania")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("MORE_DEPRESSION","More_depression")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("AN","Anorexia_nervosa")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BE_ND_AN","BE_not_during_AN")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BED","Binge_eating_disorder")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("BN","Bulimia_nervosa")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("PURGINGD","Purging_disorder")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SUBSTANCES","Alcohol_cannabis")
-  meta.scripts[nrow(meta.scripts)+1,c("code","filename.ex.suffix")]<-c("SOCIAL","Social_situations")
+
+  meta.scripts <- data.frame(
+    matrix(
+      data = NA,
+      nrow = 0,
+      ncol = 0
+    )
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "SELF_REPORTED",
+    "Self_reported"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "SELF_REPORTED_ED",
+    "Self_reported_eating_disorder"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "ANXIETY",
+    "Anxiety"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "LT_DEPRESSION",
+    "Lifetime_depression"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "PHQ9",
+    "PHQ9"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "SELF_HARM",
+    "Self_harm"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "TRAUMA",
+    "Trauma"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "MANIA",
+    "Mania"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "MORE_DEPRESSION",
+    "More_depression"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "AN",
+    "Anorexia_nervosa"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "BE_ND_AN",
+    "BE_not_during_AN"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "BED",
+    "Binge_eating_disorder"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "BN",
+    "Bulimia_nervosa"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "PURGINGD",
+    "Purging_disorder"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "SUBSTANCES",
+    "Alcohol_cannabis"
+  )
+
+  meta.scripts[nrow(meta.scripts) + 1, c("code", "filename.ex.suffix")] <- c(
+    "SOCIAL",
+    "Social_situations"
+  )
 
   producedVariables <- c(
     "MHQ2.SelfReportedDiagnosis",
@@ -163,32 +237,32 @@ runAllScriptsOverarching <- function(
     "MHQ2.UCLALoneliness",
     "MHQ2.BriefResilienceScale"
   )
-  
-  toReturn$producedVariables<-producedVariables
 
-  if(is.na(variablesToExtract)){
+  toReturn$producedVariables <- producedVariables
+
+  if (is.na(variablesToExtract)) {
     variablesToExtract <- producedVariables
   }
-  
-  if(length(variablesToExtract)>0){
+
+  if (length(variablesToExtract) > 0) {
     #assess misspecified variables in variablesToExtract
     misspecifiedVariables <- variablesToExtract[!(variablesToExtract %in% producedVariables)]
-    if(length(misspecifiedVariables)>0){
+    if (length(misspecifiedVariables) > 0) {
       warning("There are specified variables that are not produced by this script.")
       warning("The script will terminate and return further information.")
       warning("A list of misspecified variables is in the return object misspecifiedVariables.")
       warning("Note that the script uses case sensitive matching for specified variables.\n")
-      toReturn$misspecifiedVariables<-misspecifiedVariables
+      toReturn$misspecifiedVariables <- misspecifiedVariables
       return(toReturn)
     }
   }
-  
+
   requiredVariables <- c(
     "eid", #UK Biobank ID
     "50-0.0", #Adult height at sign up to UK Biobank
-    paste0("29000-0.",0:19), #self reported diagnoses
-    paste0("2900",2:9,"-0.0"), #Depression ever
-    paste0("290",10:15,"-0.0"), #Depression ever
+    paste0("29000-0.", 0:19), #self reported diagnoses
+    paste0("2900", 2:9, "-0.0"), #Depression ever
+    paste0("290", 10:15, "-0.0"), #Depression ever
     "29016-0.0",
     "29017-0.0",
     "29018-0.0",
@@ -205,43 +279,42 @@ runAllScriptsOverarching <- function(
     "29032-0.0",
     "29033-0.0", #Depression, number of episodes
     "29035-0.0", #Post-natal depression
-    paste0("29038-0.",0:2), #medication helped symptoms of depression
-    paste0("29039-0.",0:6), #medication helped symptoms of depression
-    paste0("290",40:48,"-0.0"), #medication/non-medication helped symptoms of depression
-    paste0("290",49:50,"-0.0"),#mania
-    paste0("29051-0.",0:7),#mania
+    paste0("29038-0.", 0:2), #medication helped symptoms of depression
+    paste0("29039-0.", 0:6), #medication helped symptoms of depression
+    paste0("290", 40:48, "-0.0"), #medication/non-medication helped symptoms of depression
+    paste0("290", 49:50, "-0.0"), #mania
+    paste0("29051-0.", 0:7), #mania
     "20126-0.0",
-    "20544-0.0",
     "29052-0.0",
     "29056-0.0",
     "29057-0.0",
-    paste0("290",58:64,"-0.0"), #gad7
-    paste0("29065-0.",0:12),#Panic attack symptoms
+    paste0("290", 58:64, "-0.0"), #gad7
+    paste0("29065-0.", 0:12), #Panic attack symptoms
     "29067-0.0",
     "29068-0.0",
     "29069-0.0",
     "29070-0.0",
     "29074-0.0",
     "29075-0.0",
-    paste0("290",76:90,"-0.0"), #trauma, abuse
+    paste0("290", 76:90, "-0.0"), #trauma, abuse
     "29108-0.0", #self harm
     "29111-0.0",
     "29114-0.0",
     "29116-0.0",
-    "29125-0.0",#Anorexia nervosa
+    "29125-0.0", #Anorexia nervosa
     "29122-0.0",
     "29123-0.0",
     "29124-0.0",
     "29128-0.0",
     "29129-0.0",
-    paste0("29130-0.",0:6), #Anorexia nervosa
-    "29132-0.0",#Binge eating disorder
+    paste0("29130-0.", 0:6), #Anorexia nervosa
+    "29132-0.0", #Binge eating disorder
     "29133-0.0",
     "29134-0.0",
     "29135-0.0",
     "29137-0.0",
-    paste0("29136-0.",0:4), #Binge eating disorder
-    paste0("29140-0.",0:6), #Binge eating disorder, Bulimia nervosa
+    paste0("29136-0.", 0:4), #Binge eating disorder
+    paste0("29140-0.", 0:6), #Binge eating disorder, Bulimia nervosa
     "29141-0.0", #Bulimia nervosa
     "29143-0.0",
     "29144-0.0", #Purging disorder
@@ -279,94 +352,126 @@ runAllScriptsOverarching <- function(
     "20406-0.0", #Alcohol addiction from MHQ1
     "20404-0.0" #Alcohol dependence from MHQ1
   )
-  
-  requiredVariables<-unlist(requiredVariables)
-  
+
+  requiredVariables <- unlist(requiredVariables)
+
   toReturn$requiredVariables <- requiredVariables
-  
+
   # Read data
   # All scripts must use the same variable for holding the data; dat
-  if(is.null(dat)){
-    if(!is.na(inputDataFilePath)){
+  if (is.null(dat)) {
+    if (!is.na(inputDataFilePath)) {
       #Rds-file
-      if(any(grep(pattern = "\\.rds$", x = inputDataFilePath, ignore.case = T))){
+      if (
+        any(
+          grep(
+            pattern = "\\.rds$",
+            x = inputDataFilePath,
+            ignore.case = TRUE
+          )
+        )
+      ) {
         dat <- readRDS(inputDataFilePath)
       } else { #assume tsv format otherwise
-        dat <- fread(file = inputDataFilePath, na.strings = c(".",NA,"NA",""), encoding = "UTF-8",check.names = T, fill = T, blank.lines.skip = T, data.table = F, nThread = nThreads, showProgress = F)
+        dat <- fread(
+          file = inputDataFilePath,
+          na.strings = c(".", NA, "NA", ""),
+          encoding = "UTF-8",
+          check.names = TRUE,
+          fill = TRUE,
+          blank.lines.skip = TRUE,
+          data.table = FALSE,
+          nThread = nThreads,
+          showProgress = FALSE
+        )
       }
     } else {
       stop("No input file specified\n")
     }
   }
-  
+
   #assess missing variables in dat
   missingVariables <- requiredVariables[!(requiredVariables %in% colnames(dat))]
-  
-  if(length(missingVariables)>0){
-    warning("There are required variables missing. The script will terminate and return further information. A list of missing variables is in the returned sub-object missingVariables.\n")
-    toReturn$missingVariables<-missingVariables
+
+  if (length(missingVariables) > 0) {
+    warning("There are required variables missing. ")
+    warning("The script will terminate and return further information. ")
+    warning("A list of missing variables is in the returned sub-object missingVariables.\n")
+    toReturn$missingVariables <- missingVariables
     return(toReturn)
   }
-  
+
   # Process
-  # Execute all scripts from the source. These must be configured to be compatible with this process.
-  for(iDS in 1:nrow(meta.scripts)){
-    #iDS <- 2 #test
-    
-    cCode<-meta.scripts[iDS,c("code")]
-    cFilename<-meta.scripts[iDS,c("filename.ex.suffix")]
+  # Execute all scripts from the source.
+  # These must be configured to be compatible with this process.
+  for (iDS in seq_len(nrow(meta.scripts))) {
+    cFilename <- meta.scripts[iDS, c("filename.ex.suffix")]
     #as R - this puts the files in the working directory root though
     knitr::purl(
-      file.path("scripts",paste0(cFilename,".Rmd"))
+      file.path("scripts", paste0(cFilename, ".Rmd"))
     )
     source(
-      paste0(cFilename,".R"),
+      paste0(cFilename, ".R"),
       local = TRUE #execute in local environment i.e. the function
     )
   }
-  
+
   # Execute additional commands to produce AnyAlgorithmBasedDisorder
   # Note that this does not distinguish between controls and missing data
-  
-  dat$MHQ2.AnyAlgorithmBasedDisorder <- with(dat,
+
+  dat$MHQ2.AnyAlgorithmBasedDisorder <- with(
+    dat,
     ifelse(
       (!is.na(MHQ2.DepressionEverCase) & MHQ2.DepressionEverCase == 1) |
-      (!is.na(MHQ2.PanicDisorder) & MHQ2.PanicDisorder == 1) |
-      (!is.na(MHQ2.AnorexiaNervosa) & MHQ2.AnorexiaNervosa == 1) |
-      (!is.na(MHQ2.BulimiaNervosa) & MHQ2.BulimiaNervosa == 1) |
-      (!is.na(MHQ2.BingeEatingDisorder) & MHQ2.BingeEatingDisorder == 1) |
-      (!is.na(MHQ2.PurgingDisorder) & MHQ2.PurgingDisorder == 1) |
-      (!is.na(MHQ2.AlcoholHazardousHarmfulUseCase) & MHQ2.AlcoholHazardousHarmfulUseCase == 1),
+        (!is.na(MHQ2.PanicDisorder) & MHQ2.PanicDisorder == 1) |
+        (!is.na(MHQ2.AnorexiaNervosa) & MHQ2.AnorexiaNervosa == 1) |
+        (!is.na(MHQ2.BulimiaNervosa) & MHQ2.BulimiaNervosa == 1) |
+        (!is.na(MHQ2.BingeEatingDisorder) & MHQ2.BingeEatingDisorder == 1) |
+        (!is.na(MHQ2.PurgingDisorder) & MHQ2.PurgingDisorder == 1) |
+        (!is.na(MHQ2.AlcoholHazardousHarmfulUseCase) & MHQ2.AlcoholHazardousHarmfulUseCase == 1),
       1,
       0
     )
   )
 
   #export results
-  toReturn$processedDat<-dat[,producedVariables]
-  
-  if(length(variablesToExtract)>0){
-    toReturn$processedDat<-toReturn$processedDat[,variablesToExtract] #do we want to have a case-insensitive option here?
+  toReturn$processedDat <- dat[, producedVariables]
+
+  if (length(variablesToExtract) > 0) {
+    toReturn$processedDat <- toReturn$processedDat[, variablesToExtract]
   }
-  
-  if(writeOutput){
-    data.table::fwrite(x = toReturn$processedDat,file = outputDataFilePath, append = F,quote = F,sep = "\t",col.names = T)
+
+  if (writeOutput) {
+    fwrite(
+      x = toReturn$processedDat,
+      file = outputDataFilePath,
+      append = FALSE,
+      quote = FALSE,
+      sep = "\t",
+      col.names = TRUE
+    )
   }
-  
+
   cat("\nThe data has been processsed and the resulting dataframe is in the returned sub-object processedDat.\n")
-  
+
   return(toReturn)
 }
 
 #execute function if we run from the command line
-if(interactive()==FALSE){
+if (interactive() == FALSE) {
   cat("\nWelcome to the MHQ2 overarching coding script.\n")
-  if(!is.na(argInputDataFilePath)){
+  if (!is.na(argInputDataFilePath)) {
     #we need to at least specify an input file to run the script
-    
-    argVariables2<-NA
-    if(!is.na(argVariables)) argVariables2<-unlist(strsplit(argVariables,split = ",",fixed = TRUE))
-    
+
+    argVariables2 <- NA
+    if (!is.na(argVariables)) argVariables2 <- unlist(
+      strsplit(
+        argVariables,
+        split = ",",
+        fixed = TRUE
+      )
+    )
+
     runAllScriptsOverarching(
       inputDataFilePath = argInputDataFilePath,
       outputDataFilePath = argOutputDataFilePath,
@@ -379,13 +484,13 @@ if(interactive()==FALSE){
 }
 
 #test of whole function
-# result <-runAllScriptsOverarching(
-#   variablesToExtract = c("Depressed.Current","Mania.Ever"),
+# result  <- runAllScriptsOverarching(
+#   variablesToExtract = c("Depressed.Current", "Mania.Ever"),
 #   inputDataFilePath = 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
 #   )
 
 #misspecified variable
-# result <-runAllScriptsOverarching(
-#   variablesToExtract = c("Depressed.Current","Mania.Ever","crap"),
+# result  <- runAllScriptsOverarching(
+#   variablesToExtract = c("Depressed.Current", "Mania.Ever", "crap"),
 #   inputDataFilePath = 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
 #   )

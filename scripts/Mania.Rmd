@@ -248,7 +248,7 @@ NOT {hypomania/mania}
 AND
 NOT {categorised bipolar @ baseline 20126 = 1 or 2}
 AND
-NOT {self-reported bipolar 20544=10}
+NOT {self-reported bipolar 29000=10}
 
 ```{r}
 
