@@ -7,7 +7,7 @@ output: html_document
 
 Configuration of global options 
 
-```{r Setup, include=FALSE}
+```{r Setup, include=FALSE, purl=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
   comment = '',
@@ -18,11 +18,11 @@ knitr::opts_chunk$set(
 
 Clear global environment prior to initiation
 
-```{r Clear global environment}
+```{r Clear global environment, purl=FALSE}
 remove(list = ls())
 ```
 
-```{r Load packages}
+```{r Load packages, purl=FALSE}
 library(tidyverse)
 library(dplyr)
 
@@ -30,44 +30,46 @@ library(dplyr)
 
 ### Read in data
 
-```{r Read in data}
-MHQ2<-readRDS("/scratch/prj/ukbiobank/UKB_MHQ2_Anonymised/MHQ2_Anonymous.rds")
+```{r Read in data, purl=FALSE}
+dat<-readRDS("/scratch/prj/ukbiobank/UKB_MHQ2_Anonymised/MHQ2_Anonymous.rds")
 
 ```
 
 ### Rename variable names
 
+This is the proposed variable renaming to avoid the ` ticks. Inactivating this now, sorry. 
+
 ```{r rename variable names}
-new_colnames <- paste0("f.", gsub("-", ".", colnames(MHQ2)))
-colnames(MHQ2) <- new_colnames
+# new_colnames <- paste0("f.", gsub("-", ".", colnames(dat)))
+# colnames(dat) <- new_colnames
 
 ```
 
 ##### Current depression: PHQ-9 ######
 
 A Two core symptoms: as least have one core symptom in past two weeks
-f.29002.0.0: Little interest or pleasure (D1a) = More than half of the days (2) or Nearly every day (3)
+29002.0.0: Little interest or pleasure (D1a) = More than half of the days (2) or Nearly every day (3)
 OR
-f.29003.0.0: Feeling down (D1b) = More than half of the days (2) or Nearly every day (3)
+29003.0.0: Feeling down (D1b) = More than half of the days (2) or Nearly every day (3)
 
 AND
 B (number of symptoms) – Sum positive items >= 5
-f.29002.0.0: Little interest or pleasure (D1a) = More than half of the days (2) or Nearly every day (3)
-f.29003.0.0: Feeling down (D1b) = More than half of the days (2) or Nearly every day (3)
-f.29004.0.0: Trouble sleeping (D1c) = More than half of the days (2) or Nearly every day (3)
-f.29005.0.0: Feeling tired (D1d) = More than half of the days (2) or Nearly every day (3)
-f.29006.0.0: Poor appetite(D1e)  = More than half of the days (2) or Nearly every day (3)
-f.29007.0.0: Feeling guilt (D1f) = More than half of the days (2) or Nearly every day (3)
-f.29008.0.0: Trouble concentrating (D1g) = More than half of the days (2) or Nearly every day (3)
-f.29009.0.0: Moving slowly (D1h) = More than half of the days (2) or Nearly every day (3)
-f.29010.0.0: Thoughts death (D1i) = Several days (1) More than half of the days (2) or Nearly every day (3)
+29002.0.0: Little interest or pleasure (D1a) = More than half of the days (2) or Nearly every day (3)
+29003.0.0: Feeling down (D1b) = More than half of the days (2) or Nearly every day (3)
+29004.0.0: Trouble sleeping (D1c) = More than half of the days (2) or Nearly every day (3)
+29005.0.0: Feeling tired (D1d) = More than half of the days (2) or Nearly every day (3)
+29006.0.0: Poor appetite(D1e)  = More than half of the days (2) or Nearly every day (3)
+29007.0.0: Feeling guilt (D1f) = More than half of the days (2) or Nearly every day (3)
+29008.0.0: Trouble concentrating (D1g) = More than half of the days (2) or Nearly every day (3)
+29009.0.0: Moving slowly (D1h) = More than half of the days (2) or Nearly every day (3)
+29010.0.0: Thoughts death (D1i) = Several days (1) More than half of the days (2) or Nearly every day (3)
 
 ```{r check whether participants have info for two core symptoms}
 
-MHQ2 <- MHQ2 %>%
+dat <- dat %>%
   mutate(
     PHQ9.No.Info = ifelse(
-      (is.na(f.29002.0.0) | f.29002.0.0 < 0) & (is.na(f.29003.0.0) | f.29003.0.0 < 0),
+      (is.na(`29002-0.0`) | `29002-0.0` < 0) & (is.na(`29003-0.0`) | `29003-0.0` < 0),
       1,
       0
     )
@@ -77,10 +79,10 @@ MHQ2 <- MHQ2 %>%
 
 ```{r screen participants who meet at least one core symptom}
 
-MHQ2 <- MHQ2 %>%
+dat <- dat %>%
   mutate(
     PHQ9.Screen = ifelse(
-      ((!is.na(f.29002.0.0) & f.29002.0.0 >= 2) | (!is.na(f.29003.0.0) & f.29003.0.0 >= 2)) &
+      ((!is.na(`29002-0.0`) & `29002-0.0` >= 2) | (!is.na(`29003-0.0`) & `29003-0.0` >= 2)) &
         (!is.na(PHQ9.No.Info) & PHQ9.No.Info == 0),
       1,
       0
@@ -93,20 +95,20 @@ MHQ2 <- MHQ2 %>%
 
 ### List of columns of PHQ9
 columns_PHQ9.Items <- c(
-  "f.29002.0.0", "f.29007.0.0", "f.29003.0.0", "f.29008.0.0", 
-  "f.29004.0.0", "f.29009.0.0", "f.29005.0.0", "f.29006.0.0", "f.29010.0.0"
+  "29002-0.0", "29007-0.0", "29003-0.0", "29008-0.0", 
+  "29004-0.0", "29009-0.0", "29005-0.0", "29006-0.0", "29010-0.0"
 )
 
 ### change as numeric variables
 for (col in columns_PHQ9.Items) {
-  MHQ2[[col]] <- as.numeric(MHQ2[[col]])
+  dat[[col]] <- as.numeric(dat[[col]])
 }
 
-MHQ2$PHQ9.Items <- 0
+dat$PHQ9.Items <- 0
 
 for (col in columns_PHQ9.Items) {
-  cutoff <- ifelse(col == "f.29010.0.0", 1, 2)
-  MHQ2$PHQ9.Items <- with(MHQ2, ifelse(!is.na(get(col)) & get(col) >= cutoff, PHQ9.Items + 1, PHQ9.Items))
+  cutoff <- ifelse(col == "29010-0.0", 1, 2)
+  dat$PHQ9.Items <- with(dat, ifelse(!is.na(get(col)) & get(col) >= cutoff, PHQ9.Items + 1, PHQ9.Items))
 }
 
 ```
@@ -115,7 +117,7 @@ for (col in columns_PHQ9.Items) {
 
 ```{r PHQ-9 driven depression}
 
-MHQ2 <- MHQ2 %>%
+dat <- dat %>%
   mutate(
     PHQ9.derived.depression = case_when(
       PHQ9.No.Info == 1 ~ NA_real_,
@@ -132,10 +134,10 @@ Cut-offs used are: < 5 No depression; 5-15 Less severe depression; >15 More seve
 
 ```{r PHQ-9 full score}
 
-MHQ2 <- MHQ2 %>%
+dat <- dat %>%
   mutate(
-    PHQ9.Severity = rowSums(across(c(f.29002.0.0, f.29007.0.0, f.29003.0.0, f.29008.0.0,
-                                     f.29004.0.0, f.29009.0.0, f.29005.0.0, f.29010.0.0, f.29006.0.0),
+    PHQ9.Severity = rowSums(across(c(`29002-0.0`, `29007-0.0`, `29003-0.0`, `29008-0.0`,
+                                     `29004-0.0`, `29009-0.0`, `29005-0.0`, `29010-0.0`, `29006-0.0`),
                                    ~ ifelse(. < 0 | is.na(.), 0, .))
     )
   )
@@ -145,11 +147,11 @@ MHQ2 <- MHQ2 %>%
 conditions <- Reduce(
   `&`,
   lapply(columns_PHQ9.Items, function(col) {
-    (MHQ2[[col]] < 0 | is.na(MHQ2[[col]]))
+    (dat[[col]] < 0 | is.na(dat[[col]]))
   })
 )
 
-MHQ2$PHQ9.Severity[conditions] <- NA
+dat$PHQ9.Severity[conditions] <- NA
 
 ```
 
@@ -162,7 +164,7 @@ Current Depression controls (0 = controls): Scores negative on PHQ9 algorithm an
 
 ```{r Current Depression}
 
-MHQ2 <- MHQ2 %>%
+dat <- dat %>%
   mutate(
     Depressed.Current = case_when(
       PHQ9.No.Info == 1 ~ NA_real_,
@@ -181,7 +183,7 @@ and it plus controls for current depression will contain all of those who answer
 
 ```{r Current or subthreshold depression}
 
-MHQ2 <- MHQ2 %>%
+dat <- dat %>%
   mutate(
     Current.subthreshold.Depression = case_when(
       PHQ9.No.Info == 1 ~ NA_real_,
@@ -199,7 +201,7 @@ current depression with PHQ9 full score > 15
 
 ```{r Current more severe depression}
 
-MHQ2 <- MHQ2 %>%
+dat <- dat %>%
   mutate(
     Current.more.severe.depression = case_when(
       PHQ9.No.Info == 1 ~ NA_real_,
@@ -216,42 +218,42 @@ MHQ2 <- MHQ2 %>%
 Any of the drugs the participant reported taking helped symptoms of depression (at least a little).
 Case {depression ever} 
 AND
-f.29038.0.0-f.29038.0.2: Have you ever tried (D27) = Medication prescribed to you (2) 
+29038.0.0-29038.0.2: Have you ever tried (D27) = Medication prescribed to you (2) 
 AND
-f.29039.0.0-f.29039.0.6: Have you ever tried these (D28) = at least one of: Citalopram (1), Fluoxetine (2), Sertraline (3), Paroxetine (4), 
-f.29039.0.0-f.29039.0.6: Have you ever tried these (D28) = at least one of: Amitriptyline (5), Dosulepin (6), Other antidepressant (7) 
+29039.0.0-29039.0.6: Have you ever tried these (D28) = at least one of: Citalopram (1), Fluoxetine (2), Sertraline (3), Paroxetine (4), 
+29039.0.0-29039.0.6: Have you ever tried these (D28) = at least one of: Amitriptyline (5), Dosulepin (6), Other antidepressant (7) 
 AND
 For any of D28a to D28g: Has (selected medication) helped you to feel better (D28a-g) = “Yes, at least a little”
-f.29040.0.0: Citalopram has helped feel better (1)
-f.29041.0.0: Fluoxetine has helped feel better (1)
-f.29042.0.0: Sertraline has helped feel better (1)
-f.29043.0.0: Paroxetine has helped feel better (1)
-f.29044.0.0: Amitriptyline has helped feel better (1)
-f.29045.0.0: Dosulepin has helped feel better (1)
-f.29046.0.0: Other antidepressants has helped feel better (1)
+29040.0.0: Citalopram has helped feel better (1)
+29041.0.0: Fluoxetine has helped feel better (1)
+29042.0.0: Sertraline has helped feel better (1)
+29043.0.0: Paroxetine has helped feel better (1)
+29044.0.0: Amitriptyline has helped feel better (1)
+29045.0.0: Dosulepin has helped feel better (1)
+29046.0.0: Other antidepressants has helped feel better (1)
 
 ```{r Medication helped}
 
-### check f.29038.0.0-f.29038.0.2: Have you ever tried (D27) = Medication prescribed to you (2) 
+### check 29038.0.0-29038.0.2: Have you ever tried (D27) = Medication prescribed to you (2) 
 
-f.29038<-apply(MHQ2[,grep("f.29038.0", colnames(MHQ2))], 1, function(row) "2" %in% row) 
-MHQ2$f.29038[c(f.29038)]<-1
+`29038`<-apply(dat[,grep("29038-0", colnames(dat))], 1, function(row) "2" %in% row) 
+dat$`29038`[c(`29038`)]<-1
 
-### check f.29039.0.0-f.29039.0.6: Have you ever tried these (D28) = at least one of:Citalopram (1), Fluoxetine (2), Sertraline (3), Paroxetine (4), Amitriptyline (5), Dosulepin (6), Other antidepressant (7)
+### check 29039.0.0-29039.0.6: Have you ever tried these (D28) = at least one of:Citalopram (1), Fluoxetine (2), Sertraline (3), Paroxetine (4), Amitriptyline (5), Dosulepin (6), Other antidepressant (7)
 
-f.29039 <- apply(MHQ2[, grep("f.29039.0", colnames(MHQ2))], 1, function(row) any(c("1","2","3","4","5","6","7") %in% row))
-MHQ2$f.29039[c(f.29039)] <- 1
+`29039` <- apply(dat[, grep("29039-0", colnames(dat))], 1, function(row) any(c("1","2","3","4","5","6","7") %in% row))
+dat$`29039`[c(`29039`)] <- 1
 
 #### FLAG: lines 250 and 252: need to merge depression.ever.case variable from Lifetime depression script ####
 
-MHQ2 <- MHQ2 %>%
+dat <- dat %>%
   mutate(
     Depressed.medication.helped = case_when(
-      depression.ever.case == 1 & f.29038 == 1 & f.29039 == 1 &  # need to depression.ever.case
-        (f.29040.0.0 == 1 | f.29041.0.0 == 1 | f.29042.0.0 == 1 | f.29043.0.0 == 1 | f.29044.0.0 == 1 | f.29045.0.0 == 1 | f.29046.0.0 == 1) ~ 1,
-      depression.ever.case == 1 & f.29039 == 1 &
-        ((f.29040.0.0 %in% c(0, -1) | f.29041.0.0 %in% c(0, -1) | f.29042.0.0 %in% c(0, -1) |
-            f.29043.0.0 %in% c(0, -1) | f.29044.0.0 %in% c(0, -1) | f.29045.0.0 %in% c(0, -1) | f.29046.0.0 %in% c(0, -1))) ~ 0,
+      depression.ever.case == 1 & `29038` == 1 & `29039` == 1 &  # need to depression.ever.case
+        (`29040-0.0` == 1 | `29041-0.0` == 1 | `29042-0.0` == 1 | `29043-0.0` == 1 | `29044-0.0` == 1 | `29045-0.0` == 1 | `29046-0.0` == 1) ~ 1,
+      depression.ever.case == 1 & `29039` == 1 &
+        ((`29040-0.0` %in% c(0, -1) | `29041-0.0` %in% c(0, -1) | `29042-0.0` %in% c(0, -1) |
+            `29043-0.0` %in% c(0, -1) | `29044-0.0` %in% c(0, -1) | `29045-0.0` %in% c(0, -1) | `29046-0.0` %in% c(0, -1))) ~ 0,
       TRUE ~ NA_real_
     )
   )
@@ -263,25 +265,25 @@ MHQ2 <- MHQ2 %>%
 Any of the talking therapies or other therapeutic activities that participant reported participating in helped symptoms of depression (at least a little).
 depression.ever.case=1 
 AND
-f.29047.0.0: Activities undertaken to treat depression (D29) = “Talking therapies, such as psychotherapy, counselling, group therapy or CBT” (1) 
+29047.0.0: Activities undertaken to treat depression (D29) = “Talking therapies, such as psychotherapy, counselling, group therapy or CBT” (1) 
 OR 
-f.29047.0.0: Activities undertaken to treat depression (D29) = “Other therapeutic activities such as mindfulness, yoga or art classes” (2)
+29047.0.0: Activities undertaken to treat depression (D29) = “Other therapeutic activities such as mindfulness, yoga or art classes” (2)
 AND
-f.29048.0.0: Activities have helped (D29a) = “Yes, at least a little” (1)
+29048.0.0: Activities have helped (D29a) = “Yes, at least a little” (1)
 
 ```{r Non-medication therapy helped}
 
-### check f.29047.0.0-f.29047.0.1: Activities undertaken to treat depression (D29)
-f.29047 <- apply(MHQ2[, grep("f.29047.0", colnames(MHQ2))], 1, function(row) any(c("1","2") %in% row))
-MHQ2$f.29047[c(f.29047)] <- 1
+### check 29047.0.0-29047.0.1: Activities undertaken to treat depression (D29)
+`29047` <- apply(dat[, grep("29047-0", colnames(dat))], 1, function(row) any(c("1","2") %in% row))
+dat$`29047`[c(`29047`)] <- 1
 
 #### FLAG: lines 283 and 284: need to merge depression.ever.case variable from Lifetime depression script ####
 
-MHQ2 <- MHQ2 %>%
+dat <- dat %>%
   mutate(
     Depressed.non_medication.therapy.helped = case_when(
-      depression.ever.case == 1 & f.29047 == 1 & f.29048.0.0 == 1 ~ 1, # need to merge Depressed.Ever
-      depression.ever.case == 1 & f.29047 == 1 & (f.29048.0.0 == 0 | f.29048.0.0 == -1) ~ 0, 
+      depression.ever.case == 1 & `29047` == 1 & `29048-0.0` == 1 ~ 1, # need to merge Depressed.Ever
+      depression.ever.case == 1 & `29047` == 1 & (`29048-0.0` == 0 | `29048-0.0` == -1) ~ 0, 
       TRUE ~ NA_real_
     )
   )
@@ -289,7 +291,7 @@ MHQ2 <- MHQ2 %>%
 ```
 
 ## Save variables for export
-```{r Save variables for export}
+```{r Save variables for export, purl=FALSE}
 export_variables <- c("ID",
                       "PHQ9.No.Info",                                               
                       "PHQ9.Screen",
@@ -305,8 +307,8 @@ export_variables <- c("ID",
 ```
 
 ## save data
-```{r Write cleaned MHQ2 variables to a .rds file}
-MHQ2 %>%
+```{r Write cleaned MHQ2 variables to a .rds file, purl=FALSE}
+dat %>%
   select(all_of(export_variables)) %>%
   saveRDS(
     file = paste0(datapath,"MHQ2_PHQ9.rds")
