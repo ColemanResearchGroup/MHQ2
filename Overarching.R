@@ -426,7 +426,7 @@ runAllScriptsOverarching <- function(
         (!is.na(MHQ2.PanicDisorder) & MHQ2.PanicDisorder == 1) |
         (!is.na(MHQ2.AnorexiaNervosa) & MHQ2.AnorexiaNervosa == 1) |
         (!is.na(MHQ2.BulimiaNervosa) & MHQ2.BulimiaNervosa == 1) |
-        (!is.na(MHQ2.BingeEatingDisorder) & MHQ2.BingeEatingDisorder == 1) |
+        (!is.na(MHQ2.BingeEatingDisorderDSM5) & MHQ2.BingeEatingDisorderDSM5 == 1) |
         (!is.na(MHQ2.PurgingDisorder) & MHQ2.PurgingDisorder == 1) |
         (!is.na(MHQ2.AlcoholHazardousHarmfulUseCase) & MHQ2.AlcoholHazardousHarmfulUseCase == 1),
       1,

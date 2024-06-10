@@ -1,56 +1,13 @@
----
-title: "CIDI-SF Lifetime MDD MHQ2 UK Biobank"
-author: "Danyang Li"
-date: "09/10/2023"
-output: html_document
----
-Lifetime depression algorithm of MHQ2 UK Biobank 
-"Polar" depression traits ONLY - these are dependent on the mania part
-
-Configuration of global options 
-
-```{r Setup, include=FALSE, purl=FALSE}
-knitr::opts_chunk$set(
-  echo = TRUE,
-  comment = "",
-  prompt = FALSE,
-  cache = FALSE
-)
-```
-
-```{r Clean global environment, purl=FALSE}
-rm(list = ls())
-```
-
-```{r Load packages, purl=FALSE}
-library(data.table)
-library(tidyverse)
-```
-
-```{r Read data, purl=FALSE}
-setwd("/scratch/prj/ukbiobank/UKB_MHQ2_Anonymised")
-dat <- readRDS("data/MHQ2_Anonymous.rds")
-```
-
-# 4. Single episode unipolar depression
-Case {depression ever}
-AND
-Number of episodes (29033)= One (1)
-AND
-NOT case {bipolar type I}
-
-Excluded if number of episodes missing or bipolar state missing 
-
-```{r bipolar type I cases }
+## ----bipolar type I cases-----------------------------------------------------
 # this is the variable of biopolar type I from mania algorithm
 # needed for single and recurrent unipolar depression
 
 # bipolar.type.I
 # dat$BD1: bipolar type 1 case = 1, not case = 0 #EXTERNAL FROM MANIA
 
-```
 
-```{r Single episode unipolar depression}
+
+## ----Single episode unipolar depression---------------------------------------
 
 dat <-
   dat %>%
@@ -89,18 +46,9 @@ if (diagnosticsFlag) {
     ) %>%
     tally())
 }
-```
 
-# 5. Recurrent unipolar depression 
-Case {depression ever}
-AND
-Number of episodes (29033) = Several >1
-AND
-NOT case {bipolar type I}
 
-Excluded if number of episodes missing or bipolar state missing
-
-```{r Recurrent unipolar depression}
+## ----Recurrent unipolar depression--------------------------------------------
 
 dat <-
   dat %>%
@@ -140,14 +88,9 @@ if(diagnosticsFlag) dat %>%
 #   ) %>%
 #   tally())
 
-```
 
-# 6. Single episode unipolar depression triggered by event 
-Case {depression single episode}
-AND
-start within two months of event (29013) = Yes (1)
 
-```{r Single episode unipolar depression triggered by event}
+## ----Single episode unipolar depression triggered by event--------------------
 
 dat <-
   dat %>%
@@ -179,14 +122,9 @@ if(diagnosticsFlag) dat %>%
 #   ) %>%
 #   tally())
 
-```
 
-# 7. Post-natal depression 
-Case {depression ever}
-AND
-Did this first episode occur within months of giving birth? 
-Or has it been suggested that you had post-natal depression? (29035) = Yes (1)
-```{r Post-natal depression}
+
+## ----Post-natal depression----------------------------------------------------
 
 dat <-
   dat %>%
@@ -218,25 +156,9 @@ if(diagnosticsFlag) dat %>%
 #   ) %>%
 #   tally())
 
-```
 
-# 8. Worst depressive episode likely melancholic features 
-# (melancholic-like depression) 
-Case {depression ever}
-AND
-(Loss of interest (29012) = Yes (1)
-OR
-Did your mood brighten in response to positive events (29016) = No (0)
-AND 
-(> 2) of:
-•	Was your mood worse (29017) = “in the morning” (0)
-•	Appetite (29020) = “decreased appetite” (2) OR 
-  Weight change (29021) = “lost weight” (1)
-(counts as 1 item)
-•	Sleep change (29022) = Yes (1) AND Waking too early (29024) = Yes (1)
-•	Guilt (29028) = Yes (1)
 
-```{r Melancholic-like depression}
+## ----Melancholic-like depression----------------------------------------------
 
 dat <-
   dat %>%
@@ -353,24 +275,9 @@ if(diagnosticsFlag) dat %>%
 #   ) %>%
 #   tally())
 
-```
 
-# 9. Worst depressive episode likely atypical features (atypical depression)
-Case {depression ever}
-AND
-NOT Case {worst depressive episode melancholic}
-AND
-Did your mood brighten in response to positive events (29016) = Yes (1)
-AND
-(>1) of:
-•	Appetite (29020) = “increased appetite” (1) OR 
-  Weight (29021) = “gained weight” (0)
-(counts as 1 item)
-•	Sleep change (29022) = Yes (1) AND Sleeping too much (29025) = Yes (1)
-•	Heavy feelings (29019) = Yes (1)
-•	Coping with rejection, even when not  depressed (29032) = 
-  “Yes, and this has caused problems in work or social relationships” (0)
-```{r Atypical depression}
+
+## ----Atypical depression------------------------------------------------------
 
 dat <-
   dat %>%
@@ -476,24 +383,4 @@ if(diagnosticsFlag) dat %>%
 #   ) %>%
 #   tally())
 
-```
 
-# extract the data
-```{r extract data, purl=FALSE}
-
-dat <-
-  dat %>%
-  select(
-    MHQ2.DepressionEverCase,
-    depression.ever.control,
-    depression.subthreshold,
-    MHQ2.DepressionSingle,
-    MHQ2.DepressionRecurrent,
-    MHQ2.DepressionSingleEvent,
-    MHQ2.DepressionPostnatal,
-    MHQ2.DepressionMelancholic,
-    MHQ2.DepressionAtypical
-  )
-
-saveRDS(dat, "life_time_depression.rds")
-```
