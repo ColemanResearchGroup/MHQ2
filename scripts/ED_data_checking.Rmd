@@ -1,0 +1,402 @@
+---
+title: "Eating behaviour data check"
+author: "Christopher Huebel, Helena Davies, Johan Zvrskovec, Zhoaying Yu"
+date: "2024-02-04"
+output: html_document
+---
+
+This is a statistics script that is not intended to be part of the coding routine.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(data.table)
+library(tidyverse)
+```
+
+
+# Read in data
+
+```{r}
+#dat <- readRDS("/Users/lilian/Desktop/MHQ2_Anonymous.rds")
+dat <- readRDS("/Users/christopherhuebel/work/raw_data/MHQ2_Height_Alcohol_Field_Anonymous.rds")
+```
+_Check data_
+
+# 29120 Period in life when was underweight
+1	Yes
+0	No (1 person missing vs. showcase 150,509)
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29120-0.0`)
+```
+
+
+# 29125 Lowest weight during period when underweight [matches showcase]
+weight in kg
+Expecting Mean = 51.4476
+```{r}
+dat %>%
+  select(`29125-0.0`) %>%
+  filter(`29125-0.0` != -3) %>%
+  filter(`29125-0.0` != -1) %>%
+  summary()
+```
+
+
+# 29122 Did you feel fat? [matches showcase]
+1	Yes
+0	No [Expecting 16,570]
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29122-0.0`)
+```
+
+
+# 29124 Thinking or feeling body larger than it is [matches showcase]
+1	Yes
+0	No [expecting 15,810]
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29124-0.0`)
+```
+
+
+# 29128 Low weight had/has negative consequences for health [matches showcase]
+1	Yes
+0	No [expecting 14,186]
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29128-0.0`)
+```
+
+
+# 29129 Dependency of self-esteem on body shape or weight when at this low weight [matches data showcase]
+2	A great deal
+1	A moderate amount
+0	None at all or very little [Expecting 11,759]
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29129-0.0`)
+```
+
+
+
+# 29123 Afraid of gaining weight or becoming fat at low weight [matches data showcase]
+1	Yes
+0	No [Expecting 14,815]
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29123-0.0`)
+```
+
+
+# 29130 Methods of controlling body shape or weight when at this low weight [not matching]
+1	Made yourself vomit
+2	Used laxatives (pills or liquids) [data: 587 vs 1050]
+3	Used diuretics (water pills) [data: 54 vs 247]
+4	Used weight loss pills [data: 84 vs 288]
+5	Exercised excessively or felt distressed if unable to exercise [data: 1188 vs 1917]
+6	Fasted or not eaten for eight waking hours or more [data: 1046 vs 2403]
+7	Other methods to lose weight/stay at low weight [375 vs 823]
+0	None of above [14,430]
+-3	Prefer not to answer
+
+```{r}
+setDT(dat)
+```
+
+
+```{r}
+dat[,`29130_n3`:=`29130-0.0`==-3 | `29130-0.1`==-3 | `29130-0.2`==-3 | `29130-0.3`==-3 | `29130-0.4`==-3 | `29130-0.5`==-3 | `29130-0.6`==-3]
+summary(dat$`29130_n3`)
+```
+
+
+```{r}
+dat[,`29130_0`:=`29130-0.0`==0 | `29130-0.1`==0 | `29130-0.2`==0 | `29130-0.3`==0 | `29130-0.4`==0 | `29130-0.5`==0 | `29130-0.6`==0]
+summary(dat$`29130_0`)
+```
+
+
+```{r}
+dat[,`29130_1`:=`29130-0.0`==1 | `29130-0.1`==1 | `29130-0.2`==1 | `29130-0.3`==1 | `29130-0.4`==1 | `29130-0.5`==1 | `29130-0.6`==1]
+summary(dat$`29130_1`)
+```
+
+
+```{r}
+dat[,`29130_2`:=`29130-0.0`==2 | `29130-0.1`==2 | `29130-0.2`==2 | `29130-0.3`==2 | `29130-0.4`==2 | `29130-0.5`==2 | `29130-0.6`==2]
+summary(dat$`29130_2`)
+```
+
+
+```{r}
+dat[,`29130_3`:=`29130-0.0`==3 | `29130-0.1`==3 | `29130-0.2`==3 | `29130-0.3`==3 | `29130-0.4`==3 | `29130-0.5`==3 | `29130-0.6`==3]
+summary(dat$`29130_3`)
+```
+
+
+```{r}
+dat[,`29130_4`:=`29130-0.0`==4 | `29130-0.1`==4 | `29130-0.2`==4 | `29130-0.3`==4 | `29130-0.4`==4 | `29130-0.5`==4 | `29130-0.6`==4]
+summary(dat$`29130_4`)
+```
+
+
+```{r}
+dat[,`29130_5`:=`29130-0.0`==5 | `29130-0.1`==5 | `29130-0.2`==5 | `29130-0.3`==5 | `29130-0.4`==5 | `29130-0.5`==5 | `29130-0.6`==5]
+summary(dat$`29130_5`)
+```
+
+
+```{r}
+dat[,`29130_6`:=`29130-0.0`==6 | `29130-0.1`==6 | `29130-0.2`==6 | `29130-0.3`==6 | `29130-0.4`==6 | `29130-0.5`==6 | `29130-0.6`==6]
+summary(dat$`29130_6`)
+```
+
+
+```{r}
+dat[,`29130_7`:=`29130-0.0`==7 | `29130-0.1`==7 | `29130-0.2`==7 | `29130-0.3`==7 | `29130-0.4`==7 | `29130-0.5`==7 | `29130-0.6`==7]
+summary(dat$`29130_7`)
+```
+
+
+
+
+# 29134 Experienced episodes of overeating/binge eating during time(s) of low weight [matches showcase]
+0	Only at time(s) of low weight [241]
+1	Both at times of low weight and when not at low weight [1,352]
+2	Only at time(s) when I was not at low weight [2,767]
+-4	Not applicable, as did not have low weight [15,049]
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29134-0.0`)
+```
+
+# Binge eating
+
+29132 Ever had recurrent episodes of excessive overeating or binge eating [not matching]
+2	Yes, at least once a week [3,338]
+1	Yes, occasionally
+0	No [data: 149,732 vs 149,731]
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29132-0.0`)
+```
+
+
+
+# 29133 Longest amount of time that overate or binge ate at least once a week [matches showcase]
+0	At least 3 months [2,479]
+1	More than 1 month but less than 3 months
+2	Less than 1 month
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29133-0.0`)
+```
+
+
+# 29135 Frequency of feeling had no control over eating during episodes of overeating/binge eating [matches showcase]
+0	At least once a week for at least 3 months [3,904]
+1	At least once a week for between 1 and 3 months
+2	Occasionally
+3	Never
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29135-0.0`)
+```
+
+
+29137 Distress about episodes of overeating/binge eating [matches showcase]
+1	Yes [10,960]
+0	No [8,446]
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29137-0.0`)
+```
+
+
+29140 Methods of controlling body shape or weight when overeating/binge eating [not matching]
+1	Made yourself vomit
+2	Used laxatives (pills or liquids) [data 253 vs 500]
+3	Used diuretics (water pills) [data 29 vs 145]
+4	Used weight loss pills [191  vs 434]
+5	Exercised excessively or felt distressed if unable to exercise [data 185 vs 441]
+6	Fasted or not eaten for eight waking hours or more [data 285 vs 798]
+7	Other methods to lose weight/stay at low weight [data 237 vs 622]
+0	None of above [1,124]
+-3	Prefer not to answer
+
+```{r}
+dat[,`29140_n3`:=`29140-0.0`==-3 | `29140-0.1`==-3 | `29140-0.2`==-3 | `29140-0.3`==-3 | `29140-0.4`==-3 | `29140-0.5`==-3 | `29140-0.6`==-3]
+summary(dat$`29140_n3`)
+```
+
+
+```{r}
+dat[,`29140_0`:=`29140-0.0`==0 | `29140-0.1`==0 | `29140-0.2`==0 | `29140-0.3`==0 | `29140-0.4`==0 | `29140-0.5`==0 | `29140-0.6`==0]
+summary(dat$`29140_0`)
+```
+
+
+```{r}
+dat[,`29140_1`:=`29140-0.0`==1 | `29140-0.1`==1 | `29140-0.2`==1 | `29140-0.3`==1 | `29140-0.4`==1 | `29140-0.5`==1 | `29140-0.6`==1]
+summary(dat$`29140_1`)
+```
+
+
+```{r}
+dat[,`29140_2`:=`29140-0.0`==2 | `29140-0.1`==2 | `29140-0.2`==2 | `29140-0.3`==2 | `29140-0.4`==2 | `29140-0.5`==2 | `29140-0.6`==2]
+summary(dat$`29140_2`)
+```
+
+
+```{r}
+dat[,`29140_3`:=`29140-0.0`==3 | `29140-0.1`==3 | `29140-0.2`==3 | `29140-0.3`==3 | `29140-0.4`==3 | `29140-0.5`==3 | `29140-0.6`==3]
+summary(dat$`29140_3`)
+```
+
+
+```{r}
+dat[,`29140_4`:=`29140-0.0`==4 | `29140-0.1`==4 | `29140-0.2`==4 | `29140-0.3`==4 | `29140-0.4`==4 | `29140-0.5`==4 | `29140-0.6`==4]
+summary(dat$`29140_4`)
+```
+
+
+```{r}
+dat[,`29140_5`:=`29140-0.0`==5 | `29140-0.1`==5 | `29140-0.2`==5 | `29140-0.3`==5 | `29140-0.4`==5 | `29140-0.5`==5 | `29140-0.6`==5]
+summary(dat$`29140_5`)
+```
+
+
+```{r}
+dat[,`29140_6`:=`29140-0.0`==6 | `29140-0.1`==6 | `29140-0.2`==6 | `29140-0.3`==6 | `29140-0.4`==6 | `29140-0.5`==6 | `29140-0.6`==6]
+summary(dat$`29140_6`)
+```
+
+
+```{r}
+dat[,`29140_7`:=`29140-0.0`==7 | `29140-0.1`==7 | `29140-0.2`==7 | `29140-0.3`==7 | `29140-0.4`==7 | `29140-0.5`==7 | `29140-0.6`==7]
+summary(dat$`29140_7`)
+```
+
+
+
+# 29141 Frequency of using methods of controlling body shape or weight when overeating/binge eating [matching showcase]
+1	Yes, at least once a week
+0	No [780]
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29141-0.0`)
+```
+
+
+# 29142 Longest amount of time that engaged in these behaviours when overeating/binge eating [matching showcase]
+0	At least 3 months [749]
+1	More than 1 month but less than 3 months
+2	Less than 1 month
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29142-0.0`)
+```
+
+
+29143 Dependency of self-esteem on body shape or weight when overeating/binge eating [matching showcase]
+2	A great deal
+1	A moderate amount
+0	None at all or very little [7,384]
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29143-0.0`)
+```
+
+
+# Not during AN
+29134 see abvoe
+
+
+
+29136 Actions and feelings during periods of overeating/binge eating []
+1	Eaten much more rapidly than normal
+2	Eaten until feeling uncomfortably full [data: 6690 vs 10920]
+3	Eaten large amounts of food when not physically hungry
+4	Eaten alone because of feeling embarrassed by overeating
+5	Felt disgusted, depressed or very guilty afterward
+0	Done none of the above
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29136-0.0`)
+```
+
+
+# Binge-eating disorder
+
+# Purging disorder
+29144 Control of body weight outside of periods of low weight or regular overeating/binge eating [not matching]
+1	Yes, at least once a week
+0	No [166,045 vs 166,046]
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29144-0.0`)
+```
+
+
+# 29145 Longest amount of time that engaged in these behaviours outside of periods of low weight or overeating/binge eating
+0	At least 3 months [1,606]
+1	More than 1 month but less than 3 months
+2	Less than 1 month
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29145-0.0`)
+```
+
+
+29146 Dependency of self-esteem on body shape or weight (engaging these behaviours) [matching showcase]
+2	A great deal
+1	A moderate amount
+0	None at all or very little [352]
+-3	Prefer not to answer
+
+```{r}
+dat %>%
+  count(`29146-0.0`)
+```
+
+

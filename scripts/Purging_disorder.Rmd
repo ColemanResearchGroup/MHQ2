@@ -1,0 +1,95 @@
+---
+title: "MHQ2 Purging disorder DSM-5 algorithm"
+author: "Zhaoying Yu, Helena Davies, Christopher Huebel, Johan Zvrskovec"
+output: html_document
+date: "2023-11-07"
+---
+
+
+```{r, purl=FALSE}
+library("tidyverse")
+```
+
+# Extended Purging
+
+```{r}
+dat <- dat %>%
+  mutate(
+    MHQ2.ExtendedPurgingPhenotype = case_when(
+      is.na(`29144-0.0`) |
+        `29144-0.0` < 0 ~ NA,
+      TRUE ~ `29144-0.0`
+    )
+  )
+```
+
+# Purging disorder
+
+Was there a time in your life when you made yourself vomit, used laxatives, diuretics or pills, on their own or in combination, at least once a week as a way to control your body shape or weight? = 1 Yes, at least once a week 
+
+>'29144-0.0' == 1
+
+AND
+Outside any periods of low weight or regular overeating/binge eating that you may have told us about, what was the longest amount of time where you engaged in any of the behaviours (made yourself vomit, used laxatives, diuretics or pills), on their own or in combination, at least once a week? = 0 At least three months
+
+>'29145-0.0' == 0
+
+AND
+During the time when you were engaging in these behaviours, how dependent was your self-worth on your body shape or weight? = 2 A great deal OR 1 A moderate amount
+
+>'29146-0.0' %in% c(1,2)
+
+
+```{r}
+dat <- dat %>%
+  mutate(
+    MHQ2.PurgingDisorder = case_when(
+      # Purging behaviours & once a week
+      `29144-0.0` == 1 &
+        # & at least three months
+        `29145-0.0` == 0 &
+        # & self-worth dependent on body shape/weight during purging
+        `29146-0.0` %in% c(1, 2) ~ 1,
+      # does not have purging disorder (has answered ED section of MHQ2)
+      !is.na(`29205-0.0`) ~ 0,
+      # people who have not answered the MHQ2
+      TRUE ~ NA_real_
+    )
+  )
+
+if(diagnosticsFlag) dat %>%
+  group_by(
+    `29144-0.0`,
+    `29145-0.0`,
+    `29146-0.0`,
+    MHQ2.PurgingDisorder
+  ) %>%
+  tally()
+```
+
+
+```{r}
+if(diagnosticsFlag) dat %>%
+  select(
+    `29144-0.0`, # weight loss behaviours once per week
+    `29145-0.0`, # weight loss behaviours duration
+    `29146-0.0`, # weight loss behaviours self-esteem
+    `29205-0.0`, # end date ED section MHQ2
+    MHQ2.PurgingDisorder
+  ) %>%
+  filter(
+    MHQ2.PurgingDisorder == 1
+  )
+```
+
+
+Purging disorder
+```{r}
+if(diagnosticsFlag) dat %>%
+  count(MHQ2.PurgingDisorder)
+```
+
+Expected total n that has answered the MHQ2 questionnaire 169,697
+
+0 + 1 = 168,234 + 1426 = 169,696
+

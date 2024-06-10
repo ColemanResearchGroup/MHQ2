@@ -1,0 +1,396 @@
+---
+title: "Trauma"
+author: "Abigail ter Kuile"
+date: "2023-11-23"
+output: html_document
+---
+
+# Set up
+```{r setup, include=FALSE, purl=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "",
+  prompt = FALSE,
+  cache = FALSE
+)
+```
+
+Load packages from library 
+```{r Load packages from library, purl=FALSE}
+library(tidyverse)
+```
+
+clear global environment
+```{r Clear global environment, purl=FALSE}
+
+rm(list = ls())
+
+```
+
+```{r Get system date, purl=FALSE}
+
+date <- Sys.Date()
+date
+
+```
+
+Read in data
+```{r read in data file, purl=FALSE}
+
+dat <- readRDS(file = "/file/path/MHQ2_Anonymous.rds")
+
+```
+ 
+# Make trauma field data frame (for easier inspecting)
+Adverse life events in childhood and adulthood field names MHQ: 29076-29090 
+https://biobank.ndph.ox.ac.uk/ukb/label.cgi?id=1505
+
+# specify field numbers
+```{r}
+
+trauma_field_numbers <- as.character(29076:29090)
+
+```
+
+# select trauma field numbers into dataframe
+```{r}
+
+trauma_data <- dat %>%
+  select(
+    matches(
+      paste(
+        trauma_field_numbers,
+        collapse = "|"
+      )
+    )
+  )
+
+```
+
+# Inspect data of trauma columns
+```{r, purl=FALSE}
+
+# Inspect modified columns
+if(diagnosticsFlag) glimpse(trauma_data)
+if(diagnosticsFlag) summary(trauma_data)
+
+```
+
+
+# Convert data to numeric and recode -3 (prefer not to answer) to NA
+To avoid overwriting raw data, save changes in new columns with suffix "_mod" (modified)
+```{r}
+
+trauma_data <- trauma_data %>%
+  mutate(
+    across(
+      everything(),
+      ~ .,
+      .names = "{.col}_mod"
+    )
+  ) %>%
+  mutate_all(
+    ~ as.numeric(.)
+  ) %>%
+  mutate_all(
+    ~ case_when(
+      . == -3 ~ NA_real_,
+      TRUE ~ .
+    )
+  )
+
+```
+
+# Inspect data of modified columns
+```{r, purl=FALSE}
+
+modified_columns <- trauma_data %>%
+  select(
+    ends_with("_mod")
+  )
+
+# Inspect modified columns
+if(diagnosticsFlag) glimpse(modified_columns)
+if(diagnosticsFlag) summary(modified_columns)
+
+```
+
+# Childhood adverse events exposure
+Repeated from MHQ1
+Based on answers to the five questions of Childhood Trauma Screen (CTS). Screen is positive if any item is positive.
+CTS takes one question from each domain of the Childhood Trauma Questionnaire. Thresholds taken from thresholds for represented domains in the CTQ. Other scoring schemes are used for other surveys.
+
+
+Felt loved (29076) = Sometimes true (02) OR Rarely true (01)
++++ ATK: why does the algorithm text not include 'never true' (0)? I have included 0 in the code below 
+OR 
+Physically abused by family (29077) = Rarely true (01), Sometimes true (02), Often true (03) OR Very often true (04) 
+OR 
+Felt hated by family (29078) = Rarely true (01), Sometimes true (02), Often true (03) OR Very often true (04) 
+OR 
+Sexually molested (29079) = Rarely true (01), Sometimes true (02), Often true (03) OR Very often true (04) 
+OR 
+Someone to take to doctor when needed as a child (29080) = Often true (03), Sometimes true (02) OR Rarely true (01) 
+
+Fields 29076-29080
+
+Coding	Meaning
+0	Never true
+1	Rarely true
+2	Sometimes true
+3	Often true
+4	Very often true
+-3	Prefer not to answer 
+
+++ATK how do we want to handle NAs? If we are screening positive if any item is positive, I don't think it makes sense to exclude/code as NA for all items if they are only NA for one item (as hashed out below)
+```{r}
+
+trauma_data <- trauma_data %>%
+  mutate(
+    MHQ2.TraumaChildhood = case_when(
+      (
+        is.na(`29076-0.0_mod`) &
+          is.na(`29077-0.0_mod`) &
+          is.na(`29078-0.0_mod`) &
+          is.na(`29079-0.0_mod`) &
+          is.na(`29080-0.0_mod`)
+      ) ~ NA_real_,
+      # Felt loved = Never true (0) Rarely true (1) or Sometimes true (2)
+      `29076-0.0_mod` < 3 |
+        # Physically abused by family = Rarely true (01),
+        # Sometimes true (02), Often true (03) OR Very often true (04)
+        `29077-0.0_mod` > 0 |
+        # Felt hated by family = Rarely true (01),
+        # Sometimes true (02), Often true (03) OR Very often true (04)
+        `29078-0.0_mod` > 0 |
+        # Sexually molested = Rarely true (01),
+        # Sometimes true (02), Often true (03) OR Very often true (04)
+        `29079-0.0_mod` > 0 |
+        # Someone to take to doctor when needed as a child = Often true (03),
+        # Sometimes true (02) OR Rarely true (01) OR Never (0)
+        `29080-0.0_mod` < 4 ~ 1,
+      TRUE ~ 0
+    )
+  )
+
+if(diagnosticsFlag) trauma_data %>%
+  with(
+    table(
+      MHQ2.TraumaChildhood,
+      useNA = "a"
+    )
+  )
+
+```
+
+# Adult abuse events exposure
+New (not in MHQ1)
+Based on answers to questions about partner abuse. Screen positive if any item is positive
+Positive responses may indicate intimate partner abuse. 
+
+Stopped seeing friends (29081) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01) 
+
+OR 
+
+Belittled (29082) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01) 
+
+OR 
+
+Hurt (29083) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01) 
+
+OR 
+
+Touched without consent (29084) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01) 
+
+OR 
+
+Sex without consent (29085) = Yes, within the last 12 months (02) OR Yes, but not in the last 12 months (01) 
+
+fields 29081-29085
+
+Coding	Meaning
+0	No, never
+1	Yes, but not in the last 12 months
+2	Yes, within the last 12 months
+-3	Prefer not to answer
+```{r}
+
+trauma_data <- trauma_data %>%
+  mutate(
+    MHQ2.TraumaAdulthood = case_when(
+      (
+        is.na(`29081-0.0_mod`) &
+          is.na(`29082-0.0_mod`) &
+          is.na(`29083-0.0_mod`) &
+          is.na(`29084-0.0_mod`) &
+          is.na(`29085-0.0_mod`)
+      ) ~ NA_real_,
+      # Stopped seeing friends (29081) = Yes, within the last 12 months (02) OR
+      # Yes, but not in the last 12 months (01)
+      `29081-0.0_mod` > 0 |
+        # Belittled (29082) = Yes, within the last 12 months (02) OR
+        # Yes, but not in the last 12 months (01)
+        `29082-0.0_mod` > 0 |
+        # Hurt (29083) = Yes, within the last 12 months (02) OR
+        # Yes, but not in the last 12 months (01)
+        `29083-0.0_mod` > 0 |
+        # Touched without consent (29084) = Yes, within the last 12 months (02)
+        # OR Yes, but not in the last 12 months (01)
+        `29084-0.0_mod` > 0 |
+        # Sex without consent (29085) = Yes, within the last 12 months (02) OR
+        # Yes, but not in the last 12 months (01)
+        `29085-0.0_mod` > 0 ~ 1,
+      TRUE ~ 0
+    )
+  )
+
+if(diagnosticsFlag) trauma_data %>%
+  with(
+    table(
+      MHQ2.TraumaAdulthood,
+      useNA = "a"
+    )
+  )
+
+```
+
+# Adverse events 12 months exposure
+New
+Based on answers to question about partner abuse and other adverse events. Score positive if any items positive.
+Because this includes a wider range of events, it is not a subset of above “adult abuse events” 
+
+Positive if any of: 
+
+Stopped seeing friends (29081) = Yes, within the last 12 months (02) 
+
+OR 
+
+Belittled (29082) = Yes, within the last 12 months (02) 
+
+OR 
+
+Hurt (29083) = Yes, within the last 12 months (02)  
+
+OR 
+
+Touched without consent (29084) = Yes, within the last 12 months (02) 
+
+OR 
+
+Sex without consent (29085) = Yes, within the last 12 months (02) 
+
+OR 
+
+Assault (29086) = Yes, within the last 12 months (02) 
+
+OR 
+
+Injury or illness (29087) = Yes, within the last 12 months (02) 
+
+OR 
+
+Divorce (29088) = Yes, within the last 12 months (02) 
+
+OR 
+
+Death spouse (29089) = Yes, within the last 12 months (02) 
+
+OR 
+
+Death suicide (29090) = Yes, within the last 12 months (02) 
+
+fields 29081-29090
+Coding	Meaning
+0	No, never
+1	Yes, but not in the last 12 months
+2	Yes, within the last 12 months
+-3	Prefer not to answer
+```{r}
+
+trauma_data <- trauma_data %>%
+  mutate(
+    MHQ2.Trauma12Month = case_when(
+      (
+        is.na(`29081-0.0_mod`) &
+          is.na(`29082-0.0_mod`) &
+          is.na(`29083-0.0_mod`) &
+          is.na(`29084-0.0_mod`) &
+          is.na(`29085-0.0_mod`) &
+          is.na(`29086-0.0_mod`) &
+          is.na(`29087-0.0_mod`) &
+          is.na(`29088-0.0_mod`) &
+          is.na(`29089-0.0_mod`) &
+          is.na(`29090-0.0_mod`)
+      ) ~ NA_real_,
+      # Stopped seeing friends (29081) = Yes, within the last 12 months (02)
+      `29081-0.0_mod` == 2 |
+        # Belittled (29082) = Yes, within the last 12 months (02)
+        `29082-0.0_mod` == 2 |
+        # Hurt (29083) = Yes, within the last 12 months (02)
+        `29083-0.0_mod` == 2 |
+        # Touched without consent (29084) = Yes, within the last 12 months (02)
+        `29084-0.0_mod` == 2 |
+        # Sex without consent (29085) = Yes, within the last 12 months (02)
+        `29085-0.0_mod` == 2 |
+        # Assault (29086) = Yes, within the last 12 months (02)
+        `29086-0.0_mod` == 2 |
+        # Injury or illness (29087) = Yes, within the last 12 months (02)
+        `29087-0.0_mod` == 2 |
+        # Divorce (29088) = Yes, within the last 12 months (02)
+        `29088-0.0_mod` == 2 |
+        # Death spouse (29089) = Yes, within the last 12 months (02)
+        `29089-0.0_mod` == 2 |
+        # Death suicide (29090) = Yes, within the last 12 months (02)
+        `29090-0.0_mod` == 2 ~ 1,
+      TRUE ~ 0
+    )
+  )
+
+if(diagnosticsFlag) trauma_data %>%
+  with(
+    table(
+      MHQ2.Trauma12Month,
+      useNA = "a"
+    )
+  )
+
+```
+
+# Select columns for saving
+```{r select columns}
+
+selected_columns <- trauma_data %>%
+  select(
+    MHQ2.TraumaChildhood,
+    MHQ2.TraumaAdulthood,
+    MHQ2.Trauma12Month
+  )
+
+```
+
+# Add the selected columns back to the MHQ2 dataframe
+```{r}
+
+dat <- cbind(
+  dat,
+  selected_columns
+)
+
+```
+
+# Perform garbage collection
+```{r, purl=FALSE}
+
+gc()
+
+```
+
+# Save the data
+```{r save the data, purl=FALSE}
+
+MHQ2_trauma %>%
+  saveRDS(
+    file = "/file/path/trauma_algorithms.rds"
+  )
+
+```
