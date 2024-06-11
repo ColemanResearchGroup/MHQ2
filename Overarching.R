@@ -179,6 +179,7 @@ runAllScriptsOverarching <- function(
   )
 
   producedVariables <- c(
+    "eid",
     "MHQ2.SelfReportedDiagnosis",
     "MHQ2.SelfReportedDiagnosisMHQ2016Compatible",
     "MHQ2.SelfReportedAnxietyDisorder",
