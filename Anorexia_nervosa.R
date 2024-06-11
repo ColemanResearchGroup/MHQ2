@@ -164,8 +164,8 @@ dat <- dat %>%
   mutate(
     MHQ2.ExtendedAnorexia = case_when(
       is.na(`29120-0.0`) | 
-        29120-0.0 < 0 ~ NA_real_,
-      TRUE ~ 29120-0.0
+        `29120-0.0` < 0 ~ NA_real_,
+      TRUE ~ `29120-0.0`
     )
   )
 
