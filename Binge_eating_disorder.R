@@ -1,4 +1,4 @@
-## ----BE rapid_eating----------------------------------------------------------
+## ----BE rapid_eating-----------------
 # Create numeric variables
 dat <- dat %>%
   mutate(
@@ -20,7 +20,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_rapid_eating_numeric)
 
 
-## ----BE feeling_uncomf_full---------------------------------------------------
+## ----BE feeling_uncomf_full----------
 dat <- dat %>%
   mutate(
     BE_feeling_uncomf_full_numeric = case_when(
@@ -41,7 +41,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_feeling_uncomf_full_numeric)
 
 
-## ----BE large_amounts_not_hungry----------------------------------------------
+## ----BE large_amounts_not_hungry-----
 dat <- dat %>%
   mutate(
     BE_large_amounts_not_hungry_numeric = case_when(
@@ -62,7 +62,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_large_amounts_not_hungry_numeric)
 
 
-## ----BE eaten_alone_embarrassed-----------------------------------------------
+## ----BE eaten_alone_embarrassed------
 dat <- dat %>%
   mutate(
     BE_eaten_alone_embarrassed_numeric = case_when(
@@ -83,7 +83,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_eaten_alone_embarrassed_numeric)
 
 
-## ----BE disgusted_depressed_after---------------------------------------------
+## ----BE disgusted_depressed_after----
 dat <- dat %>%
   mutate(
     BE_disgusted_depressed_after_numeric = case_when(
@@ -104,7 +104,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_disgusted_depressed_after_numeric)
 
 
-## ----sumscore BE behaviours---------------------------------------------------
+## ----sumscore BE behaviours----------
 dat <- dat %>%
   mutate(
     BE_no_characteristics_numeric = case_when(
@@ -125,7 +125,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_no_characteristics_numeric)
 
 
-## ----sumscore BE behaviours 2-------------------------------------------------
+## ----sumscore BE behaviours 2--------
 dat <- dat %>%
   mutate(
     BE_characteristics_PTNA_numeric = case_when(
@@ -146,7 +146,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_characteristics_PTNA_numeric)
 
 
-## ----sumscore BE_characteristics_items----------------------------------------
+## ----sumscore BE_characteristics_items----
 BE_characteristics_items <- dat %>%
   select(
     BE_rapid_eating_numeric,
@@ -160,7 +160,7 @@ if(diagnosticsFlag) BE_characteristics_items %>%
   names()
 
 
-## ----BE characteristics-------------------------------------------------------
+## ----BE characteristics--------------
 dat <- dat %>%
   mutate(
     BE_characteristics_sumscore = rowSums(
@@ -175,7 +175,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_characteristics_sumscore)
 
 
-## ----BED DSM5 algorithm-------------------------------------------------------
+## ----BED DSM5 algorithm--------------
 dat <- dat %>%
   mutate(
     MHQ2.BingeEatingDisorderDSM5 = case_when(

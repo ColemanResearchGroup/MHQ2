@@ -1,10 +1,10 @@
-## -----------------------------------------------------------------------------
+## ------------------------------------
 library("tidyverse")
 
 
 
 
-## ----Define grep_reports------------------------------------------------------
+## ----Define grep_reports-------------
 
 grep_reports <- function(data, codes) {
   return(
@@ -32,7 +32,7 @@ grep_reports <- function(data, codes) {
 
 
 
-## ----Any eating disorder diagnosis--------------------------------------------
+## ----Any eating disorder diagnosis----
 
 dat$SelfReportedEatingDisorder <- grep_reports(
   data = dat[, grep(
@@ -44,7 +44,7 @@ dat$SelfReportedEatingDisorder <- grep_reports(
 
 
 
-## ----Anorexia nervosa---------------------------------------------------------
+## ----Anorexia nervosa----------------
 dat$SelfReportedAnorexiaNervosa <- grep_reports(
   data = dat[, grep(
     "^29000-",
@@ -54,12 +54,12 @@ dat$SelfReportedAnorexiaNervosa <- grep_reports(
 )
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 if(diagnosticsFlag) dat %>%
   count(SelfReportedAnorexiaNervosa)
 
 
-## ----Bulimia nervosa----------------------------------------------------------
+## ----Bulimia nervosa-----------------
 dat$SelfReportedBulimiaNervosa <- grep_reports(
   data = dat[, grep(
     "^29000-",
@@ -69,12 +69,12 @@ dat$SelfReportedBulimiaNervosa <- grep_reports(
 )
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 if(diagnosticsFlag) dat %>%
   count(SelfReportedBulimiaNervosa)
 
 
-## ----Binge eating disorder----------------------------------------------------
+## ----Binge eating disorder-----------
 dat$SelfReportedBingeEatingDisorder <- grep_reports(
   data = dat[, grep(
     "^29000-",
@@ -84,7 +84,7 @@ dat$SelfReportedBingeEatingDisorder <- grep_reports(
 )
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 if(diagnosticsFlag) dat %>%
   count(SelfReportedBingeEatingDisorder)
 

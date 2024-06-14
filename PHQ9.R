@@ -1,4 +1,4 @@
-## ----check whether participants have info for two core symptoms---------------
+## ----check whether participants have info for two core symptoms----
 
 dat <- dat %>%
   mutate(
@@ -18,7 +18,7 @@ dat <- dat %>%
 
 
 
-## ----screen participants who meet at least one core symptom-------------------
+## ----screen participants who meet at least one core symptom----
 
 dat <- dat %>%
   mutate(
@@ -44,7 +44,7 @@ dat <- dat %>%
 
 
 
-## ----The number of items met by the participants------------------------------
+## ----The number of items met by the participants----
 
 ### List of columns of PHQ9
 columns_PHQ9.Items <- c(
@@ -107,7 +107,7 @@ if(diagnosticsFlag) dat %>%
 
 
 
-## ----PHQ-9 driven depression--------------------------------------------------
+## ----PHQ-9 driven depression---------
 
 dat <- dat %>%
   mutate(
@@ -143,7 +143,7 @@ if(diagnosticsFlag) dat %>%
 
 
 
-## ----PHQ-9 full score---------------------------------------------------------
+## ----PHQ-9 full score----------------
 
 dat <- dat %>%
   mutate(
@@ -189,7 +189,7 @@ dat$MHQ2.PHQ9Score[conditions] <- NA
 
 
 
-## ----Current Depression-------------------------------------------------------
+## ----Current Depression--------------
 
 dat <- dat %>%
   mutate(
@@ -254,7 +254,7 @@ if(diagnosticsFlag) dat %>%
 
 
 
-## ----Current or subthreshold depression---------------------------------------
+## ----Current or subthreshold depression----
 
 dat <- dat %>%
   mutate(
@@ -273,7 +273,7 @@ dat <- dat %>%
 
 
 
-## ----Current more severe depression-------------------------------------------
+## ----Current more severe depression----
 
 dat <- dat %>%
   mutate(
@@ -293,7 +293,7 @@ dat <- dat %>%
 
 
 
-## ----Medication helped--------------------------------------------------------
+## ----Medication helped---------------
 
 # check 29038.0.0-29038.0.2:
 # Have you ever tried (D27) = Medication prescribed to you (2)
@@ -394,7 +394,7 @@ if(diagnosticsFlag) dat %>%
 
 
 
-## ----Non-medication therapy helped--------------------------------------------
+## ----Non-medication therapy helped----
 
 ### check 29047.0.0-29047.0.1: Activities undertaken to treat depression (D29)
 

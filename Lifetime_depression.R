@@ -1,4 +1,4 @@
-## ----Depression ever case-----------------------------------------------------
+## ----Depression ever case------------
 
 if(diagnosticsFlag) unique(dat$`29014-0.0`)
 if(diagnosticsFlag) unique(dat$`29021-0.0`)
@@ -138,7 +138,7 @@ rm(cidid_symptoms)
 
 
 
-## ----Depression ever control--------------------------------------------------
+## ----Depression ever control---------
 
 phq_symptoms <- c(
   "29002-0.0",
@@ -226,7 +226,7 @@ rm(phq_symptoms)
 
 
 
-## ----subthreshold depressive symptoms ever------------------------------------
+## ----subthreshold depressive symptoms ever----
 
 dat$tmp_29000 <- apply(
   dat[, grepl(

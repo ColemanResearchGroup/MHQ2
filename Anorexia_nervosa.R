@@ -1,4 +1,4 @@
-## ----made yourself vomit------------------------------------------------------
+## ----made yourself vomit-------------
 dat <- dat %>%
   mutate(
     LW_made_yourself_vomit = case_when(
@@ -21,7 +21,7 @@ if(diagnosticsFlag) dat %>%
   count(LW_made_yourself_vomit)
 
 
-## ----used laxatives-----------------------------------------------------------
+## ----used laxatives------------------
 dat <- dat %>%
   mutate(
     LW_used_laxatives = case_when(
@@ -44,7 +44,7 @@ if(diagnosticsFlag) dat %>%
   count(LW_used_laxatives)
 
 
-## ----used diuretics-----------------------------------------------------------
+## ----used diuretics------------------
 dat <- dat %>%
   mutate(
     LW_used_diuretics = case_when(
@@ -67,7 +67,7 @@ if(diagnosticsFlag) dat %>%
   count(LW_used_diuretics)
 
 
-## ----used weight loss pills---------------------------------------------------
+## ----used weight loss pills----------
 dat <- dat %>%
   mutate(
     LW_used_weight_loss_pills = case_when(
@@ -90,7 +90,7 @@ if(diagnosticsFlag) dat %>%
   count(LW_used_weight_loss_pills)
 
 
-## ----excessive exercise-------------------------------------------------------
+## ----excessive exercise--------------
 dat <- dat %>%
   mutate(
     LW_excessive_exercise = case_when(
@@ -113,7 +113,7 @@ if(diagnosticsFlag) dat %>%
   count(LW_excessive_exercise)
 
 
-## ----fasted-------------------------------------------------------------------
+## ----fasted--------------------------
 dat <- dat %>%
   mutate(
     LW_fasted = case_when(
@@ -136,7 +136,7 @@ if(diagnosticsFlag) dat %>%
   count(LW_fasted)
 
 
-## ----other weight control-----------------------------------------------------
+## ----other weight control------------
 dat <- dat %>%
   mutate(
     LW_other_weight_control = case_when(
@@ -159,18 +159,18 @@ if(diagnosticsFlag) dat %>%
   count(LW_other_weight_control)
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 dat <- dat %>%
   mutate(
     MHQ2.ExtendedAnorexia = case_when(
       is.na(`29120-0.0`) | 
-        `29120-0.0` < 0 ~ NA,
-      TRUE ~ `29120-0.0`
+        29120-0.0 < 0 ~ NA_real_,
+      TRUE ~ 29120-0.0
     )
   )
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 dat <- dat %>%
   mutate(
     MHQ2.BMIAtLowWeight = case_when(
@@ -183,7 +183,7 @@ dat <- dat %>%
   )
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 if(diagnosticsFlag) dat %>%
   select(
     MHQ2.BMIAtLowWeight
@@ -191,7 +191,7 @@ if(diagnosticsFlag) dat %>%
   summary()
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 dat <- dat %>%
   mutate(MHQ2.AnorexiaNervosa = case_when(
     # Criterion A
@@ -238,12 +238,12 @@ dat <- dat %>%
   )
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 if(diagnosticsFlag) dat %>%
   count(MHQ2.AnorexiaNervosa)
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 dat <- dat %>%
   mutate(MHQ2.AnorexiaNervosaBingeEatingPurging = case_when(
     # Criterion A
@@ -315,12 +315,12 @@ dat <- dat %>%
   )
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 if(diagnosticsFlag) dat %>%
   count(MHQ2.AnorexiaNervosaBingeEatingPurging)
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 dat <- dat %>%
   mutate(MHQ2.AnorexiaNervosaRestricting = case_when(
     # Criterion A

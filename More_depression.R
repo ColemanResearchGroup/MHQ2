@@ -1,4 +1,4 @@
-## ----bipolar type I cases-----------------------------------------------------
+## ----bipolar type I cases------------
 # this is the variable of biopolar type I from mania algorithm
 # needed for single and recurrent unipolar depression
 
@@ -7,7 +7,7 @@
 
 
 
-## ----Single episode unipolar depression---------------------------------------
+## ----Single episode unipolar depression----
 
 dat <-
   dat %>%
@@ -48,7 +48,7 @@ if (diagnosticsFlag) {
 }
 
 
-## ----Recurrent unipolar depression--------------------------------------------
+## ----Recurrent unipolar depression----
 
 dat <-
   dat %>%
@@ -90,7 +90,7 @@ if(diagnosticsFlag) dat %>%
 
 
 
-## ----Single episode unipolar depression triggered by event--------------------
+## ----Single episode unipolar depression triggered by event----
 
 dat <-
   dat %>%
@@ -124,7 +124,7 @@ if(diagnosticsFlag) dat %>%
 
 
 
-## ----Post-natal depression----------------------------------------------------
+## ----Post-natal depression-----------
 
 dat <-
   dat %>%
@@ -158,7 +158,7 @@ if(diagnosticsFlag) dat %>%
 
 
 
-## ----Melancholic-like depression----------------------------------------------
+## ----Melancholic-like depression-----
 
 dat <-
   dat %>%
@@ -277,7 +277,7 @@ if(diagnosticsFlag) dat %>%
 
 
 
-## ----Atypical depression------------------------------------------------------
+## ----Atypical depression-------------
 
 dat <-
   dat %>%

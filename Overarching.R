@@ -64,15 +64,30 @@ argInputDataFilePath <- clOptions$`input-data-file-path`
 argOutputDataFilePath <- clOptions$`output-data-file-path`
 argVariables <- clOptions$variables
 
-# Set diagnosticsFlag to TRUE to print debugging information
 
+
+#for testing
+# dat <- readRDS('data/MHQ2_Height_Alcohol_Field_Anonymous.rds')
+# if(!any(colnames(dat)=="eid")) dat$eid<-1:nrow(dat)
+# #dat$ID<-dat$eid
+# variablesToExtract=NA
+# inputDataFilePath=NA
+# # inputDataFilePath <- 'data/MHQ2_Height_Alcohol_Field_Anonymous.Rds'
+# outputDataFilePath=NA
+# writeOutput=F
+# diagnosticsFlag=F
+# generateNewScriptsFromRmd = FALSE
+
+
+# Set diagnosticsFlag to TRUE to print debugging information
 runAllScriptsOverarching <- function(
   dat = NULL,
   variablesToExtract = NA,
   inputDataFilePath = NA,
   outputDataFilePath = NA,
   writeOutput = FALSE,
-  diagnosticsFlag = FALSE
+  diagnosticsFlag = FALSE,
+  generateNewScriptsFromRmd = FALSE
 ) {
 
   cat("\nRunning the MHQ2 overarching coding script.\n")
@@ -396,21 +411,30 @@ runAllScriptsOverarching <- function(
 
   if (length(missingVariables) > 0) {
     warning("There are required variables missing. ")
-    warning("The script will terminate and return further information. ")
+    #warning("The script will terminate and return further information. ") #not anymore
     warning("A list of missing variables is in the returned sub-object missingVariables.\n")
     toReturn$missingVariables <- missingVariables
-    return(toReturn)
+    #return(toReturn) #not anymore
+  }
+  
+  # Generate R files to process
+  # Generate all R scripts from the source Rmd files.
+  # These must be configured to be compatible with this process.
+  if(generateNewScriptsFromRmd){
+    for (iDS in seq_len(nrow(meta.scripts))) {
+      cFilename <- meta.scripts[iDS, c("filename.ex.suffix")]
+      #as R - this puts the files in the working directory root though
+      knitr::purl(
+        file.path("scripts", paste0(cFilename, ".Rmd"))
+      )
+    }
   }
 
   # Process
-  # Execute all scripts from the source.
-  # These must be configured to be compatible with this process.
+  # Execute all R scripts.
+  # These must be placed in the root folder for now, as this is the default export location.
   for (iDS in seq_len(nrow(meta.scripts))) {
     cFilename <- meta.scripts[iDS, c("filename.ex.suffix")]
-    #as R - this puts the files in the working directory root though
-    knitr::purl(
-      file.path("scripts", paste0(cFilename, ".Rmd"))
-    )
     source(
       paste0(cFilename, ".R"),
       local = TRUE #execute in local environment i.e. the function
@@ -443,6 +467,7 @@ runAllScriptsOverarching <- function(
   }
 
   if (writeOutput) {
+    cat("\nWriting output to the specified file.\n")
     fwrite(
       x = toReturn$processedDat,
       file = outputDataFilePath,

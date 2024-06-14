@@ -1,4 +1,4 @@
-## ----made yourself vomit------------------------------------------------------
+## ----made yourself vomit-------------
 dat <- dat %>%
   mutate(
     BE_made_yourself_vomit = case_when(
@@ -21,7 +21,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_made_yourself_vomit)
 
 
-## ----used laxatives-----------------------------------------------------------
+## ----used laxatives------------------
 dat <- dat %>%
   mutate(
     BE_used_laxatives = case_when(
@@ -44,7 +44,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_used_laxatives)
 
 
-## ----used diuretics-----------------------------------------------------------
+## ----used diuretics------------------
 dat <- dat %>%
   mutate(
     BE_used_diuretics = case_when(
@@ -67,7 +67,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_used_diuretics)
 
 
-## ----used weight loss pills---------------------------------------------------
+## ----used weight loss pills----------
 dat <- dat %>%
   mutate(
     BE_used_weight_loss_pills = case_when(
@@ -90,7 +90,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_used_weight_loss_pills)
 
 
-## ----excessive exercise-------------------------------------------------------
+## ----excessive exercise--------------
 dat <- dat %>%
   mutate(
     BE_excessive_exercise = case_when(
@@ -113,7 +113,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_excessive_exercise)
 
 
-## ----fasten-------------------------------------------------------------------
+## ----fasten--------------------------
 dat <- dat %>%
   mutate(
     BE_fasted = case_when(
@@ -136,7 +136,7 @@ if(diagnosticsFlag) dat %>%
   count(BE_fasted)
 
 
-## ----other weight control-----------------------------------------------------
+## ----other weight control------------
 dat <- dat %>%
   mutate(
     BE_other_weight_control = case_when(
@@ -159,19 +159,19 @@ if(diagnosticsFlag) dat %>%
   count(BE_other_weight_control)
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 dat <- dat %>%
   mutate(
     MHQ2.ExtendedOvereatingPhenotype = case_when(
       is.na(`29132-0.0`) |
         `29132-0.0` < 0 ~ NA_real_,
-      `29132-0.0` != 2 ~ 0,
-      `29132-0.0` == 2 ~ 1
+      29132-0.0 != 2 ~ 0,
+      29132-0.0 == 2 ~ 1
     )
   )
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 dat <- dat %>%
   mutate(
     MHQ2.BulimiaNervosa = case_when(

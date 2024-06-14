@@ -1,8 +1,8 @@
-## -----------------------------------------------------------------------------
+## ------------------------------------
 anx_pad_field_numbers <- as.character(29058:29075)
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 anx_pad_data <- dat %>%
   select(eid,
     matches(
@@ -18,7 +18,7 @@ if(diagnosticsFlag) glimpse(anx_pad_data)
 if(diagnosticsFlag) summary(anx_pad_data)
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 anx_pad_data <- anx_pad_data %>%
   mutate(across(everything(), ~ ., .names = "{.col}_mod")) %>%
   mutate_all(~ as.numeric(.)) %>%
@@ -30,7 +30,7 @@ anx_pad_data <- anx_pad_data %>%
 
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 anx_pad_data <- anx_pad_data %>%
   mutate(
     MHQ2.GAD7Score = rowSums(
@@ -53,7 +53,7 @@ if(diagnosticsFlag) anx_pad_data %>%
   count(MHQ2.GAD7Score)
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 anx_pad_data <- anx_pad_data %>%
   mutate(
     Gad7NaCount = rowSums(
@@ -88,7 +88,7 @@ if(diagnosticsFlag) anx_pad_data %>%
   count(Gad7NaCount)
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 # Create a new column named 'MHQ2.GADDerivedAnxiety' in the data frame
 # Calculate 'MHQ2.GADDerivedAnxiety' value.
 anx_pad_data <- anx_pad_data %>%
@@ -113,14 +113,14 @@ if(diagnosticsFlag) anx_pad_data %>%
   count(MHQ2.GADDerivedAnxiety)
 
 
-## ----Check colnames-----------------------------------------------------------
+## ----Check colnames------------------
 if(diagnosticsFlag) anx_pad_data %>%
   select(contains("29065")) %>%
   head()
 # field name ranges: 29065-0.0 - 29065-0.12
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 if(diagnosticsFlag) anx_pad_data %>%
   # matches regular expression
   # (column names that start with "29065-0.",
@@ -129,7 +129,7 @@ if(diagnosticsFlag) anx_pad_data %>%
   summary()
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 if(diagnosticsFlag) anx_pad_data %>%
   # matches regular expression
   # (column names that start with "29065-0.",
@@ -138,7 +138,7 @@ if(diagnosticsFlag) anx_pad_data %>%
   count()
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 #Create score for panic attack symptoms
 anx_pad_data <- anx_pad_data %>%
   mutate(PanicSymptomsCount = 0)
@@ -166,7 +166,7 @@ if(diagnosticsFlag) anx_pad_data %>%
   count(PanicSymptomsCount)
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 anx_pad_data <- anx_pad_data %>%
   mutate(MHQ2.PanicAttacksEver = case_when(
     is.na(PanicSymptomsCount) ~ NA,
@@ -179,7 +179,7 @@ if(diagnosticsFlag) anx_pad_data %>%
   count(MHQ2.PanicAttacksEver)
 
 
-## -----------------------------------------------------------------------------
+## ------------------------------------
 anx_pad_data <- anx_pad_data %>%
   mutate(MHQ2.PanicDisorder = case_when(
     # Symptoms {panic attack ever}
@@ -215,7 +215,7 @@ if(diagnosticsFlag) anx_pad_data %>%
   count(MHQ2.PanicDisorder)
 
 
-## ----Update the original dataset----------------------------------------------
+## ----Update the original dataset-----
 
 setDT(dat, key = "eid")
 setDT(anx_pad_data, key = "eid")
