@@ -1,4 +1,4 @@
-## ----not during AN criteria---------------------------------------------------
+## ----not during AN criteria----------
 dat <- dat %>%
   mutate(BE_not_during_AN = case_when(
     # 29134: "If you reported a time or times of low weight above,

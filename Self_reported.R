@@ -1,4 +1,4 @@
-## ----Install dependencies - remove hashes to install--------------------------
+## ----Install dependencies - remove hashes to install----
 
 # packages <- c("data.table","tidyverse","dplyr")
 # package_install(packages)
@@ -9,7 +9,7 @@
 
 
 
-## ----Define grep_reports------------------------------------------------------
+## ----Define grep_reports-------------
 
 grep_reports <- function(data, codes) {
   return(
@@ -29,7 +29,7 @@ grep_reports <- function(data, codes) {
 
 
 
-## ----Any self-reported diagnosis----------------------------------------------
+## ----Any self-reported diagnosis-----
 
 dat$MHQ2.SelfReportedDiagnosis <- grep_reports(
   data = dat[, grep(
@@ -41,7 +41,7 @@ dat$MHQ2.SelfReportedDiagnosis <- grep_reports(
 
 
 
-## ----Any self-reported diagnosis, MHQ2016 compatible--------------------------
+## ----Any self-reported diagnosis, MHQ2016 compatible----
 
 dat$MHQ2.SelfReportedDiagnosisMHQ2016Compatible <- grep_reports(
   data = dat[, grep(
@@ -53,7 +53,7 @@ dat$MHQ2.SelfReportedDiagnosisMHQ2016Compatible <- grep_reports(
 
 
 
-## ----Any anxiety diagnosis----------------------------------------------------
+## ----Any anxiety diagnosis-----------
 
 dat$MHQ2.SelfReportedAnxietyDisorder <- grep_reports(
   data = dat[, grep(
@@ -65,7 +65,7 @@ dat$MHQ2.SelfReportedAnxietyDisorder <- grep_reports(
 
 
 
-## ----Any eating disorder diagnosis--------------------------------------------
+## ----Any eating disorder diagnosis----
 
 dat$MHQ2.SelfReportedEatingDisorder <- grep_reports(
   data = dat[, grep(
