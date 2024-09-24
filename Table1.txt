@@ -1,5 +1,0 @@
-Stage	Number
-UK Population	DEFINED ELSEWHERE
-Invites	DEFINED ELSEWHERE
-Started	DEFINED ELSEWHERE
-Completed	169253	

@@ -79,7 +79,7 @@ lapply(X = packages, FUN = require, character.only = TRUE)
 
 Full_Data <- readRDS("../ukb82087_All_Fields_For_Tables_ukb675453_Preferred_Orig_Names.rds")
 MHQ2_Raw <- readRDS("../MHQ2_Height_Alcohol_Field_Updated.rds")
-MHQ2_Derived <- readRDS("../MHQ2_With_Derived.rds")
+MHQ2_Derived <- readRDS("../MHQ2_2024_06_10.rds")
 
 ```
 
@@ -103,7 +103,7 @@ Full_Data_MHQ2 <- full_join(Full_Data_No_MHQ2, MHQ2)
 
 ```{r Nix latest withdrawls}
 
-Withdrawals <- fread("/datasets/ukbiobank/ukb82087/raw/withdraw82087_234_20240315.txt", head=F, data.table=F)
+Withdrawals <- fread("/datasets/ukbiobank/ukb82087/raw/withdraw82087_255_20240604.txt", head=F, data.table=F)
 names(Withdrawals) <- "eid"
 
 Full_Data_MHQ2 <- Full_Data_MHQ2[!(Full_Data_MHQ2$eid %in% Withdrawals$eid), ]
@@ -123,6 +123,44 @@ Age
   Age for the whole UKB is the age at median completion date of the MHQ2
   Age for MHQ1 subset is the age for each individual when they completed the MHQ1
   Age for MHQ2 subset is the age for each individual when they completed the MHQ2
+
+```{r Define MHQ2 Completed}
+
+# Completed MHQ2: Marked as having completed all sections
+# 29197	When online Mental health questionnaire completed
+# 29198	When online Depression questionnaire completed
+# 29199	When online Mood changes questionnaire completed
+# 29200	When online Anxiety and panic questionnaire completed
+# 29201	When online Adverse life events questionnaire completed
+# 29202	When online Alcohol use questionnaire completed
+# 29203	When online Cannabis use questionnaire completed
+# 29204	When online Harm behaviours questionnaire completed
+# 29205	When online Eating patterns questionnaire completed
+# 29206	When online General health questionnaire completed
+# 29207	When online COVID-19 questionnaire completed
+# 29208	When online Social situation questionnaire completed
+# 29209	When online General well-being questionnaire completed
+
+Full_Data_MHQ2$MHQ2_Completed <- with(Full_Data_MHQ2,
+  case_when(
+    is.na(`29197-0.0`) | `29197-0.0` < 0 |
+      is.na(`29198-0.0`) | `29198-0.0` < 0 |
+      is.na(`29199-0.0`) | `29199-0.0` < 0 |
+      is.na(`29200-0.0`) | `29200-0.0` < 0 |
+      is.na(`29201-0.0`) | `29201-0.0` < 0 |
+      is.na(`29202-0.0`) | `29202-0.0` < 0 |
+      is.na(`29203-0.0`) | `29203-0.0` < 0 |
+      is.na(`29204-0.0`) | `29204-0.0` < 0 |
+      is.na(`29205-0.0`) | `29205-0.0` < 0 |
+      is.na(`29206-0.0`) | `29206-0.0` < 0 |
+      is.na(`29207-0.0`) | `29207-0.0` < 0 |
+      is.na(`29208-0.0`) | `29208-0.0` < 0 |
+      is.na(`29209-0.0`) | `29209-0.0` < 0 ~ NA_real_,
+    .default = 1
+  )
+)
+
+```
 
 ```{r DefineAge}
 
@@ -695,39 +733,7 @@ Two MHQ2 participants do not have baseline data, and should be excluded as compl
 
 ```{r Table1}
 
-# Completed MHQ2: Marked as having completed all sections
-# 29197	When online Mental health questionnaire completed
-# 29198	When online Depression questionnaire completed
-# 29199	When online Mood changes questionnaire completed
-# 29200	When online Anxiety and panic questionnaire completed
-# 29201	When online Adverse life events questionnaire completed
-# 29202	When online Alcohol use questionnaire completed
-# 29203	When online Cannabis use questionnaire completed
-# 29204	When online Harm behaviours questionnaire completed
-# 29205	When online Eating patterns questionnaire completed
-# 29206	When online General health questionnaire completed
-# 29207	When online COVID-19 questionnaire completed
-# 29208	When online Social situation questionnaire completed
-# 29209	When online General well-being questionnaire completed
-
-Full_Data_MHQ2$MHQ2_Completed <- with(Full_Data_MHQ2,
-  case_when(
-    is.na(`29197-0.0`) | `29197-0.0` < 0 |
-      is.na(`29198-0.0`) | `29198-0.0` < 0 |
-      is.na(`29199-0.0`) | `29199-0.0` < 0 |
-      is.na(`29200-0.0`) | `29200-0.0` < 0 |
-      is.na(`29201-0.0`) | `29201-0.0` < 0 |
-      is.na(`29202-0.0`) | `29202-0.0` < 0 |
-      is.na(`29203-0.0`) | `29203-0.0` < 0 |
-      is.na(`29204-0.0`) | `29204-0.0` < 0 |
-      is.na(`29205-0.0`) | `29205-0.0` < 0 |
-      is.na(`29206-0.0`) | `29206-0.0` < 0 |
-      is.na(`29207-0.0`) | `29207-0.0` < 0 |
-      is.na(`29208-0.0`) | `29208-0.0` < 0 |
-      is.na(`29209-0.0`) | `29209-0.0` < 0 ~ NA_real_,
-    .default = 1
-  )
-)
+## Remove people with missing ages
 
 Full_Data_MHQ2$MHQ2_Completed <- ifelse(
   is.na(
@@ -824,7 +830,7 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # MHQ2
 
 cat(
   table(
@@ -843,17 +849,31 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # MHQ1
 
 cat(
-  table(
-    Full_Data_MHQ2$MHQ2.Age.Bands
-  )[1] -
-  table(
-    Full_Data_MHQ2$MHQ1.Age.Bands
-  )[1],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Age.Bands
+        )
+      )[1],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
   "\t"
-)
+) # MHQ2 - MHQ1
 
 cat(
   table(
@@ -872,17 +892,31 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # UKB
 
 cat(
-  table(
-    Full_Data_MHQ2$MHQ2.Age.Bands
-  )[1]-
-  table(
-    Full_Data_MHQ2$UKB.Age.Bands
-  )[1],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Age.Bands
+        )
+      )[1],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
   "\n"
-)
+) # MHQ2 - UKB
 
 cat(
 "Age\t55-64\t"
@@ -905,7 +939,7 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # MHQ2
 
 cat(
   table(
@@ -924,17 +958,31 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # MHQ1
 
 cat(
-  table(
-    Full_Data_MHQ2$MHQ2.Age.Bands
-  )[2] -
-  table(
-    Full_Data_MHQ2$MHQ1.Age.Bands
-  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Age.Bands
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
   "\t"
-)
+) # MHQ2 - MHQ1
 
 cat(
   table(
@@ -953,17 +1001,31 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # UKB
 
 cat(
-  table(
-    Full_Data_MHQ2$MHQ2.Age.Bands
-  )[2] -
-  table(
-    Full_Data_MHQ2$UKB.Age.Bands
-  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Age.Bands
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
   "\n"
-)
+) # MHQ2 - UKB
 
 cat(
   "Age\t65-74\t"
@@ -986,7 +1048,7 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # MHQ2
 
 cat(
   table(
@@ -1005,17 +1067,31 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # MHQ1
 
 cat(
-  table(
-    Full_Data_MHQ2$MHQ2.Age.Bands
-  )[3] -
-  table(
-    Full_Data_MHQ2$MHQ1.Age.Bands
-  )[3],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Age.Bands
+        )
+      )[3],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
   "\t"
-)
+) # MHQ2 - MHQ1
 
 cat(
   table(
@@ -1034,17 +1110,31 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # UKB
 
 cat(
-  table(
-    Full_Data_MHQ2$MHQ2.Age.Bands
-  )[3] -
-  table(
-    Full_Data_MHQ2$UKB.Age.Bands
-  )[3],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Age.Bands
+        )
+      )[3],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
   "\n"
-)
+) # MHQ2 - UKB
 
 cat(
   "Age\t75-84\t"
@@ -1067,7 +1157,7 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # MHQ2
 
 cat(
   table(
@@ -1086,17 +1176,31 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # MHQ1
 
 cat(
-  table(
-    Full_Data_MHQ2$MHQ2.Age.Bands
-  )[4] -
-  table(
-    Full_Data_MHQ2$MHQ1.Age.Bands
-  )[4],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Age.Bands
+        )
+      )[4],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Age.Bands
+        )
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
   "\t"
-)
+) # MHQ2 - MHQ1
 
 cat(
   table(
@@ -1115,16 +1219,31 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # UKB
 
 cat(
-  table(
-    Full_Data_MHQ2$MHQ2.Age.Bands
-  )[4] - table(
-    Full_Data_MHQ2$UKB.Age.Bands
-  )[4],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Age.Bands
+        )
+      )[4],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Age.Bands
+        )
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
   "\n"
-)
+) # MHQ2 - UKB
 
 cat(
   "Age\t85+\t"
@@ -1147,7 +1266,7 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # MHQ2
 
 cat(
   table(
@@ -1166,17 +1285,31 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # MHQ1
 
 cat(
-  table(
-    Full_Data_MHQ2$MHQ2.Age.Bands
-  )[5] -
-  table(
-    Full_Data_MHQ2$MHQ1.Age.Bands
-  )[5],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Age.Bands
+        )
+      )[5],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Age.Bands
+        )
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
   "\t"
-)
+) # MHQ2 - MHQ1
 
 cat(
   table(
@@ -1195,17 +1328,31 @@ cat(
     sep=""
   ),
   "\t"
-)
+) # UKB
 
 cat(
-  table(
-    Full_Data_MHQ2$MHQ2.Age.Bands
-  )[5] -
-  table(
-    Full_Data_MHQ2$UKB.Age.Bands
-  )[5],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Age.Bands
+        )
+      )[5],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Age.Bands
+        )
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
   "\n"
-)
+) # MHQ2 - UKB
 
 
 cat(
@@ -1216,29 +1363,27 @@ cat(
 cat(
   MHQ2.Age.Median,
   "\t"
-)
-
+) # MHQ2
 
 cat(
   MHQ1.Age.Median,
   "\t"
-)
+) # MHQ1
 
 cat(
   MHQ2.Age.Median - MHQ1.Age.Median,
   "\t"
-)
-
+) # MHQ2 - MHQ1
 
 cat(
   UKB.Age.Median,
   "\t"
-)
+) # UKB
 
 cat(
   MHQ2.Age.Median - UKB.Age.Median,
   "\n"
-)
+) # MHQ2 - UKB
 
 
 ## Sex
@@ -1252,6 +1397,31 @@ cat(
   table(
     Full_Data_MHQ2$MHQ2.Sex
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Sex
+	)
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Sex
+	)
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(F,M)",
   "\t"
 ) #MHQ2
 
@@ -1259,28 +1429,155 @@ cat(
   table(
     Full_Data_MHQ2$MHQ1.Sex
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Sex
+	)
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Sex
+	)
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  " (F,M)",
   "\t"
 ) #MHQ1
 
 cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Sex
+        )
+      )[1],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Sex
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Sex
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Sex
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  " (F,M)",
   "\t"
-) #MHQ2 - MHQ1
+) # MHQ2 - MHQ1
 
 cat(
   table(
     Full_Data_MHQ2$UKB.Sex
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Sex
+	)
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Sex
+	)
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  " (F,M)",
   "\t"
 ) #UKB
 
 cat(
-  "\t"
-) #MHQ2-UKB
-
-cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Sex
+        )
+      )[1],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Sex
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Sex
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Sex
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  " (F,M)",
   "\n"
-)
-
+) # MHQ2 - UKB
 
 ## Ethnicity
 
@@ -1293,6 +1590,19 @@ cat(
   table(
     Full_Data_MHQ2$MHQ2.Ethnicity
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",  
   "\t"
 ) #MHQ2
 
@@ -1300,10 +1610,44 @@ cat(
   table(
     Full_Data_MHQ2$MHQ1.Ethnicity
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",
   "\t"
 ) #MHQ1
 
 cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Ethnicity
+        )
+      ),
+      3
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",
   "\t"
 ) #MHQ2 - MHQ1
 
@@ -1311,40 +1655,117 @@ cat(
   table(
     Full_Data_MHQ2$UKB.Ethnicity
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",
   "\t"
 ) #UKB
 
 cat(
-  "\t"
-) #MHQ2-UKB
-
-cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Ethnicity
+        )
+      ),
+      3
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",
   "\n"
-)
+) #MHQ2 - UKB
 
 
 ## TDI
 
 cat(
-  "TDI\tNA",
+  "Relative deprivation\tNA",
   "\t"
 )
 
 cat(
   table(
     Full_Data_MHQ2$MHQ2.TDI
-   ),
-   "\t"
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
+  "\t"
 ) #MHQ2
 
 cat(
   table(
     Full_Data_MHQ2$MHQ1.TDI
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
   "\t"
 ) #MHQ1
 
 cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.TDI
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+	table(
+          Full_Data_MHQ2$MHQ1.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
   "\t"
 ) #MHQ2 - MHQ1
 
@@ -1352,22 +1773,52 @@ cat(
   table(
     Full_Data_MHQ2$UKB.TDI
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
   "\t"
 ) #UKB
 
 cat(
-  "\t"
-) #MHQ2-UKB
-
-cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.TDI
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+	table(
+          Full_Data_MHQ2$UKB.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
   "\n"
-)
+) #MHQ2 - UKB
 
 
 ## Highest.Qualification
 
 cat(
-  "Highest.Qualification\tNA",
+  "Degree educated\tNA",
   "\t"
 )
 
@@ -1375,6 +1826,19 @@ cat(
   table(
     Full_Data_MHQ2$MHQ2.Highest.Qualification
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Highest.Qualification
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
   "\t"
 ) #MHQ2
 
@@ -1382,10 +1846,44 @@ cat(
   table(
     Full_Data_MHQ2$MHQ1.Highest.Qualification
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Highest.Qualification
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
   "\t"
 ) #MHQ1
 
 cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Highest.Qualification
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Highest.Qualification
+        )
+      ),
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
   "\t"
 ) #MHQ2 - MHQ1
 
@@ -1393,22 +1891,52 @@ cat(
   table(
     Full_Data_MHQ2$UKB.Highest.Qualification
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Highest.Qualification
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
   "\t"
 ) #UKB
 
 cat(
-  "\t"
-) #MHQ2-UKB
-
-cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Highest.Qualification
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Highest.Qualification
+        )
+      ),
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
   "\n"
-)
+) #MHQ2 - UKB
 
 
 ## Housing
 
 cat(
-  "Housing\tNA",
+  "Rents home\tNA",
   "\t"
 )
 
@@ -1416,6 +1944,19 @@ cat(
   table(
     Full_Data_MHQ2$MHQ2.Housing
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",
   "\t"
 ) #MHQ2
 
@@ -1423,10 +1964,44 @@ cat(
   table(
     Full_Data_MHQ2$MHQ1.Housing
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",  
   "\t"
 ) #MHQ1
 
 cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Housing
+	)
+      ),
+      3
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",
   "\t"
 ) #MHQ2 - MHQ1
 
@@ -1434,16 +2009,47 @@ cat(
   table(
     Full_Data_MHQ2$UKB.Housing
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",  
   "\t"
 ) #UKB
 
 cat(
-  "\t"
-) #MHQ2-UKB
-
-cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Housing
+	)
+      ),
+      3
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",
   "\n"
-)
+) #MHQ2 - UKB
+
 
 ## Longstanding.Illness
 
@@ -1455,41 +2061,345 @@ cat(
 cat(
   table(
     Full_Data_MHQ2$MHQ2.Longstanding.Illness
-  ),
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
   "\t"
 ) #MHQ2
 
 cat(
   table(
     Full_Data_MHQ2$MHQ1.Longstanding.Illness
-  ),
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),    
   "\t"
 ) #MHQ1
 
 cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),  
   "\t"
 ) #MHQ2 - MHQ1
 
 cat(
   table(
     Full_Data_MHQ2$UKB.Longstanding.Illness
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
+  "\t"
+) #UKB
+
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),  
+  "\n"
+) #MHQ2 - UKB
+
+
+## Smoking
+
+cat(
+  "Smoker\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Smoking
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Smoking
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Smoking
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Smoking
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Smoking
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Smoking
+        )
+      ),
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Smoking
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Smoking
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
   "\t"
 ) #UKB
 
 cat(
-  "\t"
-) #MHQ2-UKB
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Smoking
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Smoking
+        )
+      ),
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
+  "\n"
+) #MHQ2 - UKB
+
+
+## Physical.Activity
 
 cat(
-  "\n"
+  "Physical activity at least three times a week\tNA",
+  "\t"
 )
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ2.Physical.Activity
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2$MHQ1.Physical.Activity
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Physical.Activity
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ1.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2$UKB.Physical.Activity
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
+  "\t"
+) #UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$MHQ2.Physical.Activity
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2$UKB.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\n"
+) #MHQ2 - UKB
 
 
 ## Neuroticism
 
 cat(
-  "Neuroticism\tNA",
+  "Neuroticism score, mean (SD)\tNA",
   "\t"
 )
 
@@ -1498,12 +2408,12 @@ cat(
     Full_Data_MHQ2$MHQ2.Neuroticism,
     na.rm=T
   ),
-  "\t",
+  "(",
   sd(
     Full_Data_MHQ2$MHQ2.Neuroticism,
     na.rm=T
   ),
-  "\t"
+  ")\t"
 ) #MHQ2
 
 cat(
@@ -1511,15 +2421,23 @@ cat(
     Full_Data_MHQ2$MHQ1.Neuroticism,
     na.rm=T
   ),
-  "\t",
+  "(",
   sd(
     Full_Data_MHQ2$MHQ1.Neuroticism,
     na.rm=T
   ),
-  "\t"
+  ")\t"
 ) #MHQ1
 
 cat(
+  mean(
+    Full_Data_MHQ2$MHQ2.Neuroticism,
+    na.rm=T
+  ) -
+  mean(
+    Full_Data_MHQ2$MHQ1.Neuroticism,
+    na.rm=T
+  ),  
   "\t"
  ) #MHQ2 - MHQ1
 
@@ -1528,131 +2446,3415 @@ cat(
     Full_Data_MHQ2$UKB.Neuroticism,
     na.rm=T
   ),
-  "\t",
+  "(",
   sd(
     Full_Data_MHQ2$UKB.Neuroticism,
     na.rm=T
   ),
+  ")\t"
+) #UKB
+
+cat(
+  mean(
+    Full_Data_MHQ2$MHQ2.Neuroticism,
+    na.rm=T
+  ) -
+  mean(
+    Full_Data_MHQ2$UKB.Neuroticism,
+    na.rm=T
+  ),  
+  "\t"
+ ) #MHQ2 - UKB
+
+sink()
+
+
+Full_Data_MHQ2_Female <-  Full_Data_MHQ2[Full_Data_MHQ2$UKB.Sex == "Female", ]
+
+sink("Table2_Female.txt")
+
+## Header
+cat(
+  "Measure\tSub-measure\tMHQ2\tMHQ1\tMHQ2-MHQ1\tUKB\tMHQ2-UKB\n"
+)
+
+## Age
+cat(
+  "Age\t45-54\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ2.Age.Bands
+  )[1],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ1.Age.Bands
+  )[1],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Age.Bands
+        )
+      )[1],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$UKB.Age.Bands
+  )[1],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Age.Bands
+        )
+      )[1],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\n"
+) # MHQ2 - UKB
+
+cat(
+"Age\t55-64\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ2.Age.Bands
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ1.Age.Bands
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Age.Bands
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$UKB.Age.Bands
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Age.Bands
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\n"
+) # MHQ2 - UKB
+
+cat(
+  "Age\t65-74\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ2.Age.Bands
+  )[3],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ1.Age.Bands
+  )[3],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Age.Bands
+        )
+      )[3],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$UKB.Age.Bands
+  )[3],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Age.Bands
+        )
+      )[3],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\n"
+) # MHQ2 - UKB
+
+cat(
+  "Age\t75-84\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ2.Age.Bands
+  )[4],
+  paste(
+    round(
+      prop.table(
+	table(
+  	  Full_Data_MHQ2_Female$MHQ2.Age.Bands
+	)
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ1.Age.Bands
+  )[4],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Age.Bands
+        )
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Age.Bands
+        )
+      )[4],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Age.Bands
+        )
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$UKB.Age.Bands
+  )[4],
+  paste(
+    round(
+      prop.table(
+	table(
+	  Full_Data_MHQ2_Female$UKB.Age.Bands
+	)
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Age.Bands
+        )
+      )[4],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Age.Bands
+        )
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\n"
+) # MHQ2 - UKB
+
+cat(
+  "Age\t85+\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ2.Age.Bands
+  )[5],
+  paste(
+    round(
+      prop.table(
+	table(
+	  Full_Data_MHQ2_Female$MHQ2.Age.Bands
+	)
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ1.Age.Bands
+  )[5],
+  paste(
+    round(
+      prop.table(
+	table(
+	  Full_Data_MHQ2_Female$MHQ1.Age.Bands
+	)
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Age.Bands
+        )
+      )[5],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Age.Bands
+        )
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$UKB.Age.Bands
+  )[5],
+  paste(
+    round(
+      prop.table(
+	table(
+	  Full_Data_MHQ2_Female$UKB.Age.Bands
+	)
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Age.Bands
+        )
+      )[5],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Age.Bands
+        )
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\n"
+) # MHQ2 - UKB
+
+
+cat(
+  "Age\tMedian",
+  "\t"
+)
+
+cat(
+  MHQ2.Age.Median,
+  "\t"
+) # MHQ2
+
+cat(
+  MHQ1.Age.Median,
+  "\t"
+) # MHQ1
+
+cat(
+  MHQ2.Age.Median - MHQ1.Age.Median,
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  UKB.Age.Median,
+  "\t"
+) # UKB
+
+cat(
+  MHQ2.Age.Median - UKB.Age.Median,
+  "\n"
+) # MHQ2 - UKB
+
+
+## Sex
+
+cat(
+  "Sex\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ2.Sex
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Sex
+	)
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Sex
+	)
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(F,M)",
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ1.Sex
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Sex
+	)
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Sex
+	)
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  " (F,M)",
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Sex
+        )
+      )[1],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Sex
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Sex
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Sex
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  " (F,M)",
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$UKB.Sex
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Sex
+	)
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Sex
+	)
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  " (F,M)",
   "\t"
 ) #UKB
 
 cat(
-  "\t"
-) #MHQ2-UKB
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Sex
+        )
+      )[1],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Sex
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Sex
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Sex
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  " (F,M)",
+  "\n"
+) # MHQ2 - UKB
+
+## Ethnicity
 
 cat(
-  "\n"
+  "Ethnicity\tNA",
+  "\t"
 )
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ2.Ethnicity
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",  
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ1.Ethnicity
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Ethnicity
+        )
+      ),
+      3
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$UKB.Ethnicity
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",
+  "\t"
+) #UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Ethnicity
+        )
+      ),
+      3
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",
+  "\n"
+) #MHQ2 - UKB
+
+
+## TDI
+
+cat(
+  "Relative deprivation\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ2.TDI
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ1.TDI
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.TDI
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+	table(
+          Full_Data_MHQ2_Female$MHQ1.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$UKB.TDI
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
+  "\t"
+) #UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.TDI
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+	table(
+          Full_Data_MHQ2_Female$UKB.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
+  "\n"
+) #MHQ2 - UKB
+
+
+## Highest.Qualification
+
+cat(
+  "Degree educated\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ2.Highest.Qualification
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Highest.Qualification
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ1.Highest.Qualification
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Highest.Qualification
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Highest.Qualification
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Highest.Qualification
+        )
+      ),
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$UKB.Highest.Qualification
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Highest.Qualification
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
+  "\t"
+) #UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Highest.Qualification
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Highest.Qualification
+        )
+      ),
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
+  "\n"
+) #MHQ2 - UKB
+
+
+## Housing
+
+cat(
+  "Rents home\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ2.Housing
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ1.Housing
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",  
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Housing
+	)
+      ),
+      3
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$UKB.Housing
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",  
+  "\t"
+) #UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Housing
+	)
+      ),
+      3
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",
+  "\n"
+) #MHQ2 - UKB
+
+
+## Longstanding.Illness
+
+cat(
+  "Longstanding.Illness\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ2.Longstanding.Illness
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$MHQ1.Longstanding.Illness
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),    
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),  
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Female$UKB.Longstanding.Illness
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
+  "\t"
+) #UKB
+
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),  
+  "\n"
+) #MHQ2 - UKB
 
 
 ## Smoking
 
 cat(
-  "Smoking\tNA",
+  "Smoker\tNA",
   "\t"
 )
 
 cat(
   table(
-    Full_Data_MHQ2$MHQ2.Smoking
+    Full_Data_MHQ2_Female$MHQ2.Smoking
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Smoking
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
   "\t"
 ) #MHQ2
 
 cat(
   table(
-    Full_Data_MHQ2$MHQ1.Smoking
+    Full_Data_MHQ2_Female$MHQ1.Smoking
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Smoking
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
   "\t"
 ) #MHQ1
 
 cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Smoking
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Smoking
+        )
+      ),
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
   "\t"
 ) #MHQ2 - MHQ1
 
 cat(
   table(
-    Full_Data_MHQ2$UKB.Smoking
+    Full_Data_MHQ2_Female$UKB.Smoking
   ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Smoking
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
   "\t"
 ) #UKB
 
 cat(
-  "\t"
-) #MHQ2-UKB
-
-cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Smoking
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Smoking
+        )
+      ),
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
   "\n"
-)
+) #MHQ2 - UKB
 
 
 ## Physical.Activity
 
 cat(
-  "Physical.Activity\tNA",
+  "Physical activity at least three times a week\tNA",
   "\t"
 )
 
 cat(
   table(
-    Full_Data_MHQ2$MHQ2.Physical.Activity
-  ),
+    Full_Data_MHQ2_Female$MHQ2.Physical.Activity
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
   "\t"
 ) #MHQ2
 
 cat(
   table(
-    Full_Data_MHQ2$MHQ1.Physical.Activity
-  ),
+    Full_Data_MHQ2_Female$MHQ1.Physical.Activity
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
   "\t"
 ) #MHQ1
 
 cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Physical.Activity
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ1.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
   "\t"
 ) #MHQ2 - MHQ1
 
 cat(
   table(
-    Full_Data_MHQ2$UKB.Physical.Activity
-  ),
+    Full_Data_MHQ2_Female$UKB.Physical.Activity
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
   "\t"
 ) #UKB
 
 cat(
-  "\t"
-) #MHQ2-UKB
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$MHQ2.Physical.Activity
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Female$UKB.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\n"
+) #MHQ2 - UKB
+
+
+## Neuroticism
 
 cat(
-  "\n"
+  "Neuroticism score, mean (SD)\tNA",
+  "\t"
 )
+
+cat(
+  mean(
+    Full_Data_MHQ2_Female$MHQ2.Neuroticism,
+    na.rm=T
+  ),
+  "(",
+  sd(
+    Full_Data_MHQ2_Female$MHQ2.Neuroticism,
+    na.rm=T
+  ),
+  ")\t"
+) #MHQ2
+
+cat(
+  mean(
+    Full_Data_MHQ2_Female$MHQ1.Neuroticism,
+    na.rm=T
+  ),
+  "(",
+  sd(
+    Full_Data_MHQ2_Female$MHQ1.Neuroticism,
+    na.rm=T
+  ),
+  ")\t"
+) #MHQ1
+
+cat(
+  mean(
+    Full_Data_MHQ2_Female$MHQ2.Neuroticism,
+    na.rm=T
+  ) -
+  mean(
+    Full_Data_MHQ2_Female$MHQ1.Neuroticism,
+    na.rm=T
+  ),  
+  "\t"
+ ) #MHQ2 - MHQ1
+
+cat(
+  mean(
+    Full_Data_MHQ2_Female$UKB.Neuroticism,
+    na.rm=T
+  ),
+  "(",
+  sd(
+    Full_Data_MHQ2_Female$UKB.Neuroticism,
+    na.rm=T
+  ),
+  ")\t"
+) #UKB
+
+cat(
+  mean(
+    Full_Data_MHQ2_Female$MHQ2.Neuroticism,
+    na.rm=T
+  ) -
+  mean(
+    Full_Data_MHQ2_Female$UKB.Neuroticism,
+    na.rm=T
+  ),  
+  "\t"
+ ) #MHQ2 - UKB
 
 sink()
 
+rm(Full_Data_MHQ2_Female)
+
+sink("Table2_Male.txt")
+
+Full_Data_MHQ2_Male <- Full_Data_MHQ2[Full_Data_MHQ2$UKB.Sex == "Male",
+
+## Header
+cat(
+  "Measure\tSub-measure\tMHQ2\tMHQ1\tMHQ2-MHQ1\tUKB\tMHQ2-UKB\n"
+)
+
+## Age
+cat(
+  "Age\t45-54\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ2.Age.Bands
+  )[1],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ1.Age.Bands
+  )[1],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Age.Bands
+        )
+      )[1],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$UKB.Age.Bands
+  )[1],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Age.Bands
+        )
+      )[1],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Age.Bands
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\n"
+) # MHQ2 - UKB
+
+cat(
+"Age\t55-64\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ2.Age.Bands
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ1.Age.Bands
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Age.Bands
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$UKB.Age.Bands
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Age.Bands
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Age.Bands
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\n"
+) # MHQ2 - UKB
+
+cat(
+  "Age\t65-74\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ2.Age.Bands
+  )[3],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ1.Age.Bands
+  )[3],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Age.Bands
+        )
+      )[3],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$UKB.Age.Bands
+  )[3],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Age.Bands
+        )
+      )[3],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Age.Bands
+        )
+      )[3],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\n"
+) # MHQ2 - UKB
+
+cat(
+  "Age\t75-84\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ2.Age.Bands
+  )[4],
+  paste(
+    round(
+      prop.table(
+	table(
+  	  Full_Data_MHQ2_Male$MHQ2.Age.Bands
+	)
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ1.Age.Bands
+  )[4],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Age.Bands
+        )
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Age.Bands
+        )
+      )[4],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Age.Bands
+        )
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$UKB.Age.Bands
+  )[4],
+  paste(
+    round(
+      prop.table(
+	table(
+	  Full_Data_MHQ2_Male$UKB.Age.Bands
+	)
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Age.Bands
+        )
+      )[4],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Age.Bands
+        )
+      )[4],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\n"
+) # MHQ2 - UKB
+
+cat(
+  "Age\t85+\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ2.Age.Bands
+  )[5],
+  paste(
+    round(
+      prop.table(
+	table(
+	  Full_Data_MHQ2_Male$MHQ2.Age.Bands
+	)
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ1.Age.Bands
+  )[5],
+  paste(
+    round(
+      prop.table(
+	table(
+	  Full_Data_MHQ2_Male$MHQ1.Age.Bands
+	)
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Age.Bands
+        )
+      )[5],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Age.Bands
+        )
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$UKB.Age.Bands
+  )[5],
+  paste(
+    round(
+      prop.table(
+	table(
+	  Full_Data_MHQ2_Male$UKB.Age.Bands
+	)
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) # UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Age.Bands
+        )
+      )[5],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Age.Bands
+        )
+      )[5],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\n"
+) # MHQ2 - UKB
+
+
+cat(
+  "Age\tMedian",
+  "\t"
+)
+
+cat(
+  MHQ2.Age.Median,
+  "\t"
+) # MHQ2
+
+cat(
+  MHQ1.Age.Median,
+  "\t"
+) # MHQ1
+
+cat(
+  MHQ2.Age.Median - MHQ1.Age.Median,
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  UKB.Age.Median,
+  "\t"
+) # UKB
+
+cat(
+  MHQ2.Age.Median - UKB.Age.Median,
+  "\n"
+) # MHQ2 - UKB
+
+
+## Sex
+
+cat(
+  "Sex\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ2.Sex
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Sex
+	)
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Sex
+	)
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(F,M)",
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ1.Sex
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Sex
+	)
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Sex
+	)
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  " (F,M)",
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Sex
+        )
+      )[1],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Sex
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Sex
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Sex
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  " (F,M)",
+  "\t"
+) # MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$UKB.Sex
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Sex
+	)
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Sex
+	)
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  " (F,M)",
+  "\t"
+) #UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Sex
+        )
+      )[1],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Sex
+        )
+      )[1],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Sex
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Sex
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  " (F,M)",
+  "\n"
+) # MHQ2 - UKB
+
+## Ethnicity
+
+cat(
+  "Ethnicity\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ2.Ethnicity
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",  
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ1.Ethnicity
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Ethnicity
+        )
+      ),
+      3
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$UKB.Ethnicity
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",
+  "\t"
+) #UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Ethnicity
+        )
+      ),
+      3
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Ethnicity
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(White, Black, Asian, Chinese, Mixed, Other)",
+  "\n"
+) #MHQ2 - UKB
+
+
+## TDI
+
+cat(
+  "Relative deprivation\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ2.TDI
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ1.TDI
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.TDI
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+	table(
+          Full_Data_MHQ2_Male$MHQ1.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$UKB.TDI
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
+  "\t"
+) #UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.TDI
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+	table(
+          Full_Data_MHQ2_Male$UKB.TDI
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Most, Average, Least)",
+  "\n"
+) #MHQ2 - UKB
+
+
+## Highest.Qualification
+
+cat(
+  "Degree educated\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ2.Highest.Qualification
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Highest.Qualification
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ1.Highest.Qualification
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Highest.Qualification
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Highest.Qualification
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Highest.Qualification
+        )
+      ),
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$UKB.Highest.Qualification
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Highest.Qualification
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
+  "\t"
+) #UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Highest.Qualification
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Highest.Qualification
+        )
+      ),
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),
+  "(NoneOfTheAbove, Other, GCSE, ALevel, Degree)",
+  "\n"
+) #MHQ2 - UKB
+
+
+## Housing
+
+cat(
+  "Rents home\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ2.Housing
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ1.Housing
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",  
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Housing
+	)
+      ),
+      3
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$UKB.Housing
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",  
+  "\t"
+) #UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Housing
+	)
+      ),
+      3
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Housing
+        )
+      ),
+      3
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(OwnOutright, OwnMortgage, RentSocial, RentPrivate, Other)",
+  "\n"
+) #MHQ2 - UKB
+
+
+## Longstanding.Illness
+
+cat(
+  "Longstanding.Illness\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ2.Longstanding.Illness
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ1.Longstanding.Illness
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),    
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),  
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$UKB.Longstanding.Illness
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
+  "\t"
+) #UKB
+
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Longstanding.Illness
+        )
+      )[2],
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),  
+  "\n"
+) #MHQ2 - UKB
+
+
+## Smoking
+
+cat(
+  "Smoker\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ2.Smoking
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Smoking
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ1.Smoking
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Smoking
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Smoking
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Smoking
+        )
+      ),
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$UKB.Smoking
+  ),
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Smoking
+        )
+      ),
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
+  "\t"
+) #UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Smoking
+        )
+      ),
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Smoking
+        )
+      ),
+      2
+    )*100,    
+    "%",
+    sep=""
+  ),
+  "(Current, Former, Never)",
+  "\n"
+) #MHQ2 - UKB
+
+
+## Physical.Activity
+
+cat(
+  "Physical activity at least three times a week\tNA",
+  "\t"
+)
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ2.Physical.Activity
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
+  "\t"
+) #MHQ2
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$MHQ1.Physical.Activity
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
+  "\t"
+) #MHQ1
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Physical.Activity
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ1.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\t"
+) #MHQ2 - MHQ1
+
+cat(
+  table(
+    Full_Data_MHQ2_Male$UKB.Physical.Activity
+  )[2],
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),  
+  "\t"
+) #UKB
+
+cat(
+  paste(
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$MHQ2.Physical.Activity
+        )
+      )[2],
+      2
+    )*100 -
+    round(
+      prop.table(
+        table(
+          Full_Data_MHQ2_Male$UKB.Physical.Activity
+        )
+      )[2],
+      2
+    )*100,
+    "%",
+    sep=""
+  ),
+  "\n"
+) #MHQ2 - UKB
+
+
+## Neuroticism
+
+cat(
+  "Neuroticism score, mean (SD)\tNA",
+  "\t"
+)
+
+cat(
+  mean(
+    Full_Data_MHQ2_Male$MHQ2.Neuroticism,
+    na.rm=T
+  ),
+  "(",
+  sd(
+    Full_Data_MHQ2_Male$MHQ2.Neuroticism,
+    na.rm=T
+  ),
+  ")\t"
+) #MHQ2
+
+cat(
+  mean(
+    Full_Data_MHQ2_Male$MHQ1.Neuroticism,
+    na.rm=T
+  ),
+  "(",
+  sd(
+    Full_Data_MHQ2_Male$MHQ1.Neuroticism,
+    na.rm=T
+  ),
+  ")\t"
+) #MHQ1
+
+cat(
+  mean(
+    Full_Data_MHQ2_Male$MHQ2.Neuroticism,
+    na.rm=T
+  ) -
+  mean(
+    Full_Data_MHQ2_Male$MHQ1.Neuroticism,
+    na.rm=T
+  ),  
+  "\t"
+ ) #MHQ2 - MHQ1
+
+cat(
+  mean(
+    Full_Data_MHQ2_Male$UKB.Neuroticism,
+    na.rm=T
+  ),
+  "(",
+  sd(
+    Full_Data_MHQ2_Male$UKB.Neuroticism,
+    na.rm=T
+  ),
+  ")\t"
+) #UKB
+
+cat(
+  mean(
+    Full_Data_MHQ2_Male$MHQ2.Neuroticism,
+    na.rm=T
+  ) -
+  mean(
+    Full_Data_MHQ2_Male$UKB.Neuroticism,
+    na.rm=T
+  ),  
+  "\t"
+ ) #MHQ2 - UKB
+
+sink()
+
+rm(Full_Data_MHQ2_Male)
+
 ```
 
-# Define additional fields for following tables (TEMP, should be defined in modules?)
+# Define additional fields
 
-```{r Define Extra Fields}
+```{r DefineAdditionalFields}
 
-Full_Data_MHQ2$AnyFullThresholdEatingDisorder <- with(Full_Data_MHQ2,
-  ifelse(
-    (!is.na(Anorexia_nervosa) & Anorexia_nervosa == 1) |
-    (!is.na(Bulimia_nervosa) & Bulimia_nervosa == 1) |
-    (!is.na(Binge_eating_disorder) & Binge_eating_disorder == 1) |
-    (!is.na(Purging_disorder) & Purging_disorder == 1),
-    1,
-    NA
+Full_Data_MHQ2$MHQ2.AnyFullThresholdEatingDisorder <- with(Full_Data_MHQ2,
+  case_when(
+    (
+      !is.na(MHQ2.AnorexiaNervosa) &
+        MHQ2.AnorexiaNervosa == 1
+    ) |
+    (
+      !is.na(MHQ2.BulimiaNervosa) &
+        MHQ2.BulimiaNervosa == 1
+    ) |
+    (
+      !is.na(MHQ2.BingeEatingDisorderDSM5) &
+        MHQ2.BingeEatingDisorderDSM5 == 1
+    ) |
+    (
+      !is.na(MHQ2.PurgingDisorder) &
+        MHQ2.PurgingDisorder == 1
+    ) ~ 1,
+    TRUE ~ NA_real_
   )
 )
 
-Full_Data_MHQ2$NoLifetimeCriteria <- with(Full_Data_MHQ2,
+Full_Data_MHQ2$MHQ2.NoLifetimeDisorder <- with(Full_Data_MHQ2,
   case_when(
-    is.na(MHQ2_Completed) | MHQ2_Completed != 1 ~ NA_real_,
-    (!is.na(depression.ever.case) & depression.ever.case == 1) |
-    (!is.na(BD1) & BD1 == 1) |
-    (!is.na(PanicDisorder) & PanicDisorder == 1) |
-    (!is.na(AnyFullThresholdEatingDisorder) & AnyFullThresholdEatingDisorder == 1) ~ 0,
-    .default = 1
+    (
+      !is.na(MHQ2.DepressionEverCase) &
+        MHQ2.DepressionEverCase == 1
+    ) |
+    (
+      !is.na(MHQ2.PanicDisorder) &
+      	MHQ2.PanicDisorder == 1
+    ) |
+    (
+      !is.na(MHQ2.AnyFullThresholdEatingDisorder) &
+      	MHQ2.AnyFullThresholdEatingDisorder == 1
+    ) ~ 0,
+    is.na(MHQ2_Completed) ~ NA_real_,
+    TRUE ~ 1
   )
 )
 
@@ -1664,12 +5866,12 @@ Full_Data_MHQ2$NoLifetimeCriteria <- with(Full_Data_MHQ2,
 
 ```{r Table 3}
 
-Full_Data_MHQ2_T3 <- Full_Data_MHQ2[
-  !is.na(
-    Full_Data_MHQ2$MHQ2_Completed
-  ) &
-  Full_Data_MHQ2$MHQ2_Completed == 1,
-]
+# Full_Data_MHQ2_T3 <- Full_Data_MHQ2[
+#   !is.na(
+#     Full_Data_MHQ2$MHQ2_Completed
+#   ) &
+#   Full_Data_MHQ2$MHQ2_Completed == 1,
+# ]
 
 Table_3 <- function(data){
 
@@ -1689,13 +5891,14 @@ Table_3 <- function(data){
       data$MHQ2.Age.Bands,
       data$MHQ2_Completed
     ),
+    "(45-54,55-64,65-74,75-84,85+)",
     "\t"
   ) # MHQ2
 
   cat(
     table(
       data$MHQ2.Age.Bands,
-      data$NoLifetimeCriteria
+      data$MHQ2.NoLifetimeDisorder
     ),
     "\t"
   ) # No Criteria
@@ -1703,7 +5906,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Age.Bands,
-      data$depression.ever.case
+      data$MHQ2.DepressionEverCase
     ),
     "\t"
   ) # Depression
@@ -1711,7 +5914,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Age.Bands,
-      data$BD1
+      data$MHQ2.BD1
     ),
     "\t"
   ) # Bipolar I
@@ -1719,7 +5922,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Age.Bands,
-      data$PanicDisorder
+      data$MHQ2.PanicDisorder
     ),
     "\t"
   ) # Panic disorder
@@ -1727,7 +5930,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Age.Bands,
-      data$AnyFullThresholdEatingDisorder
+      data$MHQ2.AnyFullThresholdEatingDisorder
     ),
     "\t"
   ) # Eating disorders
@@ -1743,13 +5946,17 @@ Table_3 <- function(data){
     "\t"
   )
 
-  cat(MHQ2.Age.Median,
+  cat(
+    median(
+      data[data$MHQ2_Completed == 1, "MHQ2.Age"],
+      na.rm = TRUE
+    ),
     "\t"
   ) # MHQ2
 
   cat(
     median(
-      Full_Data_MHQ2[data$NoLifetimeCriteria == 1, "MHQ2.Age"],
+      data[data$MHQ2.NoLifetimeDisorder == 1, "MHQ2.Age"],
       na.rm = TRUE
     ),
     "\t"
@@ -1757,7 +5964,7 @@ Table_3 <- function(data){
 
   cat(
     median(
-      Full_Data_MHQ2[data$depression.ever.case == 1, "MHQ2.Age"],
+      data[data$MHQ2.DepressionEverCase == 1, "MHQ2.Age"],
       na.rm = TRUE
     ),
     "\t"
@@ -1765,7 +5972,7 @@ Table_3 <- function(data){
 
   cat(
     median(
-      Full_Data_MHQ2[data$BD1 == 1, "MHQ2.Age"],
+      data[data$MHQ2.BD1 == 1, "MHQ2.Age"],
       na.rm = TRUE
     ),
     "\t"
@@ -1773,7 +5980,7 @@ Table_3 <- function(data){
 
   cat(
     median(
-      Full_Data_MHQ2[data$PanicDisorder == 1, "MHQ2.Age"],
+      data[data$MHQ2.PanicDisorder == 1, "MHQ2.Age"],
       na.rm = TRUE
     ),
     "\t"
@@ -1781,7 +5988,7 @@ Table_3 <- function(data){
 
   cat(
     median(
-      Full_Data_MHQ2[data$AnyFullThresholdEatingDisorder == 1, "MHQ2.Age"],
+      data[data$MHQ2.AnyFullThresholdEatingDisorder == 1, "MHQ2.Age"],
       na.rm = TRUE
     ),
     "\t"
@@ -1809,35 +6016,35 @@ Table_3 <- function(data){
 
   cat(
     table(
-      data$MHQ2.Sex, data$NoLifetimeCriteria
+      data$MHQ2.Sex, data$MHQ2.NoLifetimeDisorder
     ),
     "\t"
   ) # No Lifetime Criteria
 
   cat(
     table(
-      data$MHQ2.Sex, data$depression.ever.case
+      data$MHQ2.Sex, data$MHQ2.DepressionEverCase
     ),
     "\t"
   ) # Depression
 
   cat(
     table(
-      data$MHQ2.Sex, data$BD1
+      data$MHQ2.Sex, data$MHQ2.BD1
     ),
     "\t"
   ) # Bipolar I
 
   cat(
     table(
-      data$MHQ2.Sex, data$PanicDisorder
+      data$MHQ2.Sex, data$MHQ2.PanicDisorder
     ),
     "\t"
   ) # Panic disorder
 
   cat(
     table(
-      data$MHQ2.Sex, data$AnyFullThresholdEatingDisorder
+      data$MHQ2.Sex, data$MHQ2.AnyFullThresholdEatingDisorder
     ),
     "\t"
   ) # Eating disorder
@@ -1864,35 +6071,35 @@ Table_3 <- function(data){
 
   cat(
     table(
-      data$MHQ2.Ethnicity, data$NoLifetimeCriteria
+      data$MHQ2.Ethnicity, data$MHQ2.NoLifetimeDisorder
     ),
     "\t"
   ) # No Lifetime Criteria
 
   cat(
     table(
-      data$MHQ2.Ethnicity, data$depression.ever.case
+      data$MHQ2.Ethnicity, data$MHQ2.DepressionEverCase
     ),
     "\t"
   ) # Depression
 
   cat(
     table(
-      data$MHQ2.Ethnicity, data$BD1
+      data$MHQ2.Ethnicity, data$MHQ2.BD1
     ),
     "\t"
   ) # Bipolar I
 
   cat(
     table(
-      data$MHQ2.Ethnicity, data$PanicDisorder
+      data$MHQ2.Ethnicity, data$MHQ2.PanicDisorder
     ),
     "\t"
   ) # Panic disorder
 
   cat(
     table(
-      data$MHQ2.Ethnicity, data$AnyFullThresholdEatingDisorder
+      data$MHQ2.Ethnicity, data$MHQ2.AnyFullThresholdEatingDisorder
     ),
     "\t"
   ) # Eating disorder
@@ -1921,7 +6128,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.TDI, 
-      data$NoLifetimeCriteria
+      data$MHQ2.NoLifetimeDisorder
     ), 
     "\t"
   ) # No Lifetime Criteria
@@ -1929,7 +6136,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.TDI, 
-      data$depression.ever.case
+      data$MHQ2.DepressionEverCase
     ), 
     "\t"
   ) # Depression
@@ -1937,7 +6144,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.TDI, 
-      data$BD1
+      data$MHQ2.BD1
     ), 
     "\t"
   ) # Bipolar I
@@ -1945,7 +6152,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.TDI, 
-      data$PanicDisorder
+      data$MHQ2.PanicDisorder
     ), 
     "\t"
   ) # Panic disorder
@@ -1953,7 +6160,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.TDI, 
-      data$AnyFullThresholdEatingDisorder
+      data$MHQ2.AnyFullThresholdEatingDisorder
     ), 
     "\t"
   ) # Eating disorder
@@ -1983,7 +6190,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Highest.Qualification, 
-      data$NoLifetimeCriteria
+      data$MHQ2.NoLifetimeDisorder
     ), 
     "\t"
   ) # No Lifetime Criteria
@@ -1991,7 +6198,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Highest.Qualification, 
-      data$depression.ever.case
+      data$MHQ2.DepressionEverCase
     ), 
     "\t"
   ) # Depression
@@ -1999,7 +6206,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Highest.Qualification, 
-      data$BD1
+      data$MHQ2.BD1
     ), 
     "\t"
   ) # Bipolar I
@@ -2007,7 +6214,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Highest.Qualification, 
-      data$PanicDisorder
+      data$MHQ2.PanicDisorder
     ), 
     "\t"
   ) # Panic disorder
@@ -2015,7 +6222,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Highest.Qualification, 
-      data$AnyFullThresholdEatingDisorder
+      data$MHQ2.AnyFullThresholdEatingDisorder
     ), 
     "\t"
   ) # Eating disorder
@@ -2045,7 +6252,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Housing, 
-      data$NoLifetimeCriteria
+      data$MHQ2.NoLifetimeDisorder
     ), 
     "\t"
   ) # No Lifetime Criteria 
@@ -2053,7 +6260,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Housing, 
-      data$depression.ever.case
+      data$MHQ2.DepressionEverCase
     ), 
     "\t"
   ) # Depression
@@ -2061,7 +6268,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Housing, 
-      data$BD1
+      data$MHQ2.BD1
     ), 
     "\t"
   ) # Bipolar I
@@ -2069,7 +6276,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Housing, 
-      data$PanicDisorder
+      data$MHQ2.PanicDisorder
     ), 
     "\t"
   ) # Panic disorder
@@ -2077,7 +6284,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Housing, 
-      data$AnyFullThresholdEatingDisorder
+      data$MHQ2.AnyFullThresholdEatingDisorder
     ), 
     "\t"
   ) # Eating disorder 
@@ -2106,7 +6313,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Longstanding.Illness,
-      data$NoLifetimeCriteria
+      data$MHQ2.NoLifetimeDisorder
     ),
     "\t"
   ) # No Lifetime Criteria
@@ -2114,7 +6321,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Longstanding.Illness, 
-      data$depression.ever.case
+      data$MHQ2.DepressionEverCase
     ), 
     "\t"
   ) # Depression
@@ -2122,7 +6329,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Longstanding.Illness, 
-      data$BD1
+      data$MHQ2.BD1
     ), 
     "\t"
   ) # Bipolar I
@@ -2130,7 +6337,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Longstanding.Illness, 
-      data$PanicDisorder
+      data$MHQ2.PanicDisorder
     ), 
     "\t"
   ) # Panic disorder
@@ -2138,7 +6345,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Longstanding.Illness, 
-      data$AnyFullThresholdEatingDisorder
+      data$MHQ2.AnyFullThresholdEatingDisorder
     ), 
     "\t"
   ) # Eating disorder
@@ -2172,13 +6379,13 @@ Table_3 <- function(data){
 
   cat(
     mean(
-      Full_Data_MHQ2[data$NoLifetimeCriteria == 1, 
+      data[data$MHQ2.NoLifetimeDisorder == 1, 
 	"MHQ2.Neuroticism"], 
       na.rm=T
     ), 
     "\t",
     sd(
-      Full_Data_MHQ2[data$NoLifetimeCriteria == 1, 
+      data[data$MHQ2.NoLifetimeDisorder == 1, 
 	"MHQ2.Neuroticism"], 
       na.rm=T
     ), 
@@ -2187,13 +6394,13 @@ Table_3 <- function(data){
 
   cat(
     mean(
-      Full_Data_MHQ2[data$depression.ever.case == 1, 
+      data[data$MHQ2.DepressionEverCase == 1, 
 	"MHQ2.Neuroticism"], 
       na.rm=T
     ), 
     "\t",
     sd(
-      Full_Data_MHQ2[data$depression.ever.case == 1, 
+      data[data$MHQ2.DepressionEverCase == 1, 
 	"MHQ2.Neuroticism"], 
       na.rm=T
     ), 
@@ -2202,13 +6409,13 @@ Table_3 <- function(data){
 
   cat(
     mean(
-      Full_Data_MHQ2[data$BD1 == 1, 
+      data[data$MHQ2.BD1 == 1, 
 	"MHQ2.Neuroticism"], 
       na.rm=T
     ), 
     "\t",
     sd(
-      Full_Data_MHQ2[data$BD1 == 1, 
+      data[data$MHQ2.BD1 == 1, 
 	"MHQ2.Neuroticism"], 
       na.rm=T
     ), 
@@ -2217,13 +6424,13 @@ Table_3 <- function(data){
 
   cat(
     mean(
-      Full_Data_MHQ2[data$PanicDisorder == 1, 
+      data[data$MHQ2.PanicDisorder == 1, 
 	"MHQ2.Neuroticism"], 
       na.rm=T
     ), 
     "\t",
     sd(
-      Full_Data_MHQ2[data$PanicDisorder == 1, 
+      data[data$MHQ2.PanicDisorder == 1, 
 	"MHQ2.Neuroticism"], 
       na.rm=T
     ), 
@@ -2232,13 +6439,13 @@ Table_3 <- function(data){
 
   cat(
     mean(
-      Full_Data_MHQ2[data$AnyFullThresholdEatingDisorder == 1,
+      data[data$MHQ2.AnyFullThresholdEatingDisorder == 1,
 	"MHQ2.Neuroticism"],
       na.rm=T
     ),
     "\t",
     sd(
-      Full_Data_MHQ2[data$AnyFullThresholdEatingDisorder == 1,
+      data[data$MHQ2.AnyFullThresholdEatingDisorder == 1,
 	"MHQ2.Neuroticism"],
       na.rm=T
     ),
@@ -2270,7 +6477,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Smoking,
-      data$NoLifetimeCriteria
+      data$MHQ2.NoLifetimeDisorder
     ),
     "\t"
   ) # No Lifetime Criteria
@@ -2278,7 +6485,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Smoking, 
-      data$depression.ever.case
+      data$MHQ2.DepressionEverCase
     ), 
     "\t"
   ) # Depression
@@ -2286,7 +6493,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Smoking, 
-      data$BD1
+      data$MHQ2.BD1
     ), 
     "\t"
   ) # Bipolar I
@@ -2294,7 +6501,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Smoking, 
-      data$PanicDisorder
+      data$MHQ2.PanicDisorder
     ), 
     "\t"
   ) # Panic disorder
@@ -2302,7 +6509,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Smoking,
-      data$AnyFullThresholdEatingDisorder
+      data$MHQ2.AnyFullThresholdEatingDisorder
     ),
     "\t"
   ) # Eating disorder
@@ -2332,7 +6539,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Physical.Activity,
-      data$NoLifetimeCriteria
+      data$MHQ2.NoLifetimeDisorder
     ),
     "\t"
   ) # No Lifetime Criteria
@@ -2340,7 +6547,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Physical.Activity, 
-      data$depression.ever.case
+      data$MHQ2.DepressionEverCase
     ), 
     "\t"
   ) # Depression
@@ -2348,7 +6555,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Physical.Activity, 
-      data$BD1
+      data$MHQ2.BD1
     ), 
     "\t"
   ) # Bipolar I
@@ -2356,7 +6563,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Physical.Activity, 
-      data$PanicDisorder
+      data$MHQ2.PanicDisorder
     ), 
     "\t"
   ) # Panic disorder
@@ -2364,7 +6571,7 @@ Table_3 <- function(data){
   cat(
     table(
       data$MHQ2.Physical.Activity,
-      data$AnyFullThresholdEatingDisorder
+      data$MHQ2.AnyFullThresholdEatingDisorder
     ),
     "\t"
   ) # Eating disorder
@@ -2384,7 +6591,7 @@ Table_3 <- function(data){
 
   cat(
     table(
-      data$TraumaChildhood, 
+      data$MHQ2.TraumaChildhood, 
       data$MHQ2_Completed
     ), 
     "\t"
@@ -2392,40 +6599,40 @@ Table_3 <- function(data){
 
   cat(
     table(
-      data$TraumaChildhood,
-      data$NoLifetimeCriteria
+      data$MHQ2.TraumaChildhood,
+      data$MHQ2.NoLifetimeDisorder
     ),
     "\t"
   ) # No Lifetime Criteria
 
   cat(
     table(
-      data$TraumaChildhood, 
-      data$depression.ever.case
+      data$MHQ2.TraumaChildhood, 
+      data$MHQ2.DepressionEverCase
     ), 
     "\t"
   ) # Depression
 
   cat(
     table(
-      data$TraumaChildhood, 
-      data$BD1
+      data$MHQ2.TraumaChildhood, 
+      data$MHQ2.BD1
     ), 
     "\t"
   ) # Bipolar I
 
   cat(
     table(
-      data$TraumaChildhood, 
-      data$PanicDisorder
+      data$MHQ2.TraumaChildhood, 
+      data$MHQ2.PanicDisorder
     ), 
     "\t"
   ) # Panic disorder
 
   cat(
     table(
-      data$TraumaChildhood,
-      data$AnyFullThresholdEatingDisorder
+      data$MHQ2.TraumaChildhood,
+      data$MHQ2.AnyFullThresholdEatingDisorder
     ),
     "\t"
   ) # Eating disorder
@@ -2446,7 +6653,7 @@ Table_3 <- function(data){
 
   cat(
     table(
-      data$TraumaAdulthood, 
+      data$MHQ2.TraumaAdulthood, 
       data$MHQ2_Completed
     ), 
     "\t"
@@ -2454,40 +6661,40 @@ Table_3 <- function(data){
 
   cat(
     table(
-      data$TraumaAdulthood,
-      data$NoLifetimeCriteria
+      data$MHQ2.TraumaAdulthood,
+      data$MHQ2.NoLifetimeDisorder
     ),
     "\t"
   ) # No Lifetime Criteria
 
   cat(
     table(
-      data$TraumaAdulthood, 
-      data$depression.ever.case
+      data$MHQ2.TraumaAdulthood, 
+      data$MHQ2.DepressionEverCase
     ), 
     "\t"
   ) # Depression
 
   cat(
     table(
-      data$TraumaAdulthood, 
-      data$BD1
+      data$MHQ2.TraumaAdulthood, 
+      data$MHQ2.BD1
     ), 
     "\t"
   ) # Bipolar I
 
   cat(
     table(
-      data$TraumaAdulthood, 
-      data$PanicDisorder
+      data$MHQ2.TraumaAdulthood, 
+      data$MHQ2.PanicDisorder
     ), 
     "\t"
   ) # Panic disorder
 
   cat(
     table(
-      data$TraumaAdulthood,
-      data$AnyFullThresholdEatingDisorder
+      data$MHQ2.TraumaAdulthood,
+      data$MHQ2.AnyFullThresholdEatingDisorder
     ),
     "\t"
   ) # Eating disorder
@@ -2508,7 +6715,7 @@ Table_3 <- function(data){
 
   cat(
     table(
-      data$social_isolation, 
+      data$MHQ2.SocialIsolation, 
       data$MHQ2_Completed
     ), 
     "\t"
@@ -2516,40 +6723,40 @@ Table_3 <- function(data){
 
   cat(
     table(
-      data$social_isolation,
-      data$NoLifetimeCriteria
+      data$MHQ2.SocialIsolation,
+      data$MHQ2.NoLifetimeDisorder
     ),
     "\t"
   ) # No Lifetime Criteria
 
   cat(
     table(
-      data$social_isolation, 
-      data$depression.ever.case
+      data$MHQ2.SocialIsolation, 
+      data$MHQ2.DepressionEverCase
     ), 
     "\t"
   ) # Depression
 
   cat(
     table(
-      data$social_isolation, 
-      data$BD1
+      data$MHQ2.SocialIsolation, 
+      data$MHQ2.BD1
     ), 
     "\t"
   ) # Bipolar I
 
   cat(
     table(
-      data$social_isolation, 
-      data$PanicDisorder
+      data$MHQ2.SocialIsolation, 
+      data$MHQ2.PanicDisorder
     ), 
     "\t"
   ) # Panic disorder
 
   cat(
     table(
-      data$social_isolation,
-      data$AnyFullThresholdEatingDisorder
+      data$MHQ2.SocialIsolation,
+      data$MHQ2.AnyFullThresholdEatingDisorder
     ),
     "\t"
   ) # Eating disorder
@@ -2570,7 +6777,7 @@ Table_3 <- function(data){
 
   cat(
     quantile(
-      data[,"UCLA_loneliness_sum"],
+      data[,"MHQ2.UCLALoneliness"],
       prob=c(0,0.25,0.5,0.75,1),
       na.rm=TRUE
     ), 
@@ -2579,7 +6786,7 @@ Table_3 <- function(data){
 
   cat(
     quantile(
-      data[!is.na(data$NoLifetimeCriteria) & data$NoLifetimeCriteria == 1,"UCLA_loneliness_sum"],
+      data[!is.na(data$MHQ2.NoLifetimeDisorder) & data$MHQ2.NoLifetimeDisorder == 1,"MHQ2.UCLALoneliness"],
       prob=c(0,0.25,0.5,0.75,1),
       na.rm=TRUE
     ),
@@ -2588,7 +6795,7 @@ Table_3 <- function(data){
 
   cat(
     quantile(
-      data[!is.na(data$depression.ever.case) & data$depression.ever.case == 1,"UCLA_loneliness_sum"],
+      data[!is.na(data$MHQ2.DepressionEverCase) & data$MHQ2.DepressionEverCase == 1,"MHQ2.UCLALoneliness"],
       prob=c(0,0.25,0.5,0.75,1),
       na.rm=TRUE
     ), 
@@ -2597,7 +6804,7 @@ Table_3 <- function(data){
 
   cat(
     quantile(
-      data[!is.na(data$BD1) & data$BD1 == 1,"UCLA_loneliness_sum"],
+      data[!is.na(data$MHQ2.BD1) & data$MHQ2.BD1 == 1,"MHQ2.UCLALoneliness"],
       prob=c(0,0.25,0.5,0.75,1),
       na.rm=TRUE
     ), 
@@ -2606,7 +6813,7 @@ Table_3 <- function(data){
 
   cat(
     quantile(
-      data[!is.na(data$PanicDisorder) & data$PanicDisorder == 1,"UCLA_loneliness_sum"],
+      data[!is.na(data$MHQ2.PanicDisorder) & data$MHQ2.PanicDisorder == 1,"MHQ2.UCLALoneliness"],
       prob=c(0,0.25,0.5,0.75,1),
       na.rm=TRUE
     ), 
@@ -2615,7 +6822,7 @@ Table_3 <- function(data){
 
   cat(
     quantile(
-      data[!is.na(data$AnyFullThresholdEatingDisorder) & data$AnyFullThresholdEatingDisorder == 1,"UCLA_loneliness_sum"],
+      data[!is.na(data$MHQ2.AnyFullThresholdEatingDisorder) & data$MHQ2.AnyFullThresholdEatingDisorder == 1,"MHQ2.UCLALoneliness"],
       prob=c(0,0.25,0.5,0.75,1),
       na.rm=TRUE
     ),
@@ -2638,7 +6845,7 @@ Table_3 <- function(data){
 
   cat(
     table(
-      data$BRS, 
+      data$MHQ2.BriefResilienceScale < 3, 
       data$MHQ2_Completed
     ), 
     "\t"
@@ -2646,40 +6853,40 @@ Table_3 <- function(data){
 
   cat(
     table(
-      data$BRS,
-      data$NoLifetimeCriteria
+      data$MHQ2.BriefResilienceScale < 3,
+      data$MHQ2.NoLifetimeDisorder
     ),
     "\t"
   ) # No Lifetime Criteria
 
   cat(
     table(
-      data$BRS, 
-      data$depression.ever.case
+      data$MHQ2.BriefResilienceScale < 3, 
+      data$MHQ2.DepressionEverCase
     ), 
     "\t"
   ) # Depression
 
   cat(
     table(
-      data$BRS, 
-      data$BD1
+      data$MHQ2.BriefResilienceScale < 3, 
+      data$MHQ2.BD1
     ), 
     "\t"
   ) # Bipolar I
 
   cat(
     table(
-      data$BRS, 
-      data$PanicDisorder
+      data$MHQ2.BriefResilienceScale < 3, 
+      data$MHQ2.PanicDisorder
     ), 
     "\t"
   ) # Panic disorder
 
   cat(
     table(
-      data$BRS,
-      data$AnyFullThresholdEatingDisorder
+      data$MHQ2.BriefResilienceScale < 3,
+      data$MHQ2.AnyFullThresholdEatingDisorder
     ),
     "\t"
   ) # Eating disorder
@@ -2691,6 +6898,12 @@ Table_3 <- function(data){
 
   ## EQ-5D VAS score median (IQR) (higher is better health)
   ## Item is 29155-0.0
+  ## Need to remove missing values -3 Prefer not to answer
+
+  data[,"29155-0.0"] <- case_when(
+    data[,"29155-0.0"] < 0 ~ NA_real_,
+    TRUE ~ data[,"29155-0.0"]
+  )
 
   cat(
     "EQ-5D VAS",
@@ -2701,7 +6914,7 @@ Table_3 <- function(data){
 
   cat(
     quantile(
-      data[,`29155-0.0`],
+      data[,"29155-0.0"],
       prob=c(0,0.25,0.5,0.75,1),
       na.rm=TRUE
     ), 
@@ -2710,7 +6923,7 @@ Table_3 <- function(data){
 
   cat(
     quantile(
-      data[!is.na(data$NoLifetimeCriteria) & data$NoLifetimeCriteria == 1,`29155-0.0`],
+      data[!is.na(data$MHQ2.NoLifetimeDisorder) & data$MHQ2.NoLifetimeDisorder == 1,"29155-0.0"],
       prob=c(0,0.25,0.5,0.75,1),
       na.rm=TRUE
     ),
@@ -2719,7 +6932,7 @@ Table_3 <- function(data){
 
   cat(
     quantile(
-      data[!is.na(data$depression.ever.case) & data$depression.ever.case == 1,`29155-0.0`],
+      data[!is.na(data$MHQ2.DepressionEverCase) & data$MHQ2.DepressionEverCase == 1,"29155-0.0"],
       prob=c(0,0.25,0.5,0.75,1),
       na.rm=TRUE
     ), 
@@ -2728,7 +6941,7 @@ Table_3 <- function(data){
 
   cat(
     quantile(
-      data[!is.na(data$BD1) & data$BD1 == 1,`29155-0.0`],
+      data[!is.na(data$MHQ2.BD1) & data$MHQ2.BD1 == 1,"29155-0.0"],
       prob=c(0,0.25,0.5,0.75,1),
       na.rm=TRUE
     ), 
@@ -2737,7 +6950,7 @@ Table_3 <- function(data){
 
   cat(
     quantile(
-      data[!is.na(data$PanicDisorder) & data$PanicDisorder == 1,`29155-0.0`],
+      data[!is.na(data$MHQ2.PanicDisorder) & data$MHQ2.PanicDisorder == 1,"29155-0.0"],
       prob=c(0,0.25,0.5,0.75,1),
       na.rm=TRUE
     ), 
@@ -2746,7 +6959,7 @@ Table_3 <- function(data){
 
   cat(
     quantile(
-      data[!is.na(data$AnyFullThresholdEatingDisorder) & data$AnyFullThresholdEatingDisorder == 1,`29155-0.0`],
+      data[!is.na(data$MHQ2.AnyFullThresholdEatingDisorder) & data$MHQ2.AnyFullThresholdEatingDisorder == 1,"29155-0.0"],
       prob=c(0,0.25,0.5,0.75,1),
       na.rm=TRUE
     ),
@@ -2767,20 +6980,20 @@ Table_3(Full_Data_MHQ2_T3)
 
 sink()
 
-rm(Full_Data_MHQ2_T3)
+# rm(Full_Data_MHQ2_T3)
 
 ## Supplementary Table 3a - Table 3 in females
 
-Full_Data_MHQ2_T3_Females <- Full_Data_MHQ2[
-  !is.na(
-    Full_Data_MHQ2$MHQ2_Completed
-  ) &
-  Full_Data_MHQ2$MHQ2_Completed == 1 &
-  !is.na(
-    Full_Data_MHQ2$MHQ2.Sex
-  ) &
-  Full_Data_MHQ2$MHQ2.Sex == "Female",
-]
+# Full_Data_MHQ2_T3_Females <- Full_Data_MHQ2[
+#   !is.na(
+#     Full_Data_MHQ2$MHQ2_Completed
+#   ) &
+#   Full_Data_MHQ2$MHQ2_Completed == 1 &
+#   !is.na(
+#     Full_Data_MHQ2$MHQ2.Sex
+#   ) &
+#   Full_Data_MHQ2$MHQ2.Sex == "Female",
+# ]
 
 sink("SupplementaryTable3a.txt")
 
@@ -2788,20 +7001,20 @@ Table_3(Full_Data_MHQ2_T3_Females)
 
 sink()
 
-rm(Full_Data_MHQ2_T3_Females)
+# rm(Full_Data_MHQ2_T3_Females)
 
 ## Supplementary Table 3b - Table 3 in males
 
-Full_Data_MHQ2_T3_Males <- Full_Data_MHQ2[
-  !is.na(
-    Full_Data_MHQ2$MHQ2_Completed
-  ) &
-  Full_Data_MHQ2$MHQ2_Completed == 1 &
-  !is.na(
-    Full_Data_MHQ2$MHQ2.Sex
-  ) &
-  Full_Data_MHQ2$MHQ2.Sex == "Male",
-]
+# Full_Data_MHQ2_T3_Males <- Full_Data_MHQ2[
+#   !is.na(
+#     Full_Data_MHQ2$MHQ2_Completed
+#   ) &
+#   Full_Data_MHQ2$MHQ2_Completed == 1 &
+#   !is.na(
+#     Full_Data_MHQ2$MHQ2.Sex
+#   ) &
+#   Full_Data_MHQ2$MHQ2.Sex == "Male",
+# ]
 
 sink("SupplementaryTable3b.txt")
 
@@ -2809,7 +7022,7 @@ Table_3(Full_Data_MHQ2_T3_Males)
 
 sink()
 
-rm(Full_Data_MHQ2_T3_Males)
+# rm(Full_Data_MHQ2_T3_Males)
 
 ```
 
@@ -2825,20 +7038,80 @@ Anorexia Nervosa ever case
 Bulimia nervosa ever case
 Purging disorder ever case
 Harm to self ever case
+Binge-eating ever case -- ALTERNATIVE PLOT
+
 
 ```{r Figure 5}
 
-Data_For_Upset <- Full_Data_MHQ2[Full_Data_MHQ2$MHQ2_Completed == 1,
-  c("eid",
-    "depression.ever.case",
-    "BD1",
-    "PanicDisorder",
-    "Anorexia_nervosa",
-    "Bulimia_nervosa",
-    "Purging_disorder",
-    "Self.Harm.Ever"
+
+Data_For_Upset <- with(Full_Data_MHQ2,
+  Full_Data_MHQ2[!is.na(MHQ2_Completed) &
+    MHQ2_Completed == 1,
+    c("eid",
+      "MHQ2.DepressionEverCase",
+      "MHQ2.BD1",
+      "MHQ2.PanicDisorder",
+      "MHQ2.AnorexiaNervosa",
+      "MHQ2.BulimiaNervosa",
+      "MHQ2.PurgingDisorder",
+      "MHQ2.SelfHarmEver"
+    )
+  ]
+)
+
+Data_For_Upset_Alt <- with(Full_Data_MHQ2,
+  Full_Data_MHQ2[!is.na(MHQ2_Completed) &
+    MHQ2_Completed == 1,
+    c("eid",
+      "MHQ2.DepressionEverCase",
+      "MHQ2.BD1",
+      "MHQ2.PanicDisorder",
+      "MHQ2.AnorexiaNervosa",
+      "MHQ2.BulimiaNervosa",
+      "MHQ2.PurgingDisorder",
+      "MHQ2.BingeEatingDisorderDSM5",
+      "MHQ2.SelfHarmEver"
+    )
+  ]
+)
+
+names(Data_For_Upset) <- c("ID",
+  "Depression",
+  "Bipolar disorder, type I",
+  "Panic disorder",
+  "Anorexia nervosa",
+  "Bulimia nervosa",
+  "Purging disorder",
+  "Self harm"
+)
+
+names(Data_For_Upset_Alt) <- c("ID",
+  "Depression",
+  "Bipolar disorder, type I",
+  "Panic disorder",
+  "Anorexia nervosa",
+  "Bulimia nervosa",
+  "Purging disorder",
+  "Binge-eating disorder",
+  "Self harm"
+)
+
+na2zero <- function(x) {
+  for (j in seq_len(ncol(x)))
+    set(
+      x,
+      which(
+        is.na(
+	  x[[j]]
+	)
+      ),
+    j,
+    0
   )
-]
+}
+
+na2zero(Data_For_Upset)
+na2zero(Data_For_Upset_Alt)
 
 png(
   "Figure5.png",
@@ -2851,10 +7124,47 @@ print(
   upset(
     Data_For_Upset,
     nsets=200,
-    nintersects=20,
+    nintersects=10,
     set_size.show = TRUE,
     order.by = "freq",
-    set_size.scale_max = 45000
+    set_size.scale_max = 45000,
+    number.angles = 0,
+    text.scale = c(1.5,
+      1.5,
+      1.5,
+      1.2,
+      1.5,
+      2
+    )
+  )
+)
+
+dev.off()
+
+
+png(
+  "Figure5Alt.png",
+  res=300,
+  height=1500,
+  width=3000
+)
+
+print(
+  upset(
+    Data_For_Upset_Alt,
+    nsets=200,
+    nintersects=10,
+    set_size.show = TRUE,
+    order.by = "freq",
+    set_size.scale_max = 45000,
+    number.angles = 0,
+    text.scale = c(1.5,
+      1.5,
+      1.5,
+      1.2,
+      1.5,
+      2
+    )
   )
 )
 
@@ -3236,18 +7546,18 @@ Full_Data_MHQ2$MHQ1.PHQ9.No.Info<-with(Full_Data_MHQ2,ifelse((is.na(`20514-0.0`)
 
 Full_Data_MHQ2$MHQ1.PHQ9.Screen<-with(Full_Data_MHQ2,ifelse(((!is.na(`20514-0.0`) & `20514-0.0` >= 2) |
 				  (!is.na(`20510-0.0`) & `20510-0.0` >= 2)) &
-				 (!is.na(PHQ9.No.Info) & PHQ9.No.Info == 0),1,0))
+				 (!is.na(MHQ1.PHQ9.No.Info) & MHQ1.PHQ9.No.Info == 0),1,0))
 Full_Data_MHQ2$MHQ1.PHQ9.Items<-0
 
-Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20514-0.0`) & `20514-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20507-0.0`) & `20507-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20510-0.0`) & `20510-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20508-0.0`) & `20508-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20517-0.0`) & `20517-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20518-0.0`) & `20518-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20519-0.0`) & `20519-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20511-0.0`) & `20511-0.0` >= 3, PHQ9.Items + 1, PHQ9.Items))
-Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20513-0.0`) & `20513-0.0` >= 2, PHQ9.Items + 1, PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20514-0.0`) & `20514-0.0` >= 3, MHQ1.PHQ9.Items + 1, MHQ1.PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20507-0.0`) & `20507-0.0` >= 3, MHQ1.PHQ9.Items + 1, MHQ1.PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20510-0.0`) & `20510-0.0` >= 3, MHQ1.PHQ9.Items + 1, MHQ1.PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20508-0.0`) & `20508-0.0` >= 3, MHQ1.PHQ9.Items + 1, MHQ1.PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20517-0.0`) & `20517-0.0` >= 3, MHQ1.PHQ9.Items + 1, MHQ1.PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20518-0.0`) & `20518-0.0` >= 3, MHQ1.PHQ9.Items + 1, MHQ1.PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20519-0.0`) & `20519-0.0` >= 3, MHQ1.PHQ9.Items + 1, MHQ1.PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20511-0.0`) & `20511-0.0` >= 3, MHQ1.PHQ9.Items + 1, MHQ1.PHQ9.Items))
+Full_Data_MHQ2$MHQ1.PHQ9.Items<-with(Full_Data_MHQ2, ifelse(!is.na(`20513-0.0`) & `20513-0.0` >= 2, MHQ1.PHQ9.Items + 1, MHQ1.PHQ9.Items))
 
 
 Full_Data_MHQ2$MHQ1.PHQ9.Severity<-with(Full_Data_MHQ2, ifelse(`20514-0.0` < 0 | is.na(`20514-0.0`), 0, as.numeric(`20514-0.0`)-1) +
@@ -3316,6 +7626,11 @@ Full_Data_MHQ2$MHQ1.Depressed.Current<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.De
 				 ifelse(MHQ1.Depressed.Ever == 0 | (!is.na(MHQ1.PHQ9.Severity) & MHQ1.PHQ9.Severity < 5), 0,
 				 ifelse(MHQ1.Depressed.Ever == 1 & (!is.na(MHQ1.PHQ9.Screen) & MHQ1.PHQ9.Screen == 1) &
 				        (!is.na(MHQ1.PHQ9.Items) & MHQ1.PHQ9.Items > 4), 1, 0))))
+
+Full_Data_MHQ2$MHQ1.PHQ9.Derived.Depression<-with(Full_Data_MHQ2, ifelse(MHQ1.PHQ9.No.Info == 1, NA,
+				 ifelse(!is.na(MHQ1.PHQ9.Severity) & MHQ1.PHQ9.Severity < 5, 0,
+				 ifelse(!is.na(MHQ1.PHQ9.Screen) & MHQ1.PHQ9.Screen == 1 &
+				        !is.na(MHQ1.PHQ9.Items) & MHQ1.PHQ9.Items > 4, 1, 0))))
 
 ### Depression current severe includes severity of PHQ9
 
@@ -3455,6 +7770,9 @@ Full_Data_MHQ2$MHQ1.GAD.Ever<-with(Full_Data_MHQ2, ifelse((is.na(`20421-0.0`) | 
 Full_Data_MHQ2$MHQ1.GAD.Current<-with(Full_Data_MHQ2, ifelse(is.na(MHQ1.GAD.Ever) | is.na(MHQ1.GAD7.Severity), NA,
 			   ifelse(MHQ1.GAD.Ever == 1 & MHQ1.GAD7.Severity > 9, 1, 0)))
 
+Full_Data_MHQ2$MHQ1.GAD7.Derived.Anxiety <- with(Full_Data_MHQ2, ifelse(is.na(MHQ1.GAD7.Severity), NA,
+                           ifelse(MHQ1.GAD7.Severity > 9, 1, 0)))
+
 #####Alcohol#####
 
 ### AUDIT Score
@@ -3481,6 +7799,15 @@ Full_Data_MHQ2$MHQ1.Alcohol.Use.Disorder<-with(Full_Data_MHQ2, ifelse(MHQ1.AUDIT
 				    	   (is.na(`2664-0.0`) | 
 					    (!is.na(`2664-0.0`) & `2664-0.0` < 0) | 
 					    (!is.na(`2664-0.0`) & `2664-0.0` > 3))), 0, NA))))
+
+Full_Data_MHQ2$MHQ1.Alcohol.Use.Disorder.Harmful<-with(Full_Data_MHQ2, ifelse(MHQ1.AUDIT.Score > 15, 1,
+                                    ifelse(!is.na(`20404-0.0`) & `20404-0.0` == 1, NA,
+                                    ifelse((!is.na(`20414-0.0`) & `20414-0.0` == 0) |
+                                           (!is.na(`20403-0.0`) & `20403-0.0` == 1 &
+                                            !is.na(`20416-0.0`) & `20416-0.0` == 1 &
+                                           (is.na(`2664-0.0`) |
+                                            (!is.na(`2664-0.0`) & `2664-0.0` < 0) |
+                                            (!is.na(`2664-0.0`) & `2664-0.0` > 3))), 0, NA))))
 
 #####Cannabis#####
 
@@ -3703,7 +8030,7 @@ Full_Data_MHQ2$MHQ1.MH.Screen<-with(Full_Data_MHQ2, ifelse((!is.na(MHQ1.Depresse
 				(!is.na(MHQ1.Addiction.Ever) & MHQ1.Addiction.Ever == 1) |
 				(!is.na(MHQ1.Unusual.Experience.Ever) & MHQ1.Unusual.Experience.Ever == 1) |
 				(!is.na(MHQ1.PTSD) & MHQ1.PTSD == 1) |
-				(!is.na(MHQ1.Self.Harm.Ever) & MHQ1.Self.Harm.Ever == 1), 1, MHQ1.MH.Screen))
+				(!is.na(MHQ1.MHQ2.SelfHarmEver) & MHQ1.MHQ2.SelfHarmEver == 1), 1, MHQ1.MH.Screen))
 
 Full_Data_MHQ2$MHQ1.MH.Questionnaires<-with(Full_Data_MHQ2, ifelse((!is.na(MHQ1.Depressed.Ever) & MHQ1.Depressed.Ever == 1) |
 				 	(!is.na(MHQ1.Wider.Bipolar.Definition) & MHQ1.Wider.Bipolar.Definition == 1) |
@@ -3711,7 +8038,7 @@ Full_Data_MHQ2$MHQ1.MH.Questionnaires<-with(Full_Data_MHQ2, ifelse((!is.na(MHQ1.
 					(!is.na(MHQ1.Alcohol.Use.Disorder) & MHQ1.Alcohol.Use.Disorder == 1) |
 					(!is.na(MHQ1.Unusual.Experience.Ever) & MHQ1.Unusual.Experience.Ever == 1) |
 					(!is.na(MHQ1.PTSD) & MHQ1.PTSD == 1) |
-					(!is.na(MHQ1.Self.Harm.Ever) & MHQ1.Self.Harm.Ever == 1), 1, 0))
+					(!is.na(MHQ1.MHQ2.SelfHarmEver) & MHQ1.MHQ2.SelfHarmEver == 1), 1, 0))
 
 Full_Data_MHQ2$MHQ1.MH.Questionnaires.Short<-with(Full_Data_MHQ2, ifelse((!is.na(MHQ1.Depressed.Ever) & MHQ1.Depressed.Ever == 1) |
 				 	      (!is.na(MHQ1.GAD.Ever) & MHQ1.GAD.Ever == 1) |
@@ -3745,50 +8072,516 @@ define_age_bands_table_6 <- function(data, age.variable){
   )
 }
 
+## Restrict Table6 to those who did both questionnaires
+
+Full_Data_MHQ2_Table_6 <- Full_Data_MHQ2[!is.na(Full_Data_MHQ2$MHQ2_Completed) & !is.na(Full_Data_MHQ2$`20400-0.0`), ]
+
 # UKB
 
-Full_Data_MHQ2$UKB.Age.Bands.Table6 <- define_age_bands_table_6(
-  data = Full_Data_MHQ2,
+Full_Data_MHQ2_Table_6$UKB.Age.Bands.Table6 <- define_age_bands_table_6(
+  data = Full_Data_MHQ2_Table_6,
   age.variable = "UKB.Age"
 )
 
 # MHQ1
 
-Full_Data_MHQ2$MHQ1.Age.Bands.Table6 <- define_age_bands_table_6(
-  data = Full_Data_MHQ2,
+Full_Data_MHQ2_Table_6$MHQ1.Age.Bands.Table6 <- define_age_bands_table_6(
+  data = Full_Data_MHQ2_Table_6,
   age.variable = "MHQ1.Age"
 )
 
 # MHQ2
 
-Full_Data_MHQ2$MHQ2.Age.Bands.Table6 <- define_age_bands_table_6(
-  data = Full_Data_MHQ2,
+Full_Data_MHQ2_Table_6$MHQ2.Age.Bands.Table6 <- define_age_bands_table_6(
+  data = Full_Data_MHQ2_Table_6,
   age.variable = "MHQ2.Age"
+)
+
+```
+
+```{r Table 6}
+
+sink("Table6.txt")
+
+cat("## PHQ9 2016\n")
+
+with(Full_Data_MHQ2_Table_6, table(MHQ1.Age.Bands.Table6, MHQ1.PHQ9.Derived.Depression, MHQ1.Sex, useNA="a"))
+
+cat("## PHQ9 2022\n")
+
+with(Full_Data_MHQ2_Table_6, table(MHQ2.Age.Bands.Table6, MHQ2.PHQ9DerivedDepression, MHQ2.Sex, useNA="a"))
+
+cat("## GAD7 2016\n")
+
+with(Full_Data_MHQ2_Table_6, table(MHQ1.Age.Bands.Table6, MHQ1.GAD7.Derived.Anxiety, MHQ1.Sex, useNA="a"))
+
+cat("## GAD7 2022\n")
+
+with(Full_Data_MHQ2_Table_6, table(MHQ2.Age.Bands.Table6, MHQ2.GADDerivedAnxiety, MHQ2.Sex, useNA="a"))
+
+cat("## AUDIT 2016\n")
+
+with(Full_Data_MHQ2_Table_6, table(MHQ1.Age.Bands.Table6, MHQ1.Alcohol.Use.Disorder.Harmful, MHQ1.Sex, useNA="a"))
+
+cat("## AUDIT 2022\n")
+
+with(Full_Data_MHQ2_Table_6, table(MHQ2.Age.Bands.Table6, MHQ2.AlcoholHarmfulDrinking, MHQ2.Sex, useNA="a"))
+
+sink()
+
+```
+
+# Table 7a – MHQ1 vs MHQ2 - Lifetime syndromes (Not excluding new onset)
+# Table 7b – MHQ1 vs MHQ2 - Lifetime syndromes (Excluding new onset)
+
+```{r Define age of onset}
+
+## MDD
+
+# Clean depression age at onset variable (29034)
+
+Full_Data_MHQ2_Table_6$f29034.0.0_clean <- ifelse(Full_Data_MHQ2_Table_6$`29034-0.0` < 0 | is.na(Full_Data_MHQ2_Table_6$`29034-0.0`), NA, Full_Data_MHQ2_Table_6$`29034-0.0`)
+
+# Define date of first episode
+
+Full_Data_MHQ2_Table_6$ApproxDateFirstDepEpisode <- with(Full_Data_MHQ2_Table_6,
+  case_when(
+    is.na(Full_Data_MHQ2_Table_6$`29198-0.0`) |
+      is.na(MHQ2.Age) |
+      is.na(Full_Data_MHQ2_Table_6$f29034.0.0_clean) ~ NA,
+    .default=as.Date(
+      as.Date(Full_Data_MHQ2_Table_6$`29198-0.0`) -
+      as.difftime(
+        (
+	  MHQ2.Age -
+	    Full_Data_MHQ2_Table_6$f29034.0.0_clean
+	)*365.25,
+	unit="days"
+      )
+    )
+  )
+)
+
+# Define incident depression
+
+Full_Data_MHQ2_Table_6$IncidentDepression <- with(Full_Data_MHQ2_Table_6,
+  case_when(
+    is.na(ApproxDateFirstDepEpisode) ~ NA,
+    ApproxDateFirstDepEpisode > as.Date("2016-07-13") ~ 1,
+    .default = 0
+  )
+)
+
+
+## BIP
+
+# Clean bipolar age at onset variable (29053)
+
+Full_Data_MHQ2_Table_6$f29053.0.0_clean <- ifelse(Full_Data_MHQ2_Table_6$`29053-0.0` < 0 | is.na(Full_Data_MHQ2_Table_6$`29053-0.0`), NA, Full_Data_MHQ2_Table_6$`29053-0.0`)
+
+# Define date of first episode
+
+Full_Data_MHQ2_Table_6$ApproxDateFirstManicEpisode <- with(Full_Data_MHQ2_Table_6,
+  case_when(
+    is.na(Full_Data_MHQ2_Table_6$`29199-0.0`) |
+      is.na(MHQ2.Age) |
+      is.na(Full_Data_MHQ2_Table_6$f29053.0.0_clean) ~ NA,
+    .default=as.Date(
+      as.Date(Full_Data_MHQ2_Table_6$`29199-0.0`) -
+      as.difftime(
+        (
+	  MHQ2.Age -
+	    Full_Data_MHQ2_Table_6$f29053.0.0_clean
+	)*365.25,
+	unit="days"
+      )
+    )
+  )
+)
+
+# Define incident bipolar
+
+Full_Data_MHQ2_Table_6$IncidentBipolar <- with(Full_Data_MHQ2_Table_6,
+  case_when(
+    is.na(ApproxDateFirstDepEpisode) &
+      is.na(ApproxDateFirstManicEpisode) ~ NA,
+    (is.na(ApproxDateFirstManicEpisode) &
+      !is.na(ApproxDateFirstDepEpisode) &
+      ApproxDateFirstDepEpisode > as.Date("2016-07-13")
+    ) |
+    (is.na(ApproxDateFirstDepEpisode) &
+      !is.na(ApproxDateFirstManicEpisode) &
+      ApproxDateFirstManicEpisode > as.Date("2016-07-13")
+    ) |
+    (!is.na(ApproxDateFirstManicEpisode) &
+      !is.na(ApproxDateFirstDepEpisode) &
+      ApproxDateFirstDepEpisode > ApproxDateFirstManicEpisode &
+      ApproxDateFirstManicEpisode > as.Date("2016-07-13")
+    ) |
+        (!is.na(ApproxDateFirstManicEpisode) &
+      !is.na(ApproxDateFirstDepEpisode) &
+      ApproxDateFirstManicEpisode > ApproxDateFirstDepEpisode &
+      ApproxDateFirstDepEpisode > as.Date("2016-07-13")
+    ) ~ 1,
+    .default = 0
+  )
+)
+
+
+## Self Harm
+
+# Clean self harm age at onset variable (29112)
+
+Full_Data_MHQ2_Table_6$f29112.0.0_clean <- ifelse(Full_Data_MHQ2_Table_6$`29112-0.0` < 0 | is.na(Full_Data_MHQ2_Table_6$`29112-0.0`), NA, Full_Data_MHQ2_Table_6$`29112-0.0`)
+
+# Define date of first episode
+
+Full_Data_MHQ2_Table_6$ApproxDateFirstHarmEpisode <- with(Full_Data_MHQ2_Table_6,
+  case_when(
+    is.na(Full_Data_MHQ2_Table_6$`29204-0.0`) |
+      is.na(MHQ2.Age) |
+      is.na(Full_Data_MHQ2_Table_6$f29112.0.0_clean) ~ NA,
+    .default=as.Date(
+      as.Date(Full_Data_MHQ2_Table_6$`29204-0.0`) -
+      as.difftime(
+        (
+	  MHQ2.Age -
+	    Full_Data_MHQ2_Table_6$f29112.0.0_clean
+	)*365.25,
+	unit="days"
+      )
+    )
+  )
+)
+
+# Define incident self harm
+
+Full_Data_MHQ2_Table_6$IncidentHarm <- with(Full_Data_MHQ2_Table_6,
+  case_when(
+    is.na(ApproxDateFirstHarmEpisode) ~ NA,
+    ApproxDateFirstHarmEpisode > as.Date("2016-07-13") ~ 1,
+    .default = 0
+  )
 )
 
 
 
+## Cannabis
+
+# Clean cannabis age at onset variable (29105)
+
+Full_Data_MHQ2_Table_6$f29105.0.0_clean <- ifelse(Full_Data_MHQ2_Table_6$`29105-0.0` < 0 | is.na(Full_Data_MHQ2_Table_6$`29105-0.0`), NA, Full_Data_MHQ2_Table_6$`29105-0.0`)
+
+# Define date of first episode 
+
+Full_Data_MHQ2_Table_6$ApproxDateFirstCanEpisode <- with(Full_Data_MHQ2_Table_6,
+  case_when(
+    is.na(Full_Data_MHQ2_Table_6$`29203-0.0`) |
+      is.na(MHQ2.Age) |
+      is.na(Full_Data_MHQ2_Table_6$f29105.0.0_clean) ~ NA,
+    .default=as.Date(
+      as.Date(Full_Data_MHQ2_Table_6$`29203-0.0`) -
+      as.difftime(
+        (
+	  MHQ2.Age -
+	    Full_Data_MHQ2_Table_6$f29105.0.0_clean
+	)*365.25,
+	unit="days"
+      )
+    )
+  )
+)
+
+# Define incident cannabis use
+
+Full_Data_MHQ2_Table_6$IncidentCannabis <- with(Full_Data_MHQ2_Table_6,
+  case_when(
+    is.na(ApproxDateFirstCanEpisode) ~ NA,
+    ApproxDateFirstCanEpisode > as.Date("2016-07-13") ~ 1,
+    .default = 0
+  )
+)
+
+
 ```
 
-Rows:
-N positive (%)
-Under 52
-52-58
-59-65
-66-74
-75-81
-Over 81
+```{r Table7.R}
+sink("Table7.txt")
 
-Columns
-PHQ9 case
-GAD7 case
-AUDIT harmful case
-(Split by sex)
-(Split by MHQ1, MHQ2)
+cat("## MDD\n")
+cat("# MHQ2 (Rows) vs MHQ1 (Columns)\n")
+print(with(Full_Data_MHQ2_Table_6, table(!is.na(MHQ2.DepressionEverCase) & MHQ2.DepressionEverCase == 1, !is.na(MHQ1.Depressed.Ever) & MHQ1.Depressed.Ever == 1, useNA="a")))
+
+print(
+  with(
+    Full_Data_MHQ2_Table_6[
+      !is.na(Full_Data_MHQ2_Table_6$MHQ2.DepressionEverCase) &
+	Full_Data_MHQ2_Table_6$MHQ2.DepressionEverCase == 1 &
+	(
+	  is.na(Full_Data_MHQ2_Table_6$MHQ1.Depressed.Ever) |
+	  (
+	    !is.na(Full_Data_MHQ2_Table_6$MHQ1.Depressed.Ever) &
+	      Full_Data_MHQ2_Table_6$MHQ1.Depressed.Ever == 0
+	  )
+	),
+    ],
+    table(IncidentDepression, useNA="a")
+  )
+)
+
+cat("# Female\n")
+
+print(with(Full_Data_MHQ2_Table_6[Full_Data_MHQ2_Table_6$MHQ2.Sex == "Female", ], table(!is.na(MHQ2.DepressionEverCase) & MHQ2.DepressionEverCase == 1, !is.na(MHQ1.Depressed.Ever) & MHQ1.Depressed.Ever == 1, useNA="a")))
+
+print(
+  with(
+    Full_Data_MHQ2_Table_6[
+      Full_Data_MHQ2_Table_6$MHQ2.Sex == "Female" &
+      !is.na(Full_Data_MHQ2_Table_6$MHQ2.DepressionEverCase) &
+	Full_Data_MHQ2_Table_6$MHQ2.DepressionEverCase == 1 &
+	(
+	  is.na(Full_Data_MHQ2_Table_6$MHQ1.Depressed.Ever) |
+	  (
+	    !is.na(Full_Data_MHQ2_Table_6$MHQ1.Depressed.Ever) &
+	      Full_Data_MHQ2_Table_6$MHQ1.Depressed.Ever == 0
+	  )
+	),
+    ],
+    table(IncidentDepression, useNA="a")
+  )
+)
+
+cat("# Male\n")
+
+print(with(Full_Data_MHQ2_Table_6[Full_Data_MHQ2_Table_6$MHQ2.Sex == "Male", ], table(!is.na(MHQ2.DepressionEverCase) & MHQ2.DepressionEverCase == 1, !is.na(MHQ1.Depressed.Ever) & MHQ1.Depressed.Ever == 1, useNA="a")))
+
+print(
+  with(
+    Full_Data_MHQ2_Table_6[
+      Full_Data_MHQ2_Table_6$MHQ2.Sex == "Male" &
+      !is.na(Full_Data_MHQ2_Table_6$MHQ2.DepressionEverCase) &
+	Full_Data_MHQ2_Table_6$MHQ2.DepressionEverCase == 1 &
+	(
+	  is.na(Full_Data_MHQ2_Table_6$MHQ1.Depressed.Ever) |
+	  (
+	    !is.na(Full_Data_MHQ2_Table_6$MHQ1.Depressed.Ever) &
+	      Full_Data_MHQ2_Table_6$MHQ1.Depressed.Ever == 0
+	  )
+	),
+    ],
+    table(IncidentDepression, useNA="a")
+  )
+)
+
+cat("## Bipolar\n")
+cat("# MHQ2 (Rows) vs MHQ1 (Columns)\n")
+print(with(Full_Data_MHQ2_Table_6, table(!is.na(MHQ2.BD1) & MHQ2.BD1 == 1, !is.na(MHQ1.BPDI) & MHQ1.BPDI == 1, useNA="a")))
+
+print(
+  with(
+    Full_Data_MHQ2_Table_6[
+      !is.na(Full_Data_MHQ2_Table_6$MHQ2.BD1) &
+	Full_Data_MHQ2_Table_6$MHQ2.BD1 == 1 &
+	(
+	  is.na(Full_Data_MHQ2_Table_6$MHQ1.BPDI) |
+	  (
+	    !is.na(Full_Data_MHQ2_Table_6$MHQ1.BPDI) &
+	      Full_Data_MHQ2_Table_6$MHQ1.BPDI == 0
+	  )
+	),
+    ],
+    table(IncidentBipolar, useNA="a")
+  )
+)
+
+cat("# Female\n")
+
+print(with(Full_Data_MHQ2_Table_6[Full_Data_MHQ2_Table_6$MHQ2.Sex == "Female", ], table(!is.na(MHQ2.BD1) & MHQ2.BD1 == 1, !is.na(MHQ1.BPDI) & MHQ1.BPDI == 1, useNA="a")))
+
+print(
+  with(
+    Full_Data_MHQ2_Table_6[
+      Full_Data_MHQ2_Table_6$MHQ2.Sex == "Female" &
+      !is.na(Full_Data_MHQ2_Table_6$MHQ2.BD1) &
+	Full_Data_MHQ2_Table_6$MHQ2.BD1 == 1 &
+	(
+	  is.na(Full_Data_MHQ2_Table_6$MHQ1.BPDI) |
+	  (
+	    !is.na(Full_Data_MHQ2_Table_6$MHQ1.BPDI) &
+	      Full_Data_MHQ2_Table_6$MHQ1.BPDI == 0
+	  )
+	),
+    ],
+    table(IncidentBipolar, useNA="a")
+  )
+)
+
+cat("# Male\n")
+
+print(with(Full_Data_MHQ2_Table_6[Full_Data_MHQ2_Table_6$MHQ2.Sex == "Male", ], table(!is.na(MHQ2.BD1) & MHQ2.BD1 == 1, !is.na(MHQ1.BPDI) & MHQ1.BPDI == 1, useNA="a")))
+
+print(
+  with(
+    Full_Data_MHQ2_Table_6[
+      Full_Data_MHQ2_Table_6$MHQ2.Sex == "Male" &
+      !is.na(Full_Data_MHQ2_Table_6$MHQ2.BD1) &
+	Full_Data_MHQ2_Table_6$MHQ2.BD1 == 1 &
+	(
+	  is.na(Full_Data_MHQ2_Table_6$MHQ1.BPDI) |
+	  (
+	    !is.na(Full_Data_MHQ2_Table_6$MHQ1.BPDI) &
+	      Full_Data_MHQ2_Table_6$MHQ1.BPDI == 0
+	  )
+	),
+    ],
+    table(IncidentBipolar, useNA="a")
+  )
+)
+
+cat("## Self Harm\n")
+cat("# MHQ2 (Rows) vs MHQ1 (Columns)\n")
+print(with(Full_Data_MHQ2_Table_6, table(!is.na(MHQ2.SelfHarmEver) & MHQ2.SelfHarmEver == 1, !is.na(MHQ1.MHQ2.SelfHarmEver) & MHQ1.MHQ2.SelfHarmEver == 1, useNA="a")))
+
+print(
+  with(
+    Full_Data_MHQ2_Table_6[
+      !is.na(Full_Data_MHQ2_Table_6$MHQ2.SelfHarmEver) &
+	Full_Data_MHQ2_Table_6$MHQ2.SelfHarmEver == 1 &
+	(
+	  is.na(Full_Data_MHQ2_Table_6$MHQ1.MHQ2.SelfHarmEver) |
+	  (
+	    !is.na(Full_Data_MHQ2_Table_6$MHQ1.MHQ2.SelfHarmEver) &
+	      Full_Data_MHQ2_Table_6$MHQ1.MHQ2.SelfHarmEver == 0
+	  )
+	),
+    ],
+    table(IncidentHarm, useNA="a")
+  )
+)
+
+cat("# Female\n")
+
+print(with(Full_Data_MHQ2_Table_6[Full_Data_MHQ2_Table_6$MHQ2.Sex == "Female", ], table(!is.na(MHQ2.SelfHarmEver) & MHQ2.SelfHarmEver == 1, !is.na(MHQ1.MHQ2.SelfHarmEver) & MHQ1.MHQ2.SelfHarmEver == 1, useNA="a")))
+
+print(
+  with(
+    Full_Data_MHQ2_Table_6[
+      Full_Data_MHQ2_Table_6$MHQ2.Sex == "Female" &
+      !is.na(Full_Data_MHQ2_Table_6$MHQ2.SelfHarmEver) &
+	Full_Data_MHQ2_Table_6$MHQ2.SelfHarmEver == 1 &
+	(
+	  is.na(Full_Data_MHQ2_Table_6$MHQ1.MHQ2.SelfHarmEver) |
+	  (
+	    !is.na(Full_Data_MHQ2_Table_6$MHQ1.MHQ2.SelfHarmEver) &
+	      Full_Data_MHQ2_Table_6$MHQ1.MHQ2.SelfHarmEver == 0
+	  )
+	),
+    ],
+    table(IncidentHarm, useNA="a")
+  )
+)
+
+cat("# Male\n")
+
+print(with(Full_Data_MHQ2_Table_6[Full_Data_MHQ2_Table_6$MHQ2.Sex == "Male", ], table(!is.na(MHQ2.SelfHarmEver) & MHQ2.SelfHarmEver == 1, !is.na(MHQ1.MHQ2.SelfHarmEver) & MHQ1.MHQ2.SelfHarmEver == 1, useNA="a")))
+
+print(
+  with(
+    Full_Data_MHQ2_Table_6[
+      Full_Data_MHQ2_Table_6$MHQ2.Sex == "Male" &
+      !is.na(Full_Data_MHQ2_Table_6$MHQ2.SelfHarmEver) &
+	Full_Data_MHQ2_Table_6$MHQ2.SelfHarmEver == 1 &
+	(
+	  is.na(Full_Data_MHQ2_Table_6$MHQ1.MHQ2.SelfHarmEver) |
+	  (
+	    !is.na(Full_Data_MHQ2_Table_6$MHQ1.MHQ2.SelfHarmEver) &
+	      Full_Data_MHQ2_Table_6$MHQ1.MHQ2.SelfHarmEver == 0
+	  )
+	),
+    ],
+    table(IncidentHarm, useNA="a")
+  )
+)
 
 
-# Table 7a – MHQ1 vs MHQ2 - Lifetime syndromes (Not excluding new onset)
-# Table 7b – MHQ1 vs MHQ2 - Lifetime syndromes (Excluding new onset)
+cat("## Cannabis\n")
+cat("# MHQ2 (Rows) vs MHQ1 (Columns)\n")
+print(with(Full_Data_MHQ2_Table_6, table(!is.na(MHQ2.CannabisUseEver) & MHQ2.CannabisUseEver == 1, !is.na(MHQ1.Cannabis.Ever) & MHQ1.Cannabis.Ever == 1, useNA="a")))
+
+print(
+  with(
+    Full_Data_MHQ2_Table_6[
+      !is.na(Full_Data_MHQ2_Table_6$MHQ2.CannabisUseEver) &
+	Full_Data_MHQ2_Table_6$MHQ2.CannabisUseEver == 1 &
+	(
+	  is.na(Full_Data_MHQ2_Table_6$MHQ1.Cannabis.Ever) |
+	  (
+	    !is.na(Full_Data_MHQ2_Table_6$MHQ1.Cannabis.Ever) &
+	      Full_Data_MHQ2_Table_6$MHQ1.Cannabis.Ever == 0
+	  )
+	),
+    ],
+    table(IncidentCannabis, useNA="a")
+  )
+)
+
+cat("# Female\n")
+
+print(with(Full_Data_MHQ2_Table_6[Full_Data_MHQ2_Table_6$MHQ2.Sex == "Female", ], table(!is.na(MHQ2.CannabisUseEver) & MHQ2.CannabisUseEver == 1, !is.na(MHQ1.Cannabis.Ever) & MHQ1.Cannabis.Ever == 1, useNA="a")))
+
+print(
+  with(
+    Full_Data_MHQ2_Table_6[
+      Full_Data_MHQ2_Table_6$MHQ2.Sex == "Female" &
+      !is.na(Full_Data_MHQ2_Table_6$MHQ2.CannabisUseEver) &
+	Full_Data_MHQ2_Table_6$MHQ2.CannabisUseEver == 1 &
+	(
+	  is.na(Full_Data_MHQ2_Table_6$MHQ1.Cannabis.Ever) |
+	  (
+	    !is.na(Full_Data_MHQ2_Table_6$MHQ1.Cannabis.Ever) &
+	      Full_Data_MHQ2_Table_6$MHQ1.Cannabis.Ever == 0
+	  )
+	),
+    ],
+    table(IncidentCannabis, useNA="a")
+  )
+)
+
+cat("# Male\n")
+
+print(with(Full_Data_MHQ2_Table_6[Full_Data_MHQ2_Table_6$MHQ2.Sex == "Male", ], table(!is.na(MHQ2.CannabisUseEver) & MHQ2.CannabisUseEver == 1, !is.na(MHQ1.Cannabis.Ever) & MHQ1.Cannabis.Ever == 1, useNA="a")))
+
+print(
+  with(
+    Full_Data_MHQ2_Table_6[
+      Full_Data_MHQ2_Table_6$MHQ2.Sex == "Male" &
+      !is.na(Full_Data_MHQ2_Table_6$MHQ2.CannabisUseEver) &
+	Full_Data_MHQ2_Table_6$MHQ2.CannabisUseEver == 1 &
+	(
+	  is.na(Full_Data_MHQ2_Table_6$MHQ1.Cannabis.Ever) |
+	  (
+	    !is.na(Full_Data_MHQ2_Table_6$MHQ1.Cannabis.Ever) &
+	      Full_Data_MHQ2_Table_6$MHQ1.Cannabis.Ever == 0
+	  )
+	),
+    ],
+    table(IncidentCannabis, useNA="a")
+  )
+)
+
+cat("## SR Diagnosis\n")
+cat("# MHQ2 (Rows) vs MHQ1 (Columns)\n")
+print(with(Full_Data_MHQ2_Table_6, table(!is.na(MHQ2.SelfReportedDiagnosisMHQ2016Compatible) & MHQ2.SelfReportedDiagnosisMHQ2016Compatible == 1, !is.na(MHQ1.NoSRConditions) & MHQ1.NoSRConditions == 0, useNA="a")))
+
+cat("# Female\n")
+print(with(Full_Data_MHQ2_Table_6[Full_Data_MHQ2_Table_6$MHQ2.Sex == "Female", ], table(!is.na(MHQ2.SelfReportedDiagnosisMHQ2016Compatible) & MHQ2.SelfReportedDiagnosisMHQ2016Compatible == 1, !is.na(MHQ1.NoSRConditions) & MHQ1.NoSRConditions == 0, useNA="a")))
+
+cat("# Male\n")
+print(with(Full_Data_MHQ2_Table_6[Full_Data_MHQ2_Table_6$MHQ2.Sex == "Male",], table(!is.na(MHQ2.SelfReportedDiagnosisMHQ2016Compatible) & MHQ2.SelfReportedDiagnosisMHQ2016Compatible == 1, !is.na(MHQ1.NoSRConditions) & MHQ1.NoSRConditions == 0, useNA="a")))
+
+
+sink()
+```
 
 Rows
 Depression
