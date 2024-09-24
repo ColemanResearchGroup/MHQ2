@@ -1,6 +1,51 @@
 # Mental Health Questionnaire 2
  Code for deriving algorithmic phenotypes from the second Mental Health Questionnaire in UK Biobank, conducted in 2023. This code is contained within Davis et al, In Prep.
 
+## Running the code
+
+### Prerequisites
+
+* R (tested with version 4.3.0)
+    * *data.table* (tested with version 1.15.4)
+    * *tidyverse* (tested with version 2.0.0)
+    * *dplyr* (tested with version 1.1.4)
+    * *optparse* (tested with version 1.7.5)
+
+
+With R loaded in the system path:
+
+````
+
+Rscript Overarching.R
+
+````
+
+````
+Usage: Overarching.R [options]
+
+Options:
+	-h, --help
+		Show this help message and exit
+
+	-i INPUT-DATA-FILE-PATH, --input-data-file-path=INPUT-DATA-FILE-PATH
+		File path to a file to read as the data to process.
+
+
+	-o OUTPUT-DATA-FILE-PATH, --output-data-file-path=OUTPUT-DATA-FILE-PATH
+		File path to a file to write as the processed data.
+
+
+	-v VARIABLES, --variables=VARIABLES
+		Comma separated string of variable names to export from the processed data.
+````
+
+
+If Overarching.R is run without specifying variables, it will output all derived phenotypes for the second mental health questionnaire, as described in Davis et al.
+
+Input data must contain all fields necessary to generate the variables requested - a full list of input and possible output variables is available in Overarching.R.
+
+Individual module scripts are available as .R and as .Rmd in the scripts folder.
+
 ## Authors
 
 * **Johan Zvrskovec** - [KCL](https://www.kcl.ac.uk/)
