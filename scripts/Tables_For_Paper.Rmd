@@ -1,12 +1,12 @@
 ---
 title: "Tables for Davis et al (MHQ2)"
 author: "Jonathan RI Coleman"
-date: "2023-12-21 - 2024-??-??"
+date: "2023-12-21 - 2024-10-11"
 output: html_document
 ---
 
 This is a script containing code to generate tables for the forthcoming decriptive paper for the 2023 mental health follow-up questionnaire.
-This requires that the algorithm generating code for the same has already been run.
+This requires that the algorithm generating code (i.e. Overarching.R) for the same has already been run.
 
 # Set up
 
