@@ -73,13 +73,21 @@ lapply(X = packages, FUN = require, character.only = TRUE)
 
 ```
 
-# Read in the data - THIS ASSUMES THE ALGORITHM SCRIPT HAS BEEN RUN!
+# Read in the data
+
+THIS ASSUMES THE ALGORITHM SCRIPT HAS BEEN RUN!
+
+Modify the script so that:
+    - Data from the wider UK Biobank and MHQ1 is passed to Full_Data
+    - Data from the original MHQ2 (i.e. the input to the algorithm script) is passed to MHQ2_Raw
+    - The derived data from the algorithm script is passed to MHQ2_Derived
+
 
 ```{r Read in data}
 
-Full_Data <- readRDS("../ukb82087_All_Fields_For_Tables_ukb675453_Preferred_Orig_Names.rds")
-MHQ2_Raw <- readRDS("../MHQ2_Height_Alcohol_Field_Updated.rds")
-MHQ2_Derived <- readRDS("../MHQ2_2024_06_10.rds")
+Full_Data <- readRDS("/path/to/UKBB_Baseline_MHQ1.rds")
+MHQ2_Raw <- readRDS("/path/to/UKBB_MHQ2_Raw.rds")
+MHQ2_Derived <- readRDS("/path/to/UKBB/MHQ2_Derived.rds")
 
 ```
 
@@ -101,9 +109,11 @@ Full_Data_MHQ2 <- full_join(Full_Data_No_MHQ2, MHQ2)
 
 # Nix latest withdrawals
 
+This needs to be modify to pass the latest withdrawals list from UK Biobank
+
 ```{r Nix latest withdrawls}
 
-Withdrawals <- fread("/datasets/ukbiobank/ukb82087/raw/withdraw82087_255_20240604.txt", head=F, data.table=F)
+Withdrawals <- fread("/path/to/withdrawXXXXX_XXX_2024XXXX.txt", head=F, data.table=F)
 names(Withdrawals) <- "eid"
 
 Full_Data_MHQ2 <- Full_Data_MHQ2[!(Full_Data_MHQ2$eid %in% Withdrawals$eid), ]
@@ -5866,12 +5876,12 @@ Full_Data_MHQ2$MHQ2.NoLifetimeDisorder <- with(Full_Data_MHQ2,
 
 ```{r Table 3}
 
-# Full_Data_MHQ2_T3 <- Full_Data_MHQ2[
-#   !is.na(
-#     Full_Data_MHQ2$MHQ2_Completed
-#   ) &
-#   Full_Data_MHQ2$MHQ2_Completed == 1,
-# ]
+Full_Data_MHQ2_T3 <- Full_Data_MHQ2[
+  !is.na(
+    Full_Data_MHQ2$MHQ2_Completed
+  ) &
+  Full_Data_MHQ2$MHQ2_Completed == 1,
+]
 
 Table_3 <- function(data){
 
@@ -6980,20 +6990,20 @@ Table_3(Full_Data_MHQ2_T3)
 
 sink()
 
-# rm(Full_Data_MHQ2_T3)
+rm(Full_Data_MHQ2_T3)
 
 ## Supplementary Table 3a - Table 3 in females
 
-# Full_Data_MHQ2_T3_Females <- Full_Data_MHQ2[
-#   !is.na(
-#     Full_Data_MHQ2$MHQ2_Completed
-#   ) &
-#   Full_Data_MHQ2$MHQ2_Completed == 1 &
-#   !is.na(
-#     Full_Data_MHQ2$MHQ2.Sex
-#   ) &
-#   Full_Data_MHQ2$MHQ2.Sex == "Female",
-# ]
+Full_Data_MHQ2_T3_Females <- Full_Data_MHQ2[
+  !is.na(
+    Full_Data_MHQ2$MHQ2_Completed
+  ) &
+  Full_Data_MHQ2$MHQ2_Completed == 1 &
+  !is.na(
+    Full_Data_MHQ2$MHQ2.Sex
+  ) &
+  Full_Data_MHQ2$MHQ2.Sex == "Female",
+]
 
 sink("SupplementaryTable3a.txt")
 
@@ -7001,20 +7011,20 @@ Table_3(Full_Data_MHQ2_T3_Females)
 
 sink()
 
-# rm(Full_Data_MHQ2_T3_Females)
+rm(Full_Data_MHQ2_T3_Females)
 
 ## Supplementary Table 3b - Table 3 in males
 
-# Full_Data_MHQ2_T3_Males <- Full_Data_MHQ2[
-#   !is.na(
-#     Full_Data_MHQ2$MHQ2_Completed
-#   ) &
-#   Full_Data_MHQ2$MHQ2_Completed == 1 &
-#   !is.na(
-#     Full_Data_MHQ2$MHQ2.Sex
-#   ) &
-#   Full_Data_MHQ2$MHQ2.Sex == "Male",
-# ]
+Full_Data_MHQ2_T3_Males <- Full_Data_MHQ2[
+  !is.na(
+    Full_Data_MHQ2$MHQ2_Completed
+  ) &
+  Full_Data_MHQ2$MHQ2_Completed == 1 &
+  !is.na(
+    Full_Data_MHQ2$MHQ2.Sex
+  ) &
+  Full_Data_MHQ2$MHQ2.Sex == "Male",
+]
 
 sink("SupplementaryTable3b.txt")
 
@@ -7022,7 +7032,7 @@ Table_3(Full_Data_MHQ2_T3_Males)
 
 sink()
 
-# rm(Full_Data_MHQ2_T3_Males)
+rm(Full_Data_MHQ2_T3_Males)
 
 ```
 
@@ -8582,34 +8592,3 @@ print(with(Full_Data_MHQ2_Table_6[Full_Data_MHQ2_Table_6$MHQ2.Sex == "Male",], t
 
 sink()
 ```
-
-Rows
-Depression
-Bipolar
-Self-harm
-Cannabis
-Any SR clinician diagnosis
-
-Columns
-Met in both
-Met 1 not 2
-Met 2 not 1*
-Neither Kappa
-
-# Table 8 – Deeper exploration of depression ()
-
-Rows
-Sex
-Median current age (or 5y bands)
-Ave PHQ9 score
-Ave GAD7 score
-Median age onset
-% single episode depression
-% recurrent depression
-% bipolar affective disorder
-
-Columns
-Met criteria in both
-Met criteria 1 not 2
-Met criteria 2 not 1
-Never met criteria
