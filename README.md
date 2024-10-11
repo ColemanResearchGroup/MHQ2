@@ -46,6 +46,8 @@ Input data can be in RDS format, or as a flat text file (.tsv), and must contain
 
 Individual module scripts are available as .R and as .Rmd in the scripts folder.
 
+Tables for Davis et al were generated using code described in scripts/Tables_For_Paper.Rmd
+
 ## Authors
 
 * **Johan Zvrskovec** - [KCL](https://www.kcl.ac.uk/)
