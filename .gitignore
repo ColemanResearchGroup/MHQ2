@@ -50,4 +50,9 @@ rsconnect/
 
 # .DS_Store file
 .DS_Store
+
+# Data checking script
 scripts/ED_data_checking.html
+
+# Local tables script
+scripts/Tables_For_Paper_LOCAL.Rmd
