@@ -42,7 +42,7 @@ Options:
 
 If Overarching.R is run without specifying variables, it will output all derived phenotypes for the second mental health questionnaire, as described in Davis et al.
 
-Input data must contain all fields necessary to generate the variables requested - a full list of input and possible output variables is available in Overarching.R.
+Input data can be in RDS format, or as a flat text file (.tsv), and must contain all fields necessary to generate the variables requested - a full list of input and possible output variables is available in Overarching.R.
 
 Individual module scripts are available as .R and as .Rmd in the scripts folder.
 
